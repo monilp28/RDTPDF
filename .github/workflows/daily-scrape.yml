@@ -3,22 +3,27 @@ on:
   workflow_dispatch: {}
   schedule:
     - cron: '1 8-17 * * 1-6'
+
 jobs:
   scrape:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+          
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          
       - name: Run scraper
         run: python src/script/toyota_scrapper.py
+        
       - name: Commit CSV if changed
         id: commit
         run: |
@@ -33,13 +38,12 @@ jobs:
             echo "No changes to commit."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
+          
       - name: Trigger Vercel deploy hook (optional)
         if: steps.commit.outputs.changed == 'true'
         env:
-          DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+          VERCEL_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
         run: |
-          if [ -n "$DEPLOY_HOOK_URL" ]; then
-            curl -X POST "$DEPLOY_HOOK_URL"
-          else
-            echo "No deploy hook URL configured, skipping deployment trigger."
+          if [ -n "$VERCEL_HOOK" ]; then
+            curl -X POST "$VERCEL_HOOK"
           fi
