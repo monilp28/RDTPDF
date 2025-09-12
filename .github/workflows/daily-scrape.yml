@@ -1,24 +1,28 @@
 name: On-demand inventory scrape
+
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: '1 8-17 * * 1-6'
+
 jobs:
   scrape:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
       - name: Run scraper
         run: python src/script/toyota_scrapper.py
+
       - name: Commit CSV if changed
         id: commit
         run: |
@@ -33,6 +37,7 @@ jobs:
             echo "No changes to commit."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
+
       - name: Trigger Vercel deploy hook (optional)
-        if: secrets.VERCEL_DEPLOY_HOOK_URL != '' && steps.commit.outputs.changed == 'true'
+        if: ${{ secrets.VERCEL_DEPLOY_HOOK_URL != '' && steps.commit.outputs.changed == 'true' }}
         run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
