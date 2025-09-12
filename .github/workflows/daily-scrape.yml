@@ -38,12 +38,3 @@ jobs:
             echo "No changes to commit."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
-          
-      - name: Trigger Vercel deploy hook (optional)
-        if: steps.commit.outputs.changed == 'true'
-        env:
-          VERCEL_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
-        run: |
-          if [ -n "$VERCEL_HOOK" ]; then
-            curl -X POST "$VERCEL_HOOK"
-          fi
