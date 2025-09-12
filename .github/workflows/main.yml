@@ -1,0 +1,38 @@
+name: On-demand inventory scrape
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '1 8-17 * * 1-6'
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run scraper
+        run: python src/script/toyota_scrapper.py
+      - name: Commit CSV if changed
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain -- public/data/inventory.csv)" ]; then
+            git add public/data/inventory.csv
+            git commit -m "chore(data): update inventory.csv [skip ci]"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No changes to commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Trigger Vercel deploy hook (optional)
+        if: ${{ secrets.VERCEL_DEPLOY_HOOK_URL != '' && steps.commit.outputs.changed == 'true' }}
+        run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
