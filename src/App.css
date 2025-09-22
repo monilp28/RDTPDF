@@ -25,12 +25,12 @@
 .info-value { font-weight: 900; }
 
 .poster-price-line { margin-top: 2px; text-align: center; font-weight: 900; } /* Further reduced from 5px */
-.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; line-height: 0.85; } /* Increased gap from 6px to 10px */
+.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; line-height: 0.85; padding: 12px 0; margin: 10px 0; } /* Added padding and margin */
 .price-label-line { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; line-height: 0.9; }
 .price-main { font-size: 114px; font-weight: 900; line-height: 0.85; }
 
 /* Sale pricing styles */
-.price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 8px 0; margin: 6px 0; } /* Added top/bottom padding and margin */
+.price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 15px 0; margin: 12px 0; } /* Increased padding from 8px to 15px and margin from 6px to 12px */
 .price-old {
   font-size: 76px;
   color: #6b7280;
