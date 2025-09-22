@@ -1,4 +1,4 @@
-.poster-logo-center { display: flex; justify-content: center; padding-top: 14px; } /* Increased top padding from 8px to 14px */
+.poster-logo-center { display: flex; justify-content: center; padding-top: 20px; } /* Increased top padding from 14px to 20px */
 .brand-logo-lg { width: 280px; height: auto; object-fit: contain; }
 
 .poster-model-center {
@@ -25,12 +25,12 @@
 .info-value { font-weight: 900; }
 
 .poster-price-line { margin-top: 2px; text-align: center; font-weight: 900; } /* Further reduced from 5px */
-.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; line-height: 0.85; } /* Increased gap from 3px to 6px */
+.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; line-height: 0.85; } /* Increased gap from 6px to 10px */
 .price-label-line { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; line-height: 0.9; }
 .price-main { font-size: 114px; font-weight: 900; line-height: 0.85; }
 
 /* Sale pricing styles */
-.price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; } /* Increased gap from 4px to 8px */
+.price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 8px 0; margin: 6px 0; } /* Added top/bottom padding and margin */
 .price-old {
   font-size: 76px;
   color: #6b7280;
@@ -116,12 +116,12 @@ h1 {
   aspect-ratio: 1/1.414;
   border: 4px solid #0b1326;
   border-radius: 10px;
-  padding: 18px 14px 12px 14px; /* Increased top padding from 12px to 18px */
+  padding: 24px 16px 12px 16px; /* Increased top padding from 18px to 24px and sides from 14px to 16px */
   background: #fff;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 6px; /* Further reduced from 12px */
+  gap: 8px; /* Increased gap from 6px to 8px */
   overflow: hidden;
 }
 
@@ -170,7 +170,7 @@ h1 {
 }
 
 .brand-left { display: flex; align-items: center; gap: 8px; } /* Reduced from 12px */
-.brand-logo { width: 110px; height: 110px; object-fit: contain; margin-top: 12px; } /* Increased top margin from 6px to 12px */
+.brand-logo { width: 110px; height: 110px; object-fit: contain; margin-top: 18px; } /* Increased top margin from 12px to 18px */
 .brand-info { line-height: 1.0; } /* Reduced from 1.1 */
 .brand-name { font-size: 24px; font-weight: 800; }
 .brand-site { font-size: 14px; color: #475569; }
@@ -226,11 +226,13 @@ h1 {
 .poster-specs-wide {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px; /* Increased gap from 10px to 14px */
+  gap: 18px; /* Increased gap from 14px to 18px */
   flex: 1 1 auto;
+  padding: 10px 0; /* Added top/bottom padding */
+  margin: 8px 0; /* Added top/bottom margin */
 }
 
-.spec { border: 3px solid #e2e8f0; border-radius: 10px; padding: 6px 8px; min-height: 60px; } /* Further reduced padding and min-height */
+.spec { border: 3px solid #e2e8f0; border-radius: 10px; padding: 8px 10px; min-height: 60px; } /* Increased padding from 6px 8px to 8px 10px */
 
 .spec label { display: block; font-size: 20px; color: #334155; margin-bottom: 1px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; line-height: 0.9; } /* Further reduced margin and added line-height */
 
