@@ -25,7 +25,7 @@
 .info-value { font-weight: 900; }
 
 .poster-price-line { margin-top: 2px; text-align: center; font-weight: 900; } /* Further reduced from 5px */
-.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 1px; line-height: 0.85; } /* Further reduced gap and added line-height */
+.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; line-height: 0.85; } /* Increased gap from 1px to 3px */
 .price-label-line { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; line-height: 0.9; }
 .price-main { font-size: 114px; font-weight: 900; line-height: 0.85; }
 
@@ -185,9 +185,11 @@ h1 {
   text-align: center;
   font-size: 96px;
   font-weight: 900;
-  padding: 8px 0; /* Reduced from 12px 0 */
+  padding: 4px 0; /* Further reduced from 8px 0 */
   border-radius: 8px;
   letter-spacing: 0.02em;
+  line-height: 0.85;
+  margin: 0px; /* Eliminated margins */
 }
 
 .poster-title-block {
@@ -224,15 +226,15 @@ h1 {
 .poster-specs-wide {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px; /* Reduced from 14px */
+  gap: 6px; /* Further reduced from 10px */
   flex: 1 1 auto;
 }
 
-.spec { border: 3px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; min-height: 80px; } /* Reduced padding from 14px 16px and min-height from 96px */
+.spec { border: 3px solid #e2e8f0; border-radius: 10px; padding: 6px 8px; min-height: 60px; } /* Further reduced padding and min-height */
 
-.spec label { display: block; font-size: 20px; color: #334155; margin-bottom: 4px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; } /* Reduced from 8px */
+.spec label { display: block; font-size: 20px; color: #334155; margin-bottom: 1px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; line-height: 0.9; } /* Further reduced margin and added line-height */
 
-.spec span { font-size: 36px; font-weight: 800; }
+.spec span { font-size: 36px; font-weight: 800; line-height: 0.9; }
 
 /* Compact preview card styles */
 .preview-card {
@@ -262,10 +264,12 @@ h1 {
 
 .poster-footer {
   text-align: center;
-  padding-top: 4px; /* Reduced from 8px */
+  padding-top: 2px; /* Further reduced from 4px */
   border-top: 2px dashed #cbd5e1;
   color: #64748b;
   font-size: 16px;
+  line-height: 0.95;
+  margin-top: 0px; /* Eliminated top margin */
 }
 
 .App-header {
