@@ -1,775 +1,289 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehicle Inventory - Poster Generator</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .poster-logo-center { display: flex; justify-content: center; padding-top: 20px; }
-        .brand-logo-lg { width: 280px; height: auto; object-fit: contain; }
-        
-        .poster-model-center {
-          margin-top: 0px;
-          text-align: center;
-          font-size: 88px;
-          font-weight: 900;
-          letter-spacing: 0.01em;
-          line-height: 0.85;
-        }
-        
-        .poster-info-box {
-          margin: 2px auto 2px auto;
-          width: 90%;
-          background: #fdeae8;
-          border: 2px solid #f5c2c0;
-          border-radius: 8px;
-          padding: 4px 8px;
-          text-align: center;
-        }
-        
-        .info-line { font-size: 32px; font-weight: 800; margin: 1px 0; display: flex; justify-content: center; gap: 8px; line-height: 0.9; }
-        .info-label { display: inline-block; min-width: 0; }
-        .info-value { font-weight: 900; }
-        
-        .poster-price-line { margin-top: 2px; text-align: center; font-weight: 900; }
-        .price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; line-height: 0.85; padding: 12px 0; margin: 10px 0; }
-        .price-label-line { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; line-height: 0.9; }
-        .price-main { font-size: 114px; font-weight: 900; line-height: 0.85; }
-        
-        .price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 15px 0; margin: 12px 0; }
-        .price-old {
-          font-size: 76px;
-          color: #6b7280;
-          position: relative;
-          line-height: 0.85;
-        }
-        .price-old::after {
-          content: "";
-          position: absolute;
-          left: -6px; right: -6px; top: 50%; height: 6px;
-          background: #ef4444;
-          transform: rotate(-6deg);
-        }
-        .price-new-label { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; color: #991b1b; line-height: 0.9; }
-        .price-now { font-size: 180px; color: #b91c1c; line-height: 0.8; }
-        
-        .poster-disclaimer {
-          margin-top: 0px;
-          text-align: center;
-          font-size: 20px;
-          font-weight: 700;
-          line-height: 0.95;
-        }
-        
-        body {
-          margin: 0;
-          font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-          color: #0c111d;
-        }
-        
-        .poster {
-          width: 100%;
-          max-width: 840px;
-          aspect-ratio: 1/1.414;
-          border: 4px solid #0b1326;
-          border-radius: 10px;
-          padding: 24px 16px 12px 16px;
-          background: #fff;
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          overflow: hidden;
-        }
-        
-        .poster-specs-wide {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 18px;
-          flex: 1 1 auto;
-          padding: 10px 0;
-          margin: 8px 0;
-        }
-        
-        .spec { 
-          border: 3px solid #e2e8f0; 
-          border-radius: 10px; 
-          padding: 8px 10px; 
-          min-height: 60px; 
-        }
-        
-        .spec label { 
-          display: block; 
-          font-size: 20px; 
-          color: #334155; 
-          margin-bottom: 1px; 
-          font-weight: 800; 
-          text-transform: uppercase; 
-          letter-spacing: 0.06em; 
-          line-height: 0.9; 
-        }
-        
-        .spec span { 
-          font-size: 36px; 
-          font-weight: 800; 
-          line-height: 0.9; 
-        }
-        
-        .brand-logo { 
-          width: 110px; 
-          height: 110px; 
-          object-fit: contain; 
-          margin-top: 18px; 
-        }
-        
-        .poster-price-banner {
-          background: #b91c1c;
-          color: #fff;
-          text-align: center;
-          font-size: 96px;
-          font-weight: 900;
-          padding: 4px 0;
-          border-radius: 8px;
-          letter-spacing: 0.02em;
-          line-height: 0.85;
-          margin: 0px;
-        }
-        
-        .poster-title-block {
-          border-bottom: 3px solid #0f172a;
-          padding-bottom: 4px;
-          margin-bottom: 0px;
-        }
-        
-        .poster-year { font-size: 64px; font-weight: 900; line-height: 0.9; }
-        .poster-make { font-size: 54px; font-weight: 900; line-height: 0.9; }
-        .poster-model-large { 
-          margin-top: 0px; 
-          font-size: 66px; 
-          font-weight: 900; 
-          margin-bottom: 0px; 
-          line-height: 0.85; 
-          word-break: break-word; 
-        }
-        .poster-title-line { 
-          word-break: break-word; 
-          line-height: 0.9; 
-        }
-        
-        .poster-subtitle { 
-          margin-top: 0px; 
-          font-size: 28px; 
-          color: #1f2937; 
-          font-weight: 700; 
-          margin-bottom: 0px; 
-          line-height: 0.9; 
-        }
-        
-        .poster-price-center {
-          text-align: center;
-          font-size: 96px;
-          line-height: 0.85;
-          font-weight: 900;
-          color: #064e3b;
-          margin: 0px 0 0px 0;
-        }
-        
-        .poster-footer {
-          text-align: center;
-          padding-top: 2px;
-          border-top: 2px dashed #cbd5e1;
-          color: #64748b;
-          font-size: 16px;
-          line-height: 0.95;
-          margin-top: 0px;
-        }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
+.poster-logo-center { display: flex; justify-content: center; }
+.brand-logo-lg { width: 280px; height: auto; object-fit: contain; }
 
-    <script type="text/babel">
-        const { useState, useMemo, useEffect } = React;
-        
-        // Sample data structure - replace this with your scraped data
-        const sampleData = [
-            {
-                id: 1,
-                year: 2023,
-                make: "Toyota",
-                model: "Camry",
-                trim: "SE",
-                price: 28500,
-                oldPrice: 32000,
-                mileage: "15,420",
-                engine: "2.5L 4-Cyl",
-                transmission: "Auto",
-                fuelType: "Gasoline",
-                stock: "T2023001",
-                color: "Midnight Black",
-                image: "https://via.placeholder.com/300x200/1a365d/ffffff?text=Toyota+Camry"
-            },
-            {
-                id: 2,
-                year: 2022,
-                make: "Honda",
-                model: "Civic",
-                trim: "Sport",
-                price: 24900,
-                mileage: "22,100",
-                engine: "1.5L Turbo",
-                transmission: "CVT",
-                fuelType: "Gasoline",
-                stock: "H2022001",
-                color: "Sonic Gray",
-                image: "https://via.placeholder.com/300x200/2d3748/ffffff?text=Honda+Civic"
-            }
-        ];
+.poster-model-center {
+  margin-top: 5px;
+  text-align: center;
+  font-size: 88px;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
 
-        const VehicleInventoryApp = () => {
-            // State for vehicles - you can replace sampleData with your real data
-            const [vehicles, setVehicles] = useState([]);
-            const [loading, setLoading] = useState(true);
-            const [searchTerm, setSearchTerm] = useState('');
-            const [filters, setFilters] = useState({
-                make: '',
-                year: '',
-                priceRange: '',
-                fuelType: ''
-            });
-            const [showFilters, setShowFilters] = useState(false);
-            const [selectedVehicle, setSelectedVehicle] = useState(null);
+.poster-info-box {
+  margin: 12px auto 10px auto;
+  width: 90%;
+  background: #fdeae8; /* light tint similar to sample */
+  border: 2px solid #f5c2c0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  text-align: center;
+}
 
-            // Load data on component mount
-            useEffect(() => {
-                // Simulate loading data - replace this with your actual data loading logic
-                setTimeout(() => {
-                    // You can replace this with actual data loading from your scraper
-                    // For example: fetch('/path/to/scraped-data.json')
-                    setVehicles(sampleData);
-                    setLoading(false);
-                }, 1000);
-            }, []);
+.info-line { font-size: 32px; font-weight: 800; margin: 10px 0; display: flex; justify-content: center; gap: 8px; }
+.info-label { display: inline-block; min-width: 0; }
+.info-value { font-weight: 900; }
 
-            // Get unique values for filters
-            const uniqueMakes = vehicles.length > 0 ? [...new Set(vehicles.map(v => v.make))].sort() : [];
-            const uniqueYears = vehicles.length > 0 ? [...new Set(vehicles.map(v => v.year))].sort((a, b) => b - a) : [];
-            const uniqueFuelTypes = vehicles.length > 0 ? [...new Set(vehicles.map(v => v.fuelType || v.fuel_type || 'Gasoline'))].sort() : [];
+.poster-price-line { margin-top: 10px; text-align: center; font-weight: 900; }
+.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }
+.price-label-line { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; }
+.price-main { font-size: 114px; font-weight: 900; }
 
-            // Filter vehicles based on search and filters
-            const filteredVehicles = useMemo(() => {
-                if (!vehicles || vehicles.length === 0) return [];
-                
-                return vehicles.filter(vehicle => {
-                    const searchableText = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''} ${vehicle.stock || vehicle.stock_number || ''}`.toLowerCase();
-                    const matchesSearch = searchTerm === '' || searchableText.includes(searchTerm.toLowerCase());
+/* Sale pricing styles */
+.price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.price-old {
+  font-size: 76px;
+  color: #6b7280;
+  position: relative;
+}
+.price-old::after {
+  content: "";
+  position: absolute;
+  left: -6px; right: -6px; top: 50%; height: 6px;
+  background: #ef4444;
+  transform: rotate(-6deg);
+}
+.price-new-label { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; color: #991b1b; }
+.price-now { font-size: 180px; color: #b91c1c; line-height: 0.95; }
 
-                    const matchesMake = filters.make === '' || vehicle.make === filters.make;
-                    const matchesYear = filters.year === '' || vehicle.year.toString() === filters.year;
-                    const matchesFuelType = filters.fuelType === '' || 
-                        (vehicle.fuelType || vehicle.fuel_type || 'Gasoline') === filters.fuelType;
-                    
-                    const vehiclePrice = parseFloat(vehicle.price) || 0;
-                    const matchesPrice = filters.priceRange === '' || (() => {
-                        switch(filters.priceRange) {
-                            case 'under-30k': return vehiclePrice < 30000;
-                            case '30k-50k': return vehiclePrice >= 30000 && vehiclePrice < 50000;
-                            case '50k-70k': return vehiclePrice >= 50000 && vehiclePrice < 70000;
-                            case 'over-70k': return vehiclePrice >= 70000;
-                            default: return true;
-                        }
-                    })();
+.poster-disclaimer {
+  margin-top: 4px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+}
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: #0c111d;
+}
 
-                    return matchesSearch && matchesMake && matchesYear && matchesFuelType && matchesPrice;
-                });
-            }, [vehicles, searchTerm, filters]);
+.container {
+  max-width: 1100px;
+  margin: 28px auto;
+  padding: 0 16px;
+}
 
-            const clearFilters = () => {
-                setSearchTerm('');
-                setFilters({
-                    make: '',
-                    year: '',
-                    priceRange: '',
-                    fuelType: ''
-                });
-            };
+h1 {
+  margin: 0 0 4px 0;
+  font-size: 28px;
+}
 
-            const formatPrice = (price) => {
-                return new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                }).format(price);
-            };
+.hint {
+  color: #475569;
+  margin-bottom: 20px;
+}
 
-            const generatePoster = (vehicle) => {
-                // Integration point for your poster generation
-                console.log('Generating poster for:', vehicle);
-                
-                // Create poster HTML
-                const posterHTML = `
-                    <div class="poster">
-                        <div class="poster-logo-center">
-                            <div class="brand-logo-lg" style="font-size: 24px; font-weight: 800; color: #1f2937;">DEALERSHIP LOGO</div>
-                        </div>
-                        
-                        <div class="poster-model-center">${vehicle.year}</div>
-                        
-                        <div class="poster-info-box">
-                            <div class="info-line">
-                                <span class="info-label">${vehicle.make}</span>
-                                <span class="info-value">${vehicle.model}</span>
-                            </div>
-                            ${vehicle.trim ? `<div class="info-line"><span class="info-value">${vehicle.trim}</span></div>` : ''}
-                        </div>
-                        
-                        <div class="price-block">
-                            ${vehicle.oldPrice && parseFloat(vehicle.oldPrice) > parseFloat(vehicle.price) ? `
-                                <div class="price-old">${formatPrice(vehicle.oldPrice)}</div>
-                                <div class="price-new-label">NOW ONLY</div>
-                                <div class="price-now">${formatPrice(vehicle.price)}</div>
-                            ` : `
-                                <div class="price-label-line">PRICE</div>
-                                <div class="price-main">${formatPrice(vehicle.price)}</div>
-                            `}
-                        </div>
-                        
-                        <div class="poster-specs-wide">
-                            <div class="spec">
-                                <label>Mileage</label>
-                                <span>${vehicle.mileage || 'N/A'}</span>
-                            </div>
-                            <div class="spec">
-                                <label>Engine</label>
-                                <span>${vehicle.engine || 'N/A'}</span>
-                            </div>
-                            <div class="spec">
-                                <label>Stock</label>
-                                <span>${vehicle.stock || 'N/A'}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="poster-footer">
-                            Contact us for more information • Stock #${vehicle.stock || 'N/A'}
-                        </div>
-                    </div>
-                `;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
 
-                // Open in new window for printing/saving
-                const newWindow = window.open('', '_blank');
-                newWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Vehicle Poster - ${vehicle.year} ${vehicle.make} ${vehicle.model}</title>
-                        <style>${document.querySelector('style').textContent}</style>
-                        <style>
-                            body { margin: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-                        </style>
-                    </head>
-                    <body>
-                        ${posterHTML}
-                    </body>
-                    </html>
-                `);
-                newWindow.document.close();
-            };
+.card {
+  padding: 12px;
+  border: 2px solid #0f172a;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
 
-            const VehicleCard = ({ vehicle }) => {
-                const stockNumber = vehicle.stock || vehicle.stock_number || vehicle.vin || 'N/A';
-                const vehicleImage = vehicle.image || vehicle.image_url || vehicle.photo || 
-                    `https://via.placeholder.com/300x200/2d3748/ffffff?text=${encodeURIComponent(vehicle.make + ' ' + vehicle.model)}`;
-                const mileageDisplay = vehicle.mileage || vehicle.miles || 'N/A';
-                const engineDisplay = vehicle.engine || vehicle.engine_size || 'N/A';
-                const transmissionDisplay = vehicle.transmission || vehicle.trans || 'Auto';
-                const fuelDisplay = vehicle.fuelType || vehicle.fuel_type || 'Gasoline';
-                const colorDisplay = vehicle.color || vehicle.exterior_color || 'N/A';
-                const priceDisplay = parseFloat(vehicle.price) || 0;
-                const oldPriceDisplay = vehicle.oldPrice || vehicle.original_price || vehicle.msrp || null;
-                
-                return (
-                    <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100 group">
-                        <div className="relative overflow-hidden">
-                            <img 
-                                src={vehicleImage} 
-                                alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-                                className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                                onError={(e) => {
-                                    e.target.src = `https://via.placeholder.com/300x200/2d3748/ffffff?text=${encodeURIComponent(vehicle.make + ' ' + vehicle.model)}`;
-                                }}
-                            />
-                            <div className="absolute top-3 right-3 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium">
-                                #{stockNumber}
-                            </div>
-                            {oldPriceDisplay && parseFloat(oldPriceDisplay) > priceDisplay && (
-                                <div className="absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                                    SALE
-                                </div>
-                            )}
-                        </div>
-                        
-                        <div className="p-6">
-                            <div className="mb-4">
-                                <h3 className="text-2xl font-bold text-slate-800 mb-1">
-                                    {vehicle.year} {vehicle.make}
-                                </h3>
-                                <p className="text-xl font-semibold text-slate-600">
-                                    {vehicle.model} {vehicle.trim || ''}
-                                </p>
-                                <p className="text-sm text-slate-500 mt-1">{colorDisplay}</p>
-                            </div>
+.poster-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
 
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="flex items-center gap-2 text-slate-600">
-                                    <span className="text-sm">⚡ {mileageDisplay} {typeof mileageDisplay === 'number' ? 'mi' : ''}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-slate-600">
-                                    <span className="text-sm">🚗 {engineDisplay}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-slate-600">
-                                    <span className="text-sm">⛽ {fuelDisplay}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-slate-600">
-                                    <span className="text-sm">📅 {transmissionDisplay}</span>
-                                </div>
-                            </div>
+.btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #111827;
+  background: #111827;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
 
-                            <div className="mb-4">
-                                {oldPriceDisplay && parseFloat(oldPriceDisplay) > priceDisplay && (
-                                    <p className="text-lg text-slate-400 line-through font-medium">
-                                        {formatPrice(parseFloat(oldPriceDisplay))}
-                                    </p>
-                                )}
-                                <p className={`text-3xl font-bold ${oldPriceDisplay && parseFloat(oldPriceDisplay) > priceDisplay ? 'text-red-600' : 'text-slate-800'}`}>
-                                    {formatPrice(priceDisplay)}
-                                </p>
-                            </div>
+.btn:hover { opacity: 0.95; }
 
-                            <div className="flex gap-2">
-                                <button 
-                                    onClick={() => setSelectedVehicle(vehicle)}
-                                    className="flex-1 bg-slate-800 text-white py-3 px-4 rounded-xl font-semibold hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
-                                >
-                                    👁️ View Details
-                                </button>
-                                <button 
-                                    onClick={() => generatePoster(vehicle)}
-                                    className="bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                                >
-                                    📄
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                );
-            };
+/* Poster styles (A4-ish aspect ratio) */
+.poster {
+  width: 100%;
+  max-width: 840px; /* Rendered at 2x for PDF capture */
+  aspect-ratio: 1/1.414; /* A4 portrait */
+  border: 4px solid #0b1326;
+  border-radius: 10px;
+  padding: 24px 26px;
+  background: #fff;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow: hidden;
+}
 
-            const VehicleModal = ({ vehicle, onClose }) => {
-                if (!vehicle) return null;
-                
-                const stockNumber = vehicle.stock || vehicle.stock_number || vehicle.vin || 'N/A';
-                const vehicleImage = vehicle.image || vehicle.image_url || vehicle.photo || 
-                    `https://via.placeholder.com/300x200/2d3748/ffffff?text=${encodeURIComponent(vehicle.make + ' ' + vehicle.model)}`;
-                const mileageDisplay = vehicle.mileage || vehicle.miles || 'N/A';
-                const engineDisplay = vehicle.engine || vehicle.engine_size || 'N/A';
-                const transmissionDisplay = vehicle.transmission || vehicle.trans || 'Auto';
-                const fuelDisplay = vehicle.fuelType || vehicle.fuel_type || 'Gasoline';
-                const colorDisplay = vehicle.color || vehicle.exterior_color || 'N/A';
-                const priceDisplay = parseFloat(vehicle.price) || 0;
-                const oldPriceDisplay = vehicle.oldPrice || vehicle.original_price || vehicle.msrp || null;
-                
-                return (
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                            <div className="relative">
-                                <img 
-                                    src={vehicleImage} 
-                                    alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-                                    className="w-full h-64 object-cover"
-                                    onError={(e) => {
-                                        e.target.src = `https://via.placeholder.com/300x200/2d3748/ffffff?text=${encodeURIComponent(vehicle.make + ' ' + vehicle.model)}`;
-                                    }}
-                                />
-                                <button 
-                                    onClick={onClose}
-                                    className="absolute top-4 right-4 bg-black/70 text-white p-2 rounded-full hover:bg-black/90 transition-colors"
-                                >
-                                    ✕
-                                </button>
-                                {oldPriceDisplay && parseFloat(oldPriceDisplay) > priceDisplay && (
-                                    <div className="absolute top-4 left-4 bg-red-500 text-white px-4 py-2 rounded-full font-bold">
-                                        ON SALE
-                                    </div>
-                                )}
-                            </div>
-                            
-                            <div className="p-8">
-                                <div className="mb-6">
-                                    <h2 className="text-4xl font-bold text-slate-800 mb-2">
-                                        {vehicle.year} {vehicle.make} {vehicle.model}
-                                    </h2>
-                                    <p className="text-2xl text-slate-600 mb-1">{vehicle.trim || ''}</p>
-                                    <p className="text-lg text-slate-500">Stock #{stockNumber}</p>
-                                </div>
+/* Template mode (exact layout using background image) */
+.poster.template {
+  position: relative;
+  padding: 0; /* Template provides borders/margins */
+  border: none;
+}
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-4 text-slate-800">Vehicle Details</h3>
-                                        <div className="space-y-3">
-                                            <div className="flex justify-between">
-                                                <span className="text-slate-600">Color:</span>
-                                                <span className="font-medium">{colorDisplay}</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-slate-600">Mileage:</span>
-                                                <span className="font-medium">{mileageDisplay} {typeof mileageDisplay === 'number' ? 'miles' : ''}</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-slate-600">Engine:</span>
-                                                <span className="font-medium">{engineDisplay}</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-slate-600">Transmission:</span>
-                                                <span className="font-medium">{transmissionDisplay}</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-slate-600">Fuel Type:</span>
-                                                <span className="font-medium">{fuelDisplay}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-4 text-slate-800">Pricing</h3>
-                                        <div className="bg-slate-50 p-6 rounded-xl">
-                                            {oldPriceDisplay && parseFloat(oldPriceDisplay) > priceDisplay && (
-                                                <p className="text-2xl text-slate-400 line-through font-medium mb-2">
-                                                    {formatPrice(parseFloat(oldPriceDisplay))}
-                                                </p>
-                                            )}
-                                            <p className={`text-4xl font-bold ${oldPriceDisplay && parseFloat(oldPriceDisplay) > priceDisplay ? 'text-red-600' : 'text-slate-800'}`}>
-                                                {formatPrice(priceDisplay)}
-                                            </p>
-                                            {oldPriceDisplay && parseFloat(oldPriceDisplay) > priceDisplay && (
-                                                <p className="text-lg text-green-600 font-semibold mt-2">
-                                                    Save {formatPrice(parseFloat(oldPriceDisplay) - priceDisplay)}!
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
+.poster-template-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-                                <div className="flex gap-4">
-                                    <button 
-                                        onClick={() => generatePoster(vehicle)}
-                                        className="flex-1 bg-blue-600 text-white py-4 px-6 rounded-xl text-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-3"
-                                    >
-                                        📄 Generate Poster
-                                    </button>
-                                    <button 
-                                        onClick={onClose}
-                                        className="px-6 py-4 border border-slate-300 text-slate-700 rounded-xl text-lg font-semibold hover:bg-slate-50 transition-colors"
-                                    >
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            };
+.poster-overlay {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
 
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-                    {/* Header */}
-                    <div className="bg-white shadow-lg border-b border-slate-200">
-                        <div className="max-w-7xl mx-auto px-6 py-6">
-                            <div className="flex flex-col lg:flex-row lg:items-center gap-6">
-                                <div className="flex-1">
-                                    <h1 className="text-3xl font-bold text-slate-800 mb-2">Vehicle Inventory</h1>
-                                    <p className="text-slate-600">Find and generate posters for our available vehicles</p>
-                                </div>
-                                
-                                <div className="flex-1 max-w-2xl">
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            placeholder="Search by make, model, year, or stock number..."
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="w-full pl-12 pr-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-                                        />
-                                        <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400">🔍</span>
-                                    </div>
-                                </div>
+/* Example coordinates: tune these to match the PDF precisely */
+.fld { position: absolute; color: #111827; }
+.fld-logo { left: 28px; top: 28px; }
+.fld-stock { right: 32px; top: 38px; font-size: 33px; font-weight: 900; }
+.fld-price-label { left: 0; right: 0; top: 160px; text-align: center; font-size: 40px; font-weight: 900; letter-spacing: 0.1em; }
+.fld-price { left: 0; right: 0; top: 210px; text-align: center; font-size: 156px; font-weight: 900; color: #b91c1c; }
+.fld-price-old { left: 0; right: 0; top: 200px; text-align: center; font-size: 100px; font-weight: 900; color: #6b7280; position: relative; }
+.fld-price-old::after { content: ""; position: absolute; left: 35%; right: 35%; top: 50%; height: 6px; background: #ef4444; transform: rotate(-8deg); }
+.fld-new-price-label { left: 0; right: 0; top: 245px; text-align: center; font-size: 68px; font-weight: 900; letter-spacing: 0.08em; color: #991b1b; }
+.fld-price-new { left: 0; right: 0; top: 290px; text-align: center; font-size: 216px; font-weight: 900; color: #b91c1c; }
+.fld-year-make { left: 40px; top: 380px; font-size: 70px; font-weight: 900; }
+.fld-model { left: 40px; top: 450px; font-size: 78px; font-weight: 900; }
+.fld-trim-sub { left: 40px; top: 520px; font-size: 32px; font-weight: 800; color: #374151; }
+.fld-mileage { left: 40px; top: 640px; font-size: 44px; font-weight: 800; }
+.fld-engine { left: 40px; top: 700px; font-size: 44px; font-weight: 800; }
 
-                                <button
-                                    onClick={() => setShowFilters(!showFilters)}
-                                    className="flex items-center gap-2 px-6 py-4 bg-slate-800 text-white rounded-xl font-semibold hover:bg-slate-700 transition-colors"
-                                >
-                                    🔧 Filters
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+.poster-header-brand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-                    {/* Filters */}
-                    {showFilters && (
-                        <div className="bg-white border-b border-slate-200 shadow-sm">
-                            <div className="max-w-7xl mx-auto px-6 py-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                                    <select
-                                        value={filters.make}
-                                        onChange={(e) => setFilters({...filters, make: e.target.value})}
-                                        className="px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    >
-                                        <option value="">All Makes</option>
-                                        {uniqueMakes.map(make => (
-                                            <option key={make} value={make}>{make}</option>
-                                        ))}
-                                    </select>
+.brand-left { display: flex; align-items: center; gap: 12px; }
+.brand-logo { width: 110px; height: 110px; object-fit: contain; }
+.brand-info { line-height: 1.1; }
+.brand-name { font-size: 24px; font-weight: 800; }
+.brand-site { font-size: 14px; color: #475569; }
 
-                                    <select
-                                        value={filters.year}
-                                        onChange={(e) => setFilters({...filters, year: e.target.value})}
-                                        className="px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    >
-                                        <option value="">All Years</option>
-                                        {uniqueYears.map(year => (
-                                            <option key={year} value={year}>{year}</option>
-                                        ))}
-                                    </select>
+.brand-right { text-align: right; }
+.stock-label { font-size: 12px; color: #6b7280; letter-spacing: 0.08em; text-transform: uppercase; }
+.stock-value { font-size: 28px; font-weight: 800; }
 
-                                    <select
-                                        value={filters.priceRange}
-                                        onChange={(e) => setFilters({...filters, priceRange: e.target.value})}
-                                        className="px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    >
-                                        <option value="">All Prices</option>
-                                        <option value="under-30k">Under $30,000</option>
-                                        <option value="30k-50k">$30,000 - $50,000</option>
-                                        <option value="50k-70k">$50,000 - $70,000</option>
-                                        <option value="over-70k">Over $70,000</option>
-                                    </select>
+.poster-price-banner {
+  background: #b91c1c;
+  color: #fff;
+  text-align: center;
+  font-size: 96px;
+  font-weight: 900;
+  padding: 12px 0;
+  border-radius: 8px;
+  letter-spacing: 0.02em;
+}
 
-                                    <select
-                                        value={filters.fuelType}
-                                        onChange={(e) => setFilters({...filters, fuelType: e.target.value})}
-                                        className="px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    >
-                                        <option value="">All Fuel Types</option>
-                                        {uniqueFuelTypes.map(fuel => (
-                                            <option key={fuel} value={fuel}>{fuel}</option>
-                                        ))}
-                                    </select>
-                                </div>
+.poster-title-block {
+  border-bottom: 3px solid #0f172a;
+  padding-bottom: 12px;
+}
 
-                                <button
-                                    onClick={clearFilters}
-                                    className="px-4 py-2 text-slate-600 hover:text-slate-800 font-medium"
-                                >
-                                    Clear all filters
-                                </button>
-                            </div>
-                        </div>
-                    )}
+.poster-title-line {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
 
-                    {/* Results */}
-                    <div className="max-w-7xl mx-auto px-6 py-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <p className="text-lg text-slate-600">
-                                {loading ? 'Loading inventory...' : `Showing ${filteredVehicles.length} of ${vehicles.length} vehicles`}
-                            </p>
-                        </div>
+.poster-year { font-size: 64px; font-weight: 900; }
 
-                        {loading ? (
-                            <div className="text-center py-16">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                                <p className="text-slate-500">Loading vehicle inventory...</p>
-                            </div>
-                        ) : vehicles.length === 0 ? (
-                            <div className="text-center py-16">
-                                <div className="text-6xl mb-4">🚗</div>
-                                <h3 className="text-xl font-semibold text-slate-600 mb-2">No inventory data found</h3>
-                                <p className="text-slate-500">Please run your toyota_scrapper.py to populate the inventory</p>
-                            </div>
-                        ) : filteredVehicles.length === 0 ? (
-                            <div className="text-center py-16">
-                                <div className="text-6xl mb-4">🔍</div>
-                                <h3 className="text-xl font-semibold text-slate-600 mb-2">No vehicles found</h3>
-                                <p className="text-slate-500">Try adjusting your search or filter criteria</p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                {filteredVehicles.map((vehicle, index) => (
-                                    <VehicleCard key={vehicle.id || vehicle.stock || vehicle.stock_number || index} vehicle={vehicle} />
-                                ))}
-                            </div>
-                        )}
-                    </div>
+.poster-make { font-size: 54px; font-weight: 900; }
 
-                    {/* Modal */}
-                    <VehicleModal 
-                        vehicle={selectedVehicle} 
-                        onClose={() => setSelectedVehicle(null)} 
-                    />
-                </div>
-            );
-        };
+.poster-model-large { margin-top: 6px; font-size: 66px; font-weight: 900; }
+.poster-model-large { line-height: 1.05; word-break: break-word; }
+.poster-title-line { word-break: break-word; }
 
-        // Load your scraped data here
-        const loadInventoryData = () => {
-            // REPLACE THIS SECTION WITH YOUR ACTUAL DATA LOADING
-            // Options:
-            // 1. Load from JSON file: fetch('./scraped-data.json')
-            // 2. Load from API: fetch('/api/inventory')
-            // 3. Directly embed your scraped data here
-            
-            // For now, we'll use sample data
-            return Promise.resolve(sampleData);
-        };
+.poster-subtitle { margin-top: 8px; font-size: 28px; color: #1f2937; font-weight: 700; }
 
-        // Render the app
-        ReactDOM.render(<VehicleInventoryApp />, document.getElementById('root'));
-    </script>
+.poster-price-center {
+  text-align: center;
+  font-size: 96px;
+  line-height: 1.0;
+  font-weight: 900;
+  color: #064e3b;
+  margin: 8px 0 4px 0;
+}
 
-    <!-- Instructions for integrating your data -->
-    <script>
-        console.log(`
-        🚗 VEHICLE INVENTORY APP READY!
-        
-        📊 TO USE YOUR SCRAPED DATA:
-        
-        1. OPTION 1 - JSON File:
-           - Save your scraped data as 'scraped-data.json' in the same folder
-           - Replace the loadInventoryData function to: fetch('./scraped-data.json')
-        
-        2. OPTION 2 - Direct Integration:
-           - Replace the 'sampleData' variable with your actual scraped data array
-           - Your data should have fields like: year, make, model, price, mileage, etc.
-        
-        3. OPTION 3 - API Integration:
-           - Create an API endpoint that serves your scraped data
-           - Replace loadInventoryData function to: fetch('/api/inventory')
-        
-        🎨 POSTER GENERATION:
-        - Click the blue button on any vehicle card to generate a poster
-        - Posters open in a new window ready for printing/saving as PDF
-        - Styling uses your existing CSS classes for consistent formatting
-        
-        🔍 FEATURES INCLUDED:
-        - Real-time search across all vehicle fields
-        - Advanced filtering by make, year, price range, fuel type
-        - Responsive design that works on all devices
-        - Modal popups for detailed vehicle views
-        - Automatic poster generation with your styling
-        `);
-    </script>
-</body>
-</html>
+.poster-specs-wide {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  flex: 1 1 auto;
+}
+
+.spec { border: 3px solid #e2e8f0; border-radius: 10px; padding: 14px 16px; min-height: 96px; }
+
+.spec label { display: block; font-size: 20px; color: #334155; margin-bottom: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.spec span { font-size: 36px; font-weight: 800; }
+
+/* Compact preview card styles */
+.preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+}
+.preview-title { font-size: 22px; font-weight: 800; }
+.preview-meta { font-size: 14px; color: #475569; display: flex; gap: 16px; flex-wrap: wrap; }
+.preview-price { font-size: 22px; font-weight: 900; }
+.preview-old { color: #6b7280; text-decoration: line-through; margin-right: 8px; font-weight: 700; }
+.preview-now { color: #b91c1c; font-weight: 900; }
+
+/* Responsive: ensure single column and no overlap on smaller screens */
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    padding: 12px;
+  }
+}
+
+.poster-footer {
+  text-align: center;
+  padding-top: 8px;
+  border-top: 2px dashed #cbd5e1;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
