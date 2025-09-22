@@ -2,38 +2,40 @@
 .brand-logo-lg { width: 280px; height: auto; object-fit: contain; }
 
 .poster-model-center {
-  margin-top: 2px; /* Reduced from 5px */
+  margin-top: 0px; /* Eliminated margin */
   text-align: center;
   font-size: 88px;
   font-weight: 900;
   letter-spacing: 0.01em;
+  line-height: 0.85; /* Added tight line height */
 }
 
 .poster-info-box {
-  margin: 6px auto 5px auto; /* Reduced from 12px auto 10px auto */
+  margin: 2px auto 2px auto; /* Further reduced from 6px auto 5px auto */
   width: 90%;
   background: #fdeae8;
   border: 2px solid #f5c2c0;
   border-radius: 8px;
-  padding: 8px 10px; /* Reduced from 12px 14px */
+  padding: 4px 8px; /* Further reduced from 8px 10px */
   text-align: center;
 }
 
-.info-line { font-size: 32px; font-weight: 800; margin: 4px 0; display: flex; justify-content: center; gap: 8px; } /* Reduced margin from 10px 0 to 4px 0 */
+.info-line { font-size: 32px; font-weight: 800; margin: 1px 0; display: flex; justify-content: center; gap: 8px; line-height: 0.9; } /* Further reduced margin and added line-height */
 .info-label { display: inline-block; min-width: 0; }
 .info-value { font-weight: 900; }
 
-.poster-price-line { margin-top: 5px; text-align: center; font-weight: 900; } /* Reduced from 10px */
-.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; } /* Reduced from 6px */
-.price-label-line { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; }
-.price-main { font-size: 114px; font-weight: 900; }
+.poster-price-line { margin-top: 2px; text-align: center; font-weight: 900; } /* Further reduced from 5px */
+.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 1px; line-height: 0.85; } /* Further reduced gap and added line-height */
+.price-label-line { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; line-height: 0.9; }
+.price-main { font-size: 114px; font-weight: 900; line-height: 0.85; }
 
 /* Sale pricing styles */
-.price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; } /* Reduced from 8px */
+.price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 1px; } /* Further reduced from 4px */
 .price-old {
   font-size: 76px;
   color: #6b7280;
   position: relative;
+  line-height: 0.85;
 }
 .price-old::after {
   content: "";
@@ -42,14 +44,15 @@
   background: #ef4444;
   transform: rotate(-6deg);
 }
-.price-new-label { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; color: #991b1b; }
-.price-now { font-size: 180px; color: #b91c1c; line-height: 0.9; } /* Reduced line-height from 0.95 */
+.price-new-label { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; color: #991b1b; line-height: 0.9; }
+.price-now { font-size: 180px; color: #b91c1c; line-height: 0.8; } /* Further reduced line-height from 0.9 */
 
 .poster-disclaimer {
-  margin-top: 2px; /* Reduced from 4px */
+  margin-top: 0px; /* Eliminated margin */
   text-align: center;
   font-size: 20px;
   font-weight: 700;
+  line-height: 0.95;
 }
 body {
   margin: 0;
@@ -113,12 +116,12 @@ h1 {
   aspect-ratio: 1/1.414;
   border: 4px solid #0b1326;
   border-radius: 10px;
-  padding: 16px 18px; /* Reduced from 24px 26px */
+  padding: 12px 14px; /* Further reduced from 16px 18px */
   background: #fff;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Reduced from 18px */
+  gap: 6px; /* Further reduced from 12px */
   overflow: hidden;
 }
 
@@ -189,7 +192,8 @@ h1 {
 
 .poster-title-block {
   border-bottom: 3px solid #0f172a;
-  padding-bottom: 8px; /* Reduced from 12px */
+  padding-bottom: 4px; /* Further reduced from 8px */
+  margin-bottom: 0px; /* Eliminated bottom margin */
 }
 
 .poster-title-line {
@@ -198,23 +202,23 @@ h1 {
   align-items: baseline;
 }
 
-.poster-year { font-size: 64px; font-weight: 900; }
+.poster-year { font-size: 64px; font-weight: 900; line-height: 0.9; }
 
-.poster-make { font-size: 54px; font-weight: 900; }
+.poster-make { font-size: 54px; font-weight: 900; line-height: 0.9; }
 
-.poster-model-large { margin-top: 3px; font-size: 66px; font-weight: 900; } /* Reduced from 6px */
-.poster-model-large { line-height: 1.0; word-break: break-word; } /* Reduced from 1.05 */
-.poster-title-line { word-break: break-word; }
+.poster-model-large { margin-top: 0px; font-size: 66px; font-weight: 900; margin-bottom: 0px; } /* Eliminated margins */
+.poster-model-large { line-height: 0.85; word-break: break-word; } /* Further reduced line-height */
+.poster-title-line { word-break: break-word; line-height: 0.9; }
 
-.poster-subtitle { margin-top: 4px; font-size: 28px; color: #1f2937; font-weight: 700; } /* Reduced from 8px */
+.poster-subtitle { margin-top: 0px; font-size: 28px; color: #1f2937; font-weight: 700; margin-bottom: 0px; line-height: 0.9; } /* Eliminated margins and added line-height */
 
 .poster-price-center {
   text-align: center;
   font-size: 96px;
-  line-height: 0.95; /* Reduced from 1.0 */
+  line-height: 0.85; /* Further reduced from 0.95 */
   font-weight: 900;
   color: #064e3b;
-  margin: 4px 0 2px 0; /* Reduced from 8px 0 4px 0 */
+  margin: 0px 0 0px 0; /* Eliminated all margins */
 }
 
 .poster-specs-wide {
