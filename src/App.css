@@ -226,10 +226,10 @@ h1 {
 .poster-specs-wide {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px; /* Increased gap from 14px to 18px */
+  gap: 14px; /* Back to original gap */
   flex: 1 1 auto;
-  padding: 10px 0; /* Added top/bottom padding */
-  margin: 8px 0; /* Added top/bottom margin */
+  padding: 16px 0; /* Increased padding from 10px to 16px */
+  margin: 14px 0; /* Increased margin from 8px to 14px */
 }
 
 .spec { border: 3px solid #e2e8f0; border-radius: 10px; padding: 8px 10px; min-height: 60px; } /* Increased padding from 6px 8px to 8px 10px */
