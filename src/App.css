@@ -1,58 +1,55 @@
-.poster-logo-center { display: flex; justify-content: center; padding-top: 20px; } /* Increased top padding from 14px to 20px */
+.poster-logo-center { display: flex; justify-content: center; }
 .brand-logo-lg { width: 280px; height: auto; object-fit: contain; }
 
 .poster-model-center {
-  margin-top: 0px; /* Eliminated margin */
+  margin-top: 2px;
   text-align: center;
   font-size: 88px;
   font-weight: 900;
   letter-spacing: 0.01em;
-  line-height: 0.85; /* Added tight line height */
 }
 
 .poster-info-box {
-  margin: 2px auto 2px auto; /* Further reduced from 6px auto 5px auto */
+  margin: 10px auto 4px auto;
   width: 90%;
-  background: #fdeae8;
+  background: #fdeae8; /* light tint similar to sample */
   border: 2px solid #f5c2c0;
   border-radius: 8px;
-  padding: 4px 8px; /* Further reduced from 8px 10px */
+  padding: 10px 12px;
   text-align: center;
 }
 
-.info-line { font-size: 32px; font-weight: 800; margin: 1px 0; display: flex; justify-content: center; gap: 8px; line-height: 0.9; } /* Further reduced margin and added line-height */
+.info-line { font-size: 32px; font-weight: 800; margin: 4px 0; display: flex; justify-content: center; gap: 4px; }
 .info-label { display: inline-block; min-width: 0; }
 .info-value { font-weight: 900; }
 
-.poster-price-line { margin-top: 2px; text-align: center; font-weight: 900; } /* Further reduced from 5px */
-.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; line-height: 0.85; padding: 12px 0; margin: 10px 0; } /* Added padding and margin */
-.price-label-line { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; line-height: 0.9; }
-.price-main { font-size: 114px; font-weight: 900; line-height: 0.85; }
+.poster-price-line { margin-top: 4px; text-align: center; font-weight: 900; }
+.price-block { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; }
+.price-label-line { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; }
+.price-main { font-size: 114px; font-weight: 900; }
 
 /* Sale pricing styles */
-.price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 15px 0; margin: 12px 0; } /* Increased padding from 8px to 15px and margin from 6px to 12px */
+.price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .price-old {
   font-size: 76px;
   color: #6b7280;
   position: relative;
-  line-height: 0.85;
 }
 .price-old::after {
   content: "";
   position: absolute;
-  left: -6px; right: -6px; top: 50%; height: 6px;
+  left: -4px; right: -4px; top: 50%; height: 6px;
   background: #ef4444;
   transform: rotate(-6deg);
 }
-.price-new-label { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; color: #991b1b; line-height: 0.9; }
-.price-now { font-size: 180px; color: #b91c1c; line-height: 0.8; } /* Further reduced line-height from 0.9 */
+.price-new-label { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; color: #991b1b; }
+.price-now { font-size: 180px; color: #b91c1c; line-height: 0.95; }
 
 .poster-disclaimer {
-  margin-top: 0px; /* Eliminated margin */
+  margin-top: 2px;
   text-align: center;
   font-size: 20px;
   font-weight: 700;
-  line-height: 0.95;
 }
 body {
   margin: 0;
@@ -62,28 +59,28 @@ body {
 
 .container {
   max-width: 1100px;
-  margin: 20px auto; /* Reduced from 28px */
-  padding: 0 12px; /* Reduced from 16px */
+  margin: 32px auto;
+  padding: 0 16px;
 }
 
 h1 {
-  margin: 0 0 2px 0; /* Reduced from 4px */
+  margin: 0 0 8px 0;
   font-size: 28px;
 }
 
 .hint {
   color: #475569;
-  margin-bottom: 15px; /* Reduced from 20px */
+  margin-bottom: 20px;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 15px; /* Reduced from 20px */
+  gap: 20px;
 }
 
 .card {
-  padding: 8px; /* Reduced from 12px */
+  padding: 16px;
   border: 2px solid #0f172a;
   border-radius: 14px;
   background: #fff;
@@ -94,11 +91,11 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px; /* Reduced from 12px */
+  gap: 6px;
 }
 
 .btn {
-  padding: 8px 12px; /* Reduced from 10px 14px */
+  padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid #111827;
   background: #111827;
@@ -112,23 +109,23 @@ h1 {
 /* Poster styles (A4-ish aspect ratio) */
 .poster {
   width: 100%;
-  max-width: 840px;
-  aspect-ratio: 1/1.414;
+  max-width: 840px; /* Rendered at 2x for PDF capture */
+  aspect-ratio: 1/1.414; /* A4 portrait */
   border: 4px solid #0b1326;
   border-radius: 10px;
-  padding: 24px 16px 12px 16px; /* Increased top padding from 18px to 24px and sides from 14px to 16px */
+  padding: 16px 18px;
   background: #fff;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 8px; /* Increased gap from 6px to 8px */
+  gap: 8px;
   overflow: hidden;
 }
 
 /* Template mode (exact layout using background image) */
 .poster.template {
   position: relative;
-  padding: 0;
+  padding: 0; /* Template provides borders/margins */
   border: none;
 }
 
@@ -149,19 +146,19 @@ h1 {
 
 /* Example coordinates: tune these to match the PDF precisely */
 .fld { position: absolute; color: #111827; }
-.fld-logo { left: 20px; top: 20px; } /* Reduced from 28px */
-.fld-stock { right: 24px; top: 30px; font-size: 33px; font-weight: 900; } /* Reduced positions */
-.fld-price-label { left: 0; right: 0; top: 140px; text-align: center; font-size: 40px; font-weight: 900; letter-spacing: 0.1em; } /* Reduced from top: 160px */
-.fld-price { left: 0; right: 0; top: 180px; text-align: center; font-size: 156px; font-weight: 900; color: #b91c1c; } /* Reduced from top: 210px */
-.fld-price-old { left: 0; right: 0; top: 170px; text-align: center; font-size: 100px; font-weight: 900; color: #6b7280; position: relative; } /* Reduced from top: 200px */
+.fld-logo { left: 28px; top: 28px; }
+.fld-stock { right: 32px; top: 38px; font-size: 33px; font-weight: 900; }
+.fld-price-label { left: 0; right: 0; top: 146px; text-align: center; font-size: 40px; font-weight: 900; letter-spacing: 0.1em; }
+.fld-price { left: 0; right: 0; top: 192px; text-align: center; font-size: 156px; font-weight: 900; color: #b91c1c; }
+.fld-price-old { left: 0; right: 0; top: 182px; text-align: center; font-size: 100px; font-weight: 900; color: #6b7280; position: relative; }
 .fld-price-old::after { content: ""; position: absolute; left: 35%; right: 35%; top: 50%; height: 6px; background: #ef4444; transform: rotate(-8deg); }
-.fld-new-price-label { left: 0; right: 0; top: 215px; text-align: center; font-size: 68px; font-weight: 900; letter-spacing: 0.08em; color: #991b1b; } /* Reduced from top: 245px */
-.fld-price-new { left: 0; right: 0; top: 260px; text-align: center; font-size: 216px; font-weight: 900; color: #b91c1c; } /* Reduced from top: 290px */
-.fld-year-make { left: 32px; top: 350px; font-size: 70px; font-weight: 900; } /* Reduced from left: 40px, top: 380px */
-.fld-model { left: 32px; top: 410px; font-size: 78px; font-weight: 900; } /* Reduced from left: 40px, top: 450px */
-.fld-trim-sub { left: 32px; top: 480px; font-size: 32px; font-weight: 800; color: #374151; } /* Reduced from left: 40px, top: 520px */
-.fld-mileage { left: 32px; top: 580px; font-size: 44px; font-weight: 800; } /* Reduced from left: 40px, top: 640px */
-.fld-engine { left: 32px; top: 630px; font-size: 44px; font-weight: 800; } /* Reduced from left: 40px, top: 700px */
+.fld-new-price-label { left: 0; right: 0; top: 224px; text-align: center; font-size: 68px; font-weight: 900; letter-spacing: 0.08em; color: #991b1b; }
+.fld-price-new { left: 0; right: 0; top: 264px; text-align: center; font-size: 216px; font-weight: 900; color: #b91c1c; }
+.fld-year-make { left: 40px; top: 344px; font-size: 70px; font-weight: 900; }
+.fld-model { left: 40px; top: 404px; font-size: 78px; font-weight: 900; }
+.fld-trim-sub { left: 40px; top: 472px; font-size: 32px; font-weight: 800; color: #374151; }
+.fld-mileage { left: 40px; top: 588px; font-size: 44px; font-weight: 800; }
+.fld-engine { left: 40px; top: 648px; font-size: 44px; font-weight: 800; }
 
 .poster-header-brand {
   display: flex;
@@ -169,9 +166,9 @@ h1 {
   align-items: center;
 }
 
-.brand-left { display: flex; align-items: center; gap: 8px; } /* Reduced from 12px */
-.brand-logo { width: 110px; height: 110px; object-fit: contain; margin-top: 18px; } /* Increased top margin from 12px to 18px */
-.brand-info { line-height: 1.0; } /* Reduced from 1.1 */
+.brand-left { display: flex; align-items: center; gap: 12px; }
+.brand-logo { width: 110px; height: 110px; object-fit: contain; }
+.brand-info { line-height: 1.1; }
 .brand-name { font-size: 24px; font-weight: 800; }
 .brand-site { font-size: 14px; color: #475569; }
 
@@ -185,71 +182,66 @@ h1 {
   text-align: center;
   font-size: 96px;
   font-weight: 900;
-  padding: 4px 0; /* Further reduced from 8px 0 */
+  padding: 12px 0;
   border-radius: 8px;
   letter-spacing: 0.02em;
-  line-height: 0.85;
-  margin: 0px; /* Eliminated margins */
 }
 
 .poster-title-block {
   border-bottom: 3px solid #0f172a;
-  padding-bottom: 4px; /* Further reduced from 8px */
-  margin-bottom: 0px; /* Eliminated bottom margin */
+  padding-bottom: 12px;
 }
 
 .poster-title-line {
   display: flex;
-  gap: 8px; /* Reduced from 12px */
+  gap: 12px;
   align-items: baseline;
 }
 
-.poster-year { font-size: 64px; font-weight: 900; line-height: 0.9; }
+.poster-year { font-size: 64px; font-weight: 900; }
 
-.poster-make { font-size: 54px; font-weight: 900; line-height: 0.9; }
+.poster-make { font-size: 54px; font-weight: 900; }
 
-.poster-model-large { margin-top: 0px; font-size: 66px; font-weight: 900; margin-bottom: 0px; } /* Eliminated margins */
-.poster-model-large { line-height: 0.85; word-break: break-word; } /* Further reduced line-height */
-.poster-title-line { word-break: break-word; line-height: 0.9; }
+.poster-model-large { margin-top: 6px; font-size: 66px; font-weight: 900; }
+.poster-model-large { line-height: 1.05; word-break: break-word; }
+.poster-title-line { word-break: break-word; }
 
-.poster-subtitle { margin-top: 0px; font-size: 28px; color: #1f2937; font-weight: 700; margin-bottom: 0px; line-height: 0.9; } /* Eliminated margins and added line-height */
+.poster-subtitle { margin-top: 8px; font-size: 28px; color: #1f2937; font-weight: 700; }
 
 .poster-price-center {
   text-align: center;
   font-size: 96px;
-  line-height: 0.85; /* Further reduced from 0.95 */
+  line-height: 1.0;
   font-weight: 900;
   color: #064e3b;
-  margin: 0px 0 0px 0; /* Eliminated all margins */
+  margin: 8px 0 4px 0;
 }
 
 .poster-specs-wide {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px; /* Back to original gap */
+  gap: 14px;
   flex: 1 1 auto;
-  padding: 16px 0; /* Increased padding from 10px to 16px */
-  margin: 14px 0; /* Increased margin from 8px to 14px */
 }
 
-.spec { border: 3px solid #e2e8f0; border-radius: 10px; padding: 8px 10px; min-height: 60px; } /* Increased padding from 6px 8px to 8px 10px */
+.spec { border: 3px solid #e2e8f0; border-radius: 10px; padding: 14px 16px; min-height: 96px; }
 
-.spec label { display: block; font-size: 20px; color: #334155; margin-bottom: 1px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; line-height: 0.9; } /* Further reduced margin and added line-height */
+.spec label { display: block; font-size: 20px; color: #334155; margin-bottom: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
 
-.spec span { font-size: 36px; font-weight: 800; line-height: 0.9; }
+.spec span { font-size: 36px; font-weight: 800; }
 
 /* Compact preview card styles */
 .preview-card {
   display: flex;
   flex-direction: column;
-  gap: 6px; /* Reduced from 10px */
-  padding: 10px; /* Reduced from 14px */
+  gap: 10px;
+  padding: 14px;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   background: #fff;
 }
 .preview-title { font-size: 22px; font-weight: 800; }
-.preview-meta { font-size: 14px; color: #475569; display: flex; gap: 12px; flex-wrap: wrap; } /* Reduced from 16px */
+.preview-meta { font-size: 14px; color: #475569; display: flex; gap: 16px; flex-wrap: wrap; }
 .preview-price { font-size: 22px; font-weight: 900; }
 .preview-old { color: #6b7280; text-decoration: line-through; margin-right: 8px; font-weight: 700; }
 .preview-now { color: #b91c1c; font-weight: 900; }
@@ -260,18 +252,16 @@ h1 {
     grid-template-columns: 1fr;
   }
   .card {
-    padding: 8px; /* Reduced from 12px */
+    padding: 12px;
   }
 }
 
 .poster-footer {
   text-align: center;
-  padding-top: 2px; /* Further reduced from 4px */
+  padding-top: 8px;
   border-top: 2px dashed #cbd5e1;
   color: #64748b;
   font-size: 16px;
-  line-height: 0.95;
-  margin-top: 0px; /* Eliminated top margin */
 }
 
 .App-header {
