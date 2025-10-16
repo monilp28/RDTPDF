@@ -1,5 +1,6 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
 Honda,2009,Fit,Sport,Sport,202474,10967,,T62202,1.5L 4
+Toyota,2012,RAV4,Sport,Sport,222126,15967,,T63891,3.5L 6
 Ford,2020,Escape,SEL,SEL,118049,23967,,T30291,1.5L 3
 Cadillac,2019,XT5,AWD,AWD,105232,27967,,T40421,3.6L 6
 Ford,2018,F-150,XLT,XLT,144888,27967,,T71711,5.0L 8
@@ -23,6 +24,5 @@ Toyota,2024,Land Cruiser,,,13526,75967,,11386,2.4L 4
 GMC,2024,Sierra,Crew,Crew,20916,98967,,T71741,6.6L 8
 Gmc,2024,Sierra 3500HD,,,,98967,,T71741,
 Toyota,2025,Sequoia,,,6335,109967,,T63631,3.4L 6
-Toyota,2012,RAV4,Sport,Sport,222126,,,T63891,3.5L 6
 Ford,2014,Escape,Titanium,Titanium,208850,,,T63951,2.0L 4
 Jeep,2008,Liberty,Sport,Sport,210876,,,T63971,3.7L 6
