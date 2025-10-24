@@ -1,5 +1,5 @@
 .poster-logo-center { display: flex; justify-content: center; }
-.brand-logo-lg { width: 280px; height: auto; object-fit: contain; }
+.brand-logo-lg { width: 250px; height: auto; object-fit: contain; }
 
 .poster-model-center {
   margin-top: 2px;
