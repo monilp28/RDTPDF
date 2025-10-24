@@ -76,7 +76,7 @@ const Poster = ({ vehicle, compact = false }) => {
       </div>
 
       {/* Disclaimer */}
-      <div className="poster-disclaimer">Price Does not include taxes and licensing fees.</div>
+      <div className="poster-disclaimer">Price Does not include GST.</div>
     </>
   );
 
