@@ -576,7 +576,321 @@ class UniversalRedDeerToyotaScraper:
                 attr_lower = attr.lower()
                 if 'data-' in attr_lower:
                     if 'year' in attr_lower and not vehicle['year']:
-                        if re.match(r'^(19[8-9][0-9]|20[0-2][0-9]), str(value)):
+                        if re.match(r'^(19[8-9][0-9]|20[0-2][0-9])
+                    elif 'make' in attr_lower and not vehicle['makeName']:
+                        vehicle['makeName'] = str(value).title()
+                    elif 'model' in attr_lower and not vehicle['model']:
+                        vehicle['model'] = str(value)
+                    elif 'trim' in attr_lower and not vehicle['trim']:
+                        vehicle['trim'] = str(value)
+                        vehicle['sub-model'] = str(value)
+                    elif 'sale' in attr_lower and not vehicle['sale_value']:
+                        sale_clean = re.sub(r'[^\d]', '', str(value))
+                        if sale_clean and sale_clean.isdigit() and 3000 <= int(sale_clean) <= 300000:
+                            vehicle['sale_value'] = sale_clean
+                    elif 'price' in attr_lower:
+                        price_clean = re.sub(r'[^\d]', '', str(value))
+                        if price_clean and price_clean.isdigit() and 3000 <= int(price_clean) <= 300000:
+                            if vehicle['sale_value'] and int(price_clean) < int(vehicle['sale_value']):
+                                vehicle['value'], vehicle['sale_value'] = vehicle['sale_value'], price_clean
+                            elif not vehicle['value']:
+                                vehicle['value'] = price_clean
+                    elif 'stock' in attr_lower and not vehicle['stock_number']:
+                        if len(str(value)) >= 3:
+                            vehicle['stock_number'] = str(value)
+            
+            return vehicle
+            
+        except Exception as e:
+            logger.debug("Error extracting vehicle data: {}".format(str(e)))
+            return vehicle
+
+    def is_complete_vehicle(self, vehicle):
+        """Check if vehicle has enough accurate data"""
+        if not isinstance(vehicle, dict):
+            return False
+        
+        # Must have at least these essential fields
+        required_fields = ['year', 'makeName']
+        has_required = all(vehicle.get(field, '').strip() for field in required_fields)
+        
+        # Must have at least 1 of these identifying fields
+        identifying_fields = ['model', 'value', 'stock_number', 'mileage']
+        has_identifying = sum(1 for field in identifying_fields if vehicle.get(field, '').strip()) >= 1
+        
+        return has_required and has_identifying
+
+    def find_vehicle_containers(self, soup):
+        """Find vehicle container elements with accurate data"""
+        vehicles = []
+        
+        # Try more specific selectors first
+        priority_selectors = [
+            '[data-vehicle-id]',
+            '[data-stock-number]',
+            '[data-vin]',
+            '.vehicle-card',
+            '.inventory-item',
+            '.vehicle-listing',
+            '.srp-list-item'
+        ]
+        
+        for selector in priority_selectors:
+            elements = soup.select(selector)
+            if elements:
+                logger.info("Found {} elements with selector: {}".format(len(elements), selector))
+                
+                for element in elements:
+                    vehicle = self.extract_clean_vehicle_data(element)
+                    
+                    if self.is_complete_vehicle(vehicle):
+                        vehicles.append(vehicle)
+                        logger.info("Extracted complete vehicle: {} {} {} - Stock: {}".format(
+                            vehicle['year'], vehicle['makeName'], vehicle['model'], vehicle['stock_number']))
+                
+                if vehicles:
+                    logger.info("Successfully extracted {} vehicles using {}".format(len(vehicles), selector))
+                    return vehicles
+        
+        # Try broader selectors if specific ones fail
+        fallback_selectors = [
+            '.vehicle',
+            '.car-item',
+            '.listing-item',
+            '.inventory-card',
+            '[class*="vehicle"]',
+            '[class*="inventory"]'
+        ]
+        
+        for selector in fallback_selectors:
+            elements = soup.select(selector)
+            if elements:
+                logger.info("Trying fallback selector: {} ({} elements)".format(selector, len(elements)))
+                
+                for element in elements:
+                    vehicle = self.extract_clean_vehicle_data(element)
+                    
+                    if self.is_complete_vehicle(vehicle):
+                        vehicles.append(vehicle)
+                
+                if vehicles:
+                    logger.info("Extracted {} vehicles using fallback {}".format(len(vehicles), selector))
+                    return vehicles
+        
+        return vehicles
+
+    def scrape_inventory(self):
+        """Main scraping method - only returns accurate data for any brand"""
+        logger.info("=" * 80)
+        logger.info("UNIVERSAL RED DEER TOYOTA USED INVENTORY SCRAPER")
+        logger.info("Extracting accurate data for ANY brand/model - no fallback samples")
+        logger.info("=" * 80)
+        
+        # Fetch main page
+        soup = self.fetch_main_page()
+        if not soup:
+            logger.error("Cannot proceed without main page")
+            return []
+        
+        # Find and extract vehicle data
+        logger.info("Searching for vehicle containers...")
+        vehicles = self.find_vehicle_containers(soup)
+        
+        if not vehicles:
+            logger.warning("No complete vehicles found with current selectors")
+            
+            # Try one more approach - look for any text that contains vehicle info
+            logger.info("Attempting text-based extraction as final attempt...")
+            page_text = soup.get_text()
+            
+            # Look for structured vehicle information patterns (any brand)
+            make_list = '|'.join(self.car_makes.keys())
+            vehicle_pattern = r'(19[8-9][0-9]|20[0-2][0-9])\s+({0})\s+([A-Za-z0-9-]+).*?\$([0-9,]+)'.format(make_list)
+            
+            matches = re.findall(vehicle_pattern, page_text, re.IGNORECASE)
+            
+            for match in matches[:20]:  # Limit results
+                vehicle = {
+                    'makeName': match[1],
+                    'year': match[0],
+                    'model': match[2],
+                    'sub-model': '',
+                    'trim': '',
+                    'mileage': '',
+                    'value': "${:,}".format(int(match[3].replace(',', ''))),
+                    'sale_value': '',
+                    'stock_number': '',
+                    'engine': ''
+                }
+                
+                # Try to extract trim from surrounding context
+                context_start = max(0, page_text.find(match[0]) - 100)
+                context_end = min(len(page_text), page_text.find(match[0]) + 200)
+                context = page_text[context_start:context_end]
+                trim = self.extract_trim_from_text(context)
+                if trim:
+                    vehicle['trim'] = trim
+                    vehicle['sub-model'] = trim
+                
+                if self.is_complete_vehicle(vehicle):
+                    vehicles.append(vehicle)
+        
+        # Remove duplicates based on multiple criteria
+        unique_vehicles = []
+        seen_combinations = set()
+        
+        for vehicle in vehicles:
+            # Create unique identifier
+            identifier = (
+                vehicle.get('year', ''),
+                vehicle.get('makeName', ''),
+                vehicle.get('model', ''),
+                vehicle.get('stock_number', ''),
+                vehicle.get('value', '')
+            )
+            
+            if identifier not in seen_combinations and any(identifier):
+                seen_combinations.add(identifier)
+                unique_vehicles.append(vehicle)
+        
+        self.vehicles = unique_vehicles
+        logger.info("FINAL RESULT: {} unique vehicles with accurate data".format(len(self.vehicles)))
+        
+        return self.vehicles
+
+    def save_to_csv(self, filename):
+        """Save only if we have real vehicle data - accepts full path"""
+        fieldnames = ['makeName', 'year', 'model', 'sub-model', 'trim', 'mileage', 'value', 'sale_value', 'stock_number', 'engine']
+        
+        if not self.vehicles:
+            logger.info("No vehicles found - NOT creating CSV file")
+            return False
+        
+        try:
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            
+            with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                for vehicle in self.vehicles:
+                    row = {field: vehicle.get(field, '') for field in fieldnames}
+                    writer.writerow(row)
+            
+            logger.info("CSV saved with {} accurate vehicle records to {}".format(len(self.vehicles), filename))
+            return True
+            
+        except Exception as e:
+            logger.error("Error saving CSV: {}".format(str(e)))
+            return False
+
+    def print_results(self):
+        """Print results with accuracy validation"""
+        print("\n" + "=" * 100)
+        print("RED DEER TOYOTA USED INVENTORY - UNIVERSAL SCRAPER (ALL BRANDS)")
+        print("=" * 100)
+        
+        if not self.vehicles:
+            print("No vehicles with complete, accurate data were found.")
+            print("\nThis indicates:")
+            print("- Website structure may have changed")
+            print("- JavaScript-heavy content requires browser automation")
+            print("- Anti-scraping protection is active")
+            print("- No used vehicles currently available with accessible data")
+            print("\nNO CSV file will be created without accurate data.")
+            return
+        
+        print("Found {} vehicles with accurate, complete data".format(len(self.vehicles)))
+        print("Generated: {}".format(datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+        
+        # Show brand distribution
+        brand_counts = {}
+        for vehicle in self.vehicles:
+            brand = vehicle.get('makeName', 'Unknown')
+            brand_counts[brand] = brand_counts.get(brand, 0) + 1
+        
+        print("\nBrand Distribution:")
+        for brand, count in sorted(brand_counts.items()):
+            print("  {}: {} vehicles".format(brand, count))
+        
+        # Print header using .format() to avoid any string issues
+        print("\n{:<12} {:<6} {:<15} {:<12} {:<10} {:<10} {:<10} {:<10} {:<10} {:<20}".format(
+            'Make', 'Year', 'Model', 'Sub-Model', 'Trim', 'Mileage', 'Value', 'Sale', 'Stock#', 'Engine'))
+        print("-" * 125)
+        
+        # Print each vehicle
+        for vehicle in self.vehicles:
+            make = vehicle.get('makeName', '')[:11]
+            year = vehicle.get('year', '')
+            model = vehicle.get('model', '')[:14]
+            submodel = vehicle.get('sub-model', '')[:11]
+            trim = vehicle.get('trim', '')[:9]
+            mileage = vehicle.get('mileage', '')[:9]
+            value = vehicle.get('value', '')[:9]
+            sale_value = vehicle.get('sale_value', '')[:9]
+            stock = vehicle.get('stock_number', '')[:9]
+            engine = vehicle.get('engine', '')[:19]
+            
+            print("{:<12} {:<6} {:<15} {:<12} {:<10} {:<10} {:<10} {:<10} {:<10} {:<20}".format(
+                make, year, model, submodel, trim, mileage, value, sale_value, stock, engine))
+
+def main():
+    """Main execution - no fallback data"""
+    scraper = UniversalRedDeerToyotaScraper()
+    
+    try:
+        # Run the precise scraper
+        vehicles = scraper.scrape_inventory()
+        
+        # Display results
+        scraper.print_results()
+        
+        # Determine project root and public/data path so the React app can fetch the CSV
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.abspath(os.path.join(script_dir, '..', '..'))
+        public_data_dir = os.path.join(project_root, 'public', 'data')
+        os.makedirs(public_data_dir, exist_ok=True)
+        csv_path = os.path.join(public_data_dir, 'inventory.csv')
+        
+        # Only save CSV if we have real data
+        if vehicles:
+            csv_saved = scraper.save_to_csv(csv_path)
+            print("\nCSV Status: {}".format('Successfully created with accurate data' if csv_saved else 'Failed to create'))
+            
+            if csv_saved and os.path.exists(csv_path):
+                with open(csv_path, 'r') as f:
+                    lines = f.readlines()
+                    print("{} contains {} lines (including header)".format(csv_path, len(lines)))
+        else:
+            print("\nCSV Status: No file created - no accurate vehicle data found")
+            # Remove any existing CSV file to avoid stale data
+            if os.path.exists(csv_path):
+                os.remove(csv_path)
+                print("Removed any existing CSV file to prevent stale data")
+        
+        return 0 if vehicles else 1
+        
+    except Exception as e:
+        logger.error("Scraper failed: {}".format(str(e)))
+        print("Error: {}".format(str(e)))
+        
+        # Remove any existing CSV file on error (inside public/data)
+        try:
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            project_root = os.path.abspath(os.path.join(script_dir, '..', '..'))
+            csv_path = os.path.join(project_root, 'public', 'data', 'inventory.csv')
+            if os.path.exists(csv_path):
+                os.remove(csv_path)
+                print("Removed existing CSV file due to scraper error")
+        except Exception:
+            pass
+        
+        return 1
+
+if __name__ == "__main__":
+    exit_code = main()
+    exit(exit_code), str(value)):
                             vehicle['year'] = str(value)
                     elif 'make' in attr_lower and not vehicle['makeName']:
                         vehicle['makeName'] = str(value).title()
