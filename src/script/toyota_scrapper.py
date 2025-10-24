@@ -47,10 +47,10 @@ class UniversalRedDeerToyotaScraper:
         # Universal car makes and models - EXPANDED
         self.car_makes = {
             'Toyota': {
-                'Camry', 'RAV4', 'Highlander', 'Prius', 'Corolla', 'Tacoma', 'Tundra', 
+                'Camry', 'RAV4', 'Highlander', 'Prius', 'Corolla', 'Corolla Cross', 'Tacoma', 'Tundra', 
                 'Sienna', '4Runner', 'Sequoia', 'Avalon', 'C-HR', 'Venza', 'Land Cruiser', 
-                'GR86', 'Supra', 'Yaris', 'Matrix', 'FJ Cruiser', 'Celica', 'MR2', 'Crown',
-                'bZ4X', 'GR Corolla', 'Solara', 'Echo'
+                'GR86', 'Supra', 'Yaris', 'Yaris Cross', 'Matrix', 'FJ Cruiser', 'Celica', 'MR2', 'Crown',
+                'bZ4X', 'GR Corolla', 'Solara', 'Echo', 'Tercel', 'Pickup'
             },
             'Honda': {
                 'Civic', 'Accord', 'CR-V', 'HR-V', 'Pilot', 'Odyssey', 'Fit', 'Insight', 
@@ -170,6 +170,7 @@ class UniversalRedDeerToyotaScraper:
         """Extract make and model from text using comprehensive patterns"""
         text = re.sub(r'\s+', ' ', text.strip())
         
+        # First pass: Check for multi-word models (e.g., "Corolla Cross", "Range Rover Sport")
         for make, models in self.car_makes.items():
             make_patterns = [
                 r'\b{}\b'.format(re.escape(make)),
@@ -179,21 +180,27 @@ class UniversalRedDeerToyotaScraper:
             
             for make_pattern in make_patterns:
                 if re.search(make_pattern, text, re.IGNORECASE):
-                    for model in models:
+                    # Sort models by length (longest first) to match multi-word models first
+                    sorted_models = sorted(models, key=len, reverse=True)
+                    
+                    for model in sorted_models:
                         model_patterns = [
                             r'\b{}\b'.format(re.escape(model)),
-                            r'\b{}\b'.format(re.escape(model.replace("-", ""))),
-                            r'\b{}\b'.format(re.escape(model.replace(" ", "")))
+                            r'\b{}\b'.format(re.escape(model.replace("-", " "))),  # Handle hyphens as spaces
+                            r'\b{}\b'.format(re.escape(model.replace(" ", ""))),   # Handle spaces removed
+                            r'\b{}\b'.format(re.escape(model.replace("-", "")))    # Handle hyphens removed
                         ]
                         
                         for model_pattern in model_patterns:
                             if re.search(model_pattern, text, re.IGNORECASE):
                                 return make, model
         
-        generic_pattern = r'\b(20[0-2][0-9])\s+([A-Z][a-zA-Z-]+)\s+([A-Z][a-zA-Z0-9-]+)\b'
+        # Fallback: generic patterns
+        generic_pattern = r'\b(20[0-2][0-9])\s+([A-Z][a-zA-Z-]+)\s+([A-Z][a-zA-Z0-9-\s]+?)(?:\s+[A-Z]{2,}|\s+\d|\s*$)'
         match = re.search(generic_pattern, text)
         if match:
             year, potential_make, potential_model = match.groups()
+            potential_model = potential_model.strip()
             for make in self.car_makes.keys():
                 if make.lower() == potential_make.lower():
                     return make, potential_model
@@ -576,6 +583,7 @@ class UniversalRedDeerToyotaScraper:
         """Find vehicle container elements with accurate data"""
         vehicles = []
         
+        # Strategy 1: Try more specific selectors first
         priority_selectors = [
             '[data-vehicle-id]',
             '[data-stock-number]',
@@ -583,7 +591,10 @@ class UniversalRedDeerToyotaScraper:
             '.vehicle-card',
             '.inventory-item',
             '.vehicle-listing',
-            '.srp-list-item'
+            '.srp-list-item',
+            'article[class*="vehicle"]',
+            'div[class*="vehicle-tile"]',
+            'li[class*="vehicle"]'
         ]
         
         for selector in priority_selectors:
@@ -596,18 +607,23 @@ class UniversalRedDeerToyotaScraper:
                     
                     if self.is_complete_vehicle(vehicle):
                         vehicles.append(vehicle)
-                        logger.info("Extracted complete vehicle: {} {} {} - Stock: {}".format(
-                            vehicle['year'], vehicle['makeName'], vehicle['model'], vehicle['stock_number']))
+                        logger.info("Extracted complete vehicle: {} {} {} {} - Stock: {}".format(
+                            vehicle['year'], vehicle['makeName'], vehicle['model'], 
+                            vehicle.get('trim', ''), vehicle['stock_number']))
                 
                 if vehicles:
                     logger.info("Successfully extracted {} vehicles using {}".format(len(vehicles), selector))
                     return vehicles
         
+        # Strategy 2: Try broader selectors
         fallback_selectors = [
             '.vehicle',
             '.car-item',
             '.listing-item',
             '.inventory-card',
+            'article',
+            'li[class*="item"]',
+            'div[class*="card"]',
             '[class*="vehicle"]',
             '[class*="inventory"]'
         ]
@@ -627,6 +643,26 @@ class UniversalRedDeerToyotaScraper:
                     logger.info("Extracted {} vehicles using fallback {}".format(len(vehicles), selector))
                     return vehicles
         
+        # Strategy 3: Look for any div/section that contains year + make pattern
+        logger.info("Strategy 3: Searching all divs for vehicle patterns...")
+        all_divs = soup.find_all(['div', 'section', 'article', 'li'])
+        
+        for div in all_divs:
+            div_text = div.get_text(separator=' ', strip=True)
+            # Look for year pattern
+            if re.search(r'\b(19[89]\d|20[0-2]\d)\b', div_text):
+                # Check if it contains a known make
+                for make in self.car_makes.keys():
+                    if re.search(r'\b' + re.escape(make) + r'\b', div_text, re.IGNORECASE):
+                        vehicle = self.extract_clean_vehicle_data(div)
+                        if self.is_complete_vehicle(vehicle):
+                            vehicles.append(vehicle)
+                            break
+        
+        if vehicles:
+            logger.info("Extracted {} vehicles using pattern search in all divs".format(len(vehicles)))
+            return vehicles
+        
         return vehicles
 
     def scrape_inventory(self):
@@ -644,52 +680,115 @@ class UniversalRedDeerToyotaScraper:
         logger.info("Searching for vehicle containers...")
         vehicles = self.find_vehicle_containers(soup)
         
-        if not vehicles:
-            logger.warning("No complete vehicles found with current selectors")
+        if not vehicles or len(vehicles) < 5:  # If we found very few vehicles, try text extraction
+            logger.warning("Found only {} vehicles with selectors, trying text extraction...".format(len(vehicles)))
             
-            logger.info("Attempting text-based extraction as final attempt...")
             page_text = soup.get_text()
             
+            # Enhanced pattern to catch multi-word models
             make_list = '|'.join(self.car_makes.keys())
-            vehicle_pattern = r'(19[8-9][0-9]|20[0-2][0-9])\s+({0})\s+([A-Za-z0-9-]+).*?\$([0-9,]+)'.format(make_list)
             
-            matches = re.findall(vehicle_pattern, page_text, re.IGNORECASE)
+            # Try to find year + make + model (including multi-word models)
+            patterns = [
+                r'(19[8-9]\d|20[0-2]\d)\s+({0})\s+(Corolla Cross|Range Rover Sport|Grand Cherokee|[A-Za-z0-9][A-Za-z0-9\s-]*?)(?=\s+[A-Z]{{2,}}|\s+\$|\s*\n)'.format(make_list),
+                r'(19[8-9]\d|20[0-2]\d)\s+({0})\s+([A-Za-z0-9-]+)'.format(make_list)
+            ]
             
-            for match in matches[:20]:
-                vehicle = {
-                    'makeName': match[1],
-                    'year': match[0],
-                    'model': match[2],
-                    'sub-model': '',
-                    'trim': '',
-                    'mileage': '',
-                    'value': "${:,}".format(int(match[3].replace(',', ''))),
-                    'sale_value': '',
-                    'stock_number': '',
-                    'engine': ''
-                }
+            text_vehicles = []
+            for pattern in patterns:
+                matches = re.findall(pattern, page_text, re.IGNORECASE | re.MULTILINE)
                 
-                context_start = max(0, page_text.find(match[0]) - 100)
-                context_end = min(len(page_text), page_text.find(match[0]) + 200)
-                context = page_text[context_start:context_end]
-                trim = self.extract_trim_from_text(context)
-                if trim:
-                    vehicle['trim'] = trim
-                    vehicle['sub-model'] = trim
-                
-                if self.is_complete_vehicle(vehicle):
-                    vehicles.append(vehicle)
+                for match in matches:
+                    year = match[0]
+                    make = match[1]
+                    model = match[2].strip()
+                    
+                    # Find the make in our database (case-insensitive)
+                    actual_make = None
+                    for m in self.car_makes.keys():
+                        if m.lower() == make.lower():
+                            actual_make = m
+                            break
+                    
+                    if not actual_make:
+                        continue
+                    
+                    # Check if model exists in our database
+                    found_model = None
+                    sorted_models = sorted(self.car_makes[actual_make], key=len, reverse=True)
+                    for known_model in sorted_models:
+                        if known_model.lower() == model.lower() or \
+                           known_model.lower().replace(' ', '') == model.lower().replace(' ', ''):
+                            found_model = known_model
+                            break
+                    
+                    if not found_model:
+                        found_model = model
+                    
+                    vehicle = {
+                        'makeName': actual_make,
+                        'year': year,
+                        'model': found_model,
+                        'sub-model': '',
+                        'trim': '',
+                        'mileage': '',
+                        'value': '',
+                        'sale_value': '',
+                        'stock_number': '',
+                        'engine': ''
+                    }
+                    
+                    # Extract trim from surrounding context
+                    match_pos = page_text.find('{} {} {}'.format(year, actual_make, model))
+                    if match_pos >= 0:
+                        context_start = max(0, match_pos - 150)
+                        context_end = min(len(page_text), match_pos + 300)
+                        context = page_text[context_start:context_end]
+                        
+                        trim = self.extract_trim_from_text(context)
+                        if trim and trim.lower() not in found_model.lower():
+                            vehicle['trim'] = trim
+                            vehicle['sub-model'] = trim
+                        
+                        # Try to extract price from context
+                        price_match = re.search(r'\$\s*([0-9,]+)', context)
+                        if price_match:
+                            try:
+                                price_val = int(price_match.group(1).replace(',', ''))
+                                if 3000 <= price_val <= 300000:
+                                    vehicle['value'] = str(price_val)
+                            except:
+                                pass
+                        
+                        # Try to extract mileage from context
+                        mileage_match = re.search(r'(\d{1,3}(?:,\d{3})*)\s*(?:km|kilometers?|miles?)', context, re.IGNORECASE)
+                        if mileage_match:
+                            vehicle['mileage'] = mileage_match.group(1).replace(',', '')
+                        
+                        # Try to extract stock number from context
+                        stock_match = re.search(r'(?:Stock|#)\s*([A-Z0-9]{3,10})', context, re.IGNORECASE)
+                        if stock_match:
+                            vehicle['stock_number'] = stock_match.group(1)
+                    
+                    if self.is_complete_vehicle(vehicle):
+                        text_vehicles.append(vehicle)
+            
+            # Merge text-extracted vehicles with selector-extracted ones
+            vehicles.extend(text_vehicles)
+            logger.info("After text extraction: {} total vehicles found".format(len(vehicles)))
         
+        # Remove duplicates based on multiple criteria
         unique_vehicles = []
         seen_combinations = set()
         
         for vehicle in vehicles:
+            # Create unique identifier
             identifier = (
                 vehicle.get('year', ''),
                 vehicle.get('makeName', ''),
                 vehicle.get('model', ''),
-                vehicle.get('stock_number', ''),
-                vehicle.get('value', '')
+                vehicle.get('stock_number', '') or vehicle.get('mileage', ''),
+                vehicle.get('value', '') or vehicle.get('sale_value', '')
             )
             
             if identifier not in seen_combinations and any(identifier):
