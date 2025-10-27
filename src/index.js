@@ -53,6 +53,7 @@ const InventoryApp = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [debugInfo, setDebugInfo] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMake, setSelectedMake] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
@@ -62,21 +63,36 @@ const InventoryApp = () => {
   const loadInventory = () => {
     setLoading(true);
     setError(null);
+    setDebugInfo('Starting to load inventory...');
     
-    fetch('/data/inventory.csv')
+    console.log('Attempting to fetch: /data/inventory.csv');
+    
+    fetch('/inventory.csv')
       .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        setDebugInfo(`Response status: ${response.status}, OK: ${response.ok}`);
+        
         if (!response.ok) {
-          throw new Error('Failed to load inventory data');
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.text();
       })
       .then(data => {
-        const rows = data.split('\n').slice(1); // Skip header row
+        console.log('Data received, length:', data.length);
+        console.log('First 500 chars:', data.substring(0, 500));
+        setDebugInfo(`Data received: ${data.length} characters`);
+        
+        const lines = data.split('\n');
+        console.log('Total lines:', lines.length);
+        console.log('Header:', lines[0]);
+        
+        const rows = lines.slice(1);
         const parsed = rows
           .filter(row => row.trim())
-          .map(row => {
-            // Handle CSV with potential commas in quoted fields
+          .map((row, idx) => {
             const cols = row.split(',').map(col => col.trim());
+            console.log(`Row ${idx}:`, cols);
             return {
               makeName: cols[0] || '',
               year: cols[1] || '',
@@ -90,14 +106,19 @@ const InventoryApp = () => {
               engine: cols[9] || '',
             };
           })
-          .filter(v => v.makeName && v.year); // Only include vehicles with at least make and year
+          .filter(v => v.makeName && v.year);
+        
+        console.log('Parsed vehicles:', parsed.length);
+        console.log('Sample vehicle:', parsed[0]);
         
         setVehicles(parsed);
+        setDebugInfo(`Successfully loaded ${parsed.length} vehicles`);
         setLoading(false);
       })
       .catch(err => {
         console.error('Error loading inventory:', err);
         setError(err.message);
+        setDebugInfo(`Error: ${err.message}`);
         setLoading(false);
       });
   };
@@ -175,9 +196,14 @@ const InventoryApp = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center max-w-2xl mx-auto p-8">
           <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-red-600 border-t-transparent"></div>
           <p className="mt-4 text-slate-600 font-medium">Loading inventory...</p>
+          {debugInfo && (
+            <div className="mt-4 p-4 bg-white rounded-lg shadow text-left">
+              <p className="text-xs font-mono text-slate-700">{debugInfo}</p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -186,7 +212,7 @@ const InventoryApp = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-8">
+        <div className="text-center max-w-2xl mx-auto p-8">
           <div className="text-red-600 mb-4">
             <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -194,12 +220,63 @@ const InventoryApp = () => {
           </div>
           <h3 className="text-xl font-semibold text-slate-900 mb-2">Failed to Load Inventory</h3>
           <p className="text-slate-600 mb-4">{error}</p>
+          
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-left">
+            <h4 className="font-semibold text-yellow-900 mb-2">Debug Information:</h4>
+            <p className="text-sm text-yellow-800 font-mono">{debugInfo}</p>
+            <div className="mt-3 text-sm text-yellow-800">
+              <p className="font-semibold mb-1">Troubleshooting steps:</p>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>Make sure you've run the scraper: <code className="bg-yellow-100 px-1">python src/script/toyota_scrapper.py</code></li>
+                <li>Check if the file exists at: <code className="bg-yellow-100 px-1">public/data/inventory.csv</code></li>
+                <li>Verify the CSV file has data (should have a header row and vehicle rows)</li>
+                <li>Check browser console (F12) for more error details</li>
+              </ol>
+            </div>
+          </div>
+          
           <button
             onClick={loadInventory}
             className="inline-flex items-center space-x-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
           >
             <RefreshIcon />
             <span>Retry</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (vehicles.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center max-w-2xl mx-auto p-8">
+          <div className="text-slate-300 mb-4 flex justify-center">
+            <CarIcon />
+          </div>
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">No Vehicles in Inventory</h3>
+          <p className="text-slate-600 mb-6">The CSV file was loaded but contains no vehicle data.</p>
+          
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-left">
+            <h4 className="font-semibold text-blue-900 mb-2">What to do:</h4>
+            <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
+              <li>Run the scraper to generate inventory data:
+                <pre className="mt-1 bg-blue-100 p-2 rounded text-xs overflow-x-auto">python src/script/toyota_scrapper.py</pre>
+              </li>
+              <li>The scraper should create: <code className="bg-blue-100 px-1">public/data/inventory.csv</code></li>
+              <li>Check the CSV file has this format:
+                <pre className="mt-1 bg-blue-100 p-2 rounded text-xs overflow-x-auto">makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine</pre>
+              </li>
+              <li>After running the scraper, refresh this page</li>
+            </ol>
+          </div>
+          
+          <button
+            onClick={loadInventory}
+            className="inline-flex items-center space-x-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
+          >
+            <RefreshIcon />
+            <span>Reload</span>
           </button>
         </div>
       </div>
