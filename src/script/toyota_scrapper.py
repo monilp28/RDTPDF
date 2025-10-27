@@ -166,6 +166,62 @@ class UniversalRedDeerToyotaScraper:
             logger.error("Failed to fetch main page: {}".format(str(e)))
             return None
 
+    def fetch_all_pages(self):
+        """Fetch all inventory pages (page 1, 2, 3, etc.)"""
+        all_soups = []
+        page_num = 1
+        max_pages = 10  # Safety limit
+        
+        while page_num <= max_pages:
+            url = "{}?page={}".format(self.target_url.rstrip('/'), page_num)
+            
+            try:
+                logger.info("Fetching page {}: {}".format(page_num, url))
+                response = self.session.get(url, timeout=30)
+                response.raise_for_status()
+                
+                logger.info("Page {} Response: {}, Size: {} bytes".format(
+                    page_num, response.status_code, len(response.content)))
+                
+                soup = BeautifulSoup(response.content, 'html.parser')
+                
+                # Check if page has content
+                page_text = soup.get_text()
+                
+                # Check if this page has vehicles (look for year patterns)
+                has_vehicles = bool(re.search(r'\b(19[89]\d|20[0-2]\d)\b', page_text))
+                
+                # Check for "no results" or empty page indicators
+                no_results = any([
+                    'no vehicles found' in page_text.lower(),
+                    'no results' in page_text.lower(),
+                    '0 vehicles' in page_text.lower()
+                ])
+                
+                if not has_vehicles or no_results:
+                    logger.info("Page {} appears empty or has no vehicles, stopping pagination".format(page_num))
+                    break
+                
+                all_soups.append((page_num, soup))
+                page_num += 1
+                
+                # Small delay to be respectful
+                time.sleep(0.5)
+                
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 404:
+                    logger.info("Page {} returned 404, stopping pagination".format(page_num))
+                    break
+                else:
+                    logger.error("HTTP error on page {}: {}".format(page_num, str(e)))
+                    break
+            except Exception as e:
+                logger.error("Failed to fetch page {}: {}".format(page_num, str(e)))
+                break
+        
+        logger.info("Successfully fetched {} pages".format(len(all_soups)))
+        return all_soups
+
     def extract_make_and_model(self, text):
         """Extract make and model from text using comprehensive patterns"""
         text = re.sub(r'\s+', ' ', text.strip())
@@ -672,127 +728,174 @@ class UniversalRedDeerToyotaScraper:
         logger.info("Extracting accurate data for ANY brand/model - no fallback samples")
         logger.info("=" * 80)
         
-        soup = self.fetch_main_page()
-        if not soup:
-            logger.error("Cannot proceed without main page")
+        # Fetch all pages
+        all_pages = self.fetch_all_pages()
+        if not all_pages:
+            logger.error("Cannot proceed without any pages")
             return []
         
-        logger.info("Searching for vehicle containers...")
-        vehicles = self.find_vehicle_containers(soup)
+        all_vehicles = []
         
-        if not vehicles or len(vehicles) < 5:  # If we found very few vehicles, try text extraction
-            logger.warning("Found only {} vehicles with selectors, trying text extraction...".format(len(vehicles)))
+        # Process each page
+        for page_num, soup in all_pages:
+            logger.info("=" * 60)
+            logger.info("Processing page {}".format(page_num))
+            logger.info("=" * 60)
             
-            page_text = soup.get_text()
+            logger.info("Searching for vehicle containers on page {}...".format(page_num))
+            page_vehicles = self.find_vehicle_containers(soup)
             
-            # Enhanced pattern to catch multi-word models
-            make_list = '|'.join(self.car_makes.keys())
-            
-            # Try to find year + make + model (including multi-word models)
-            patterns = [
-                r'(19[8-9]\d|20[0-2]\d)\s+({0})\s+(Corolla Cross|Range Rover Sport|Grand Cherokee|[A-Za-z0-9][A-Za-z0-9\s-]*?)(?=\s+[A-Z]{{2,}}|\s+\$|\s*\n)'.format(make_list),
-                r'(19[8-9]\d|20[0-2]\d)\s+({0})\s+([A-Za-z0-9-]+)'.format(make_list)
-            ]
-            
-            text_vehicles = []
-            for pattern in patterns:
-                matches = re.findall(pattern, page_text, re.IGNORECASE | re.MULTILINE)
+            if not page_vehicles or len(page_vehicles) < 5:
+                logger.warning("Found only {} vehicles with selectors on page {}, trying text extraction...".format(
+                    len(page_vehicles), page_num))
                 
-                for match in matches:
-                    year = match[0]
-                    make = match[1]
-                    model = match[2].strip()
+                page_text = soup.get_text()
+                
+                # Enhanced pattern to catch multi-word models
+                make_list = '|'.join(self.car_makes.keys())
+                
+                # Try to find year + make + model (including multi-word models)
+                patterns = [
+                    r'(19[8-9]\d|20[0-2]\d)\s+({0})\s+(Corolla Cross|Range Rover Sport|Grand Cherokee|[A-Za-z0-9][A-Za-z0-9\s-]*?)(?=\s+[A-Z]{{2,}}|\s+\$|\s*\n)'.format(make_list),
+                    r'(19[8-9]\d|20[0-2]\d)\s+({0})\s+([A-Za-z0-9-]+)'.format(make_list)
+                ]
+                
+                text_vehicles = []
+                for pattern in patterns:
+                    matches = re.findall(pattern, page_text, re.IGNORECASE | re.MULTILINE)
                     
-                    # Find the make in our database (case-insensitive)
-                    actual_make = None
-                    for m in self.car_makes.keys():
-                        if m.lower() == make.lower():
-                            actual_make = m
-                            break
-                    
-                    if not actual_make:
-                        continue
-                    
-                    # Check if model exists in our database
-                    found_model = None
-                    sorted_models = sorted(self.car_makes[actual_make], key=len, reverse=True)
-                    for known_model in sorted_models:
-                        if known_model.lower() == model.lower() or \
-                           known_model.lower().replace(' ', '') == model.lower().replace(' ', ''):
-                            found_model = known_model
-                            break
-                    
-                    if not found_model:
-                        found_model = model
-                    
-                    vehicle = {
-                        'makeName': actual_make,
-                        'year': year,
-                        'model': found_model,
-                        'sub-model': '',
-                        'trim': '',
-                        'mileage': '',
-                        'value': '',
-                        'sale_value': '',
-                        'stock_number': '',
-                        'engine': ''
-                    }
-                    
-                    # Extract trim from surrounding context
-                    match_pos = page_text.find('{} {} {}'.format(year, actual_make, model))
-                    if match_pos >= 0:
-                        context_start = max(0, match_pos - 150)
-                        context_end = min(len(page_text), match_pos + 300)
-                        context = page_text[context_start:context_end]
+                    for match in matches:
+                        year = match[0]
+                        make = match[1]
+                        model = match[2].strip()
                         
-                        trim = self.extract_trim_from_text(context)
-                        if trim and trim.lower() not in found_model.lower():
-                            vehicle['trim'] = trim
-                            vehicle['sub-model'] = trim
+                        # Find the make in our database (case-insensitive)
+                        actual_make = None
+                        for m in self.car_makes.keys():
+                            if m.lower() == make.lower():
+                                actual_make = m
+                                break
                         
-                        # Try to extract price from context
-                        price_match = re.search(r'\$\s*([0-9,]+)', context)
-                        if price_match:
-                            try:
-                                price_val = int(price_match.group(1).replace(',', ''))
-                                if 3000 <= price_val <= 300000:
-                                    vehicle['value'] = str(price_val)
-                            except:
-                                pass
+                        if not actual_make:
+                            continue
                         
-                        # Try to extract mileage from context
-                        mileage_match = re.search(r'(\d{1,3}(?:,\d{3})*)\s*(?:km|kilometers?|miles?)', context, re.IGNORECASE)
-                        if mileage_match:
-                            vehicle['mileage'] = mileage_match.group(1).replace(',', '')
+                        # Check if model exists in our database
+                        found_model = None
+                        sorted_models = sorted(self.car_makes[actual_make], key=len, reverse=True)
+                        for known_model in sorted_models:
+                            if known_model.lower() == model.lower() or \
+                               known_model.lower().replace(' ', '') == model.lower().replace(' ', ''):
+                                found_model = known_model
+                                break
                         
-                        # Try to extract stock number from context
-                        stock_match = re.search(r'(?:Stock|#)\s*([A-Z0-9]{3,10})', context, re.IGNORECASE)
-                        if stock_match:
-                            vehicle['stock_number'] = stock_match.group(1)
-                    
-                    if self.is_complete_vehicle(vehicle):
-                        text_vehicles.append(vehicle)
+                        if not found_model:
+                            found_model = model
+                        
+                        vehicle = {
+                            'makeName': actual_make,
+                            'year': year,
+                            'model': found_model,
+                            'sub-model': '',
+                            'trim': '',
+                            'mileage': '',
+                            'value': '',
+                            'sale_value': '',
+                            'stock_number': '',
+                            'engine': ''
+                        }
+                        
+                        # Extract trim from surrounding context
+                        match_pos = page_text.find('{} {} {}'.format(year, actual_make, model))
+                        if match_pos >= 0:
+                            context_start = max(0, match_pos - 150)
+                            context_end = min(len(page_text), match_pos + 300)
+                            context = page_text[context_start:context_end]
+                            
+                            trim = self.extract_trim_from_text(context)
+                            if trim and trim.lower() not in found_model.lower():
+                                vehicle['trim'] = trim
+                                vehicle['sub-model'] = trim
+                            
+                            # Try to extract price from context
+                            price_match = re.search(r'\$\s*([0-9,]+)', context)
+                            if price_match:
+                                try:
+                                    price_val = int(price_match.group(1).replace(',', ''))
+                                    if 3000 <= price_val <= 300000:
+                                        vehicle['value'] = str(price_val)
+                                except:
+                                    pass
+                            
+                            # Try to extract mileage from context
+                            mileage_match = re.search(r'(\d{1,3}(?:,\d{3})*)\s*(?:km|kilometers?|miles?)', context, re.IGNORECASE)
+                            if mileage_match:
+                                vehicle['mileage'] = mileage_match.group(1).replace(',', '')
+                            
+                            # Try to extract stock number from context
+                            stock_match = re.search(r'(?:Stock|#)\s*([A-Z0-9]{3,10})', context, re.IGNORECASE)
+                            if stock_match:
+                                vehicle['stock_number'] = stock_match.group(1)
+                        
+                        if self.is_complete_vehicle(vehicle):
+                            text_vehicles.append(vehicle)
+                
+                # Merge text-extracted vehicles with selector-extracted ones
+                page_vehicles.extend(text_vehicles)
+                logger.info("After text extraction on page {}: {} vehicles found".format(page_num, len(page_vehicles)))
+            else:
+                logger.info("Page {} found {} vehicles using selectors".format(page_num, len(page_vehicles)))
             
-            # Merge text-extracted vehicles with selector-extracted ones
-            vehicles.extend(text_vehicles)
-            logger.info("After text extraction: {} total vehicles found".format(len(vehicles)))
+            all_vehicles.extend(page_vehicles)
+        
+        logger.info("=" * 80)
+        logger.info("Total vehicles before deduplication: {}".format(len(all_vehicles)))
         
         # Remove duplicates based on multiple criteria
         unique_vehicles = []
         seen_combinations = set()
         
-        for vehicle in vehicles:
-            # Create unique identifier
-            identifier = (
+        for vehicle in all_vehicles:
+            # Create multiple possible identifiers to catch duplicates
+            # Use VIN-like identifier first (most unique)
+            identifier1 = (
                 vehicle.get('year', ''),
                 vehicle.get('makeName', ''),
                 vehicle.get('model', ''),
-                vehicle.get('stock_number', '') or vehicle.get('mileage', ''),
+                vehicle.get('stock_number', '')
+            )
+            
+            # Backup identifier using mileage
+            identifier2 = (
+                vehicle.get('year', ''),
+                vehicle.get('makeName', ''),
+                vehicle.get('model', ''),
+                vehicle.get('mileage', '')
+            )
+            
+            # Backup identifier using price
+            identifier3 = (
+                vehicle.get('year', ''),
+                vehicle.get('makeName', ''),
+                vehicle.get('model', ''),
                 vehicle.get('value', '') or vehicle.get('sale_value', '')
             )
             
-            if identifier not in seen_combinations and any(identifier):
-                seen_combinations.add(identifier)
+            # Check all identifiers
+            is_duplicate = False
+            for identifier in [identifier1, identifier2, identifier3]:
+                if identifier in seen_combinations and all(identifier):
+                    is_duplicate = True
+                    break
+            
+            if not is_duplicate and any(identifier1):
+                # Add all valid identifiers to seen set
+                if all(identifier1):
+                    seen_combinations.add(identifier1)
+                if all(identifier2):
+                    seen_combinations.add(identifier2)
+                if all(identifier3):
+                    seen_combinations.add(identifier3)
+                    
                 unique_vehicles.append(vehicle)
         
         self.vehicles = unique_vehicles
