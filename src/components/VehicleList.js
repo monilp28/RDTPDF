@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Papa from 'papaparse';
 import Poster from './VehiclePoster';
 
@@ -9,6 +9,8 @@ const VehicleList = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [refreshMsg, setRefreshMsg] = useState('');
   const [useDirectScrape, setUseDirectScrape] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState('all');
 
   // Function to load from CSV fallback
   const loadFromCSV = async () => {
@@ -26,7 +28,6 @@ const VehicleList = () => {
       console.warn('CSV parse errors:', errors);
     }
     
-    // Normalize CSV data
     return data.map((row) => ({
       makeName: row.makeName || row.Make || '',
       year: row.year || row.Year || '',
@@ -51,12 +52,10 @@ const VehicleList = () => {
       }
     });
     
-    // Check if response is ok
     if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
     
-    // Check content type
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
@@ -70,7 +69,6 @@ const VehicleList = () => {
       throw new Error(data.error || 'API returned error response');
     }
     
-    // Normalize API data to match CSV format
     return (data.vehicles || []).map((row) => ({
       makeName: row.makeName || '',
       year: row.year || '',
@@ -85,7 +83,7 @@ const VehicleList = () => {
     }));
   };
 
-  // Initial load - try API first, fallback to CSV
+  // Initial load
   useEffect(() => {
     const loadInitialData = async () => {
       try {
@@ -133,12 +131,10 @@ const VehicleList = () => {
       setRefreshMsg('');
       
       if (useDirectScrape) {
-        // Direct API call
         const vehicles = await loadFromAPI();
         setVehicles(vehicles);
         setRefreshMsg(`Successfully fetched ${vehicles.length} vehicles from live scraping`);
       } else {
-        // GitHub Action trigger
         const response = await fetch('/api/trigger-scrape', {
           method: 'POST',
           headers: {
@@ -166,13 +162,49 @@ const VehicleList = () => {
     }
   };
 
+  // Get unique brands for filtering
+  const brands = useMemo(() => {
+    const brandSet = new Set(vehicles.map(v => v.makeName).filter(Boolean));
+    return ['all', ...Array.from(brandSet).sort()];
+  }, [vehicles]);
+
+  // Filter and search vehicles
+  const filteredVehicles = useMemo(() => {
+    return vehicles.filter(vehicle => {
+      // Brand filter
+      if (selectedBrand !== 'all' && vehicle.makeName !== selectedBrand) {
+        return false;
+      }
+
+      // Search filter
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const searchableText = [
+          vehicle.makeName,
+          vehicle.year,
+          vehicle.model,
+          vehicle.trim,
+          vehicle['sub-model'],
+          vehicle.stock_number
+        ].filter(Boolean).join(' ').toLowerCase();
+        
+        return searchableText.includes(query);
+      }
+
+      return true;
+    });
+  }, [vehicles, searchQuery, selectedBrand]);
+
   if (loading) {
     return (
-      <div className="container">
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <p>Loading inventory...</p>
-          <div style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
-            {useDirectScrape ? 'Trying live scraping...' : 'Loading from CSV...'}
+      <div className="app-wrapper">
+        <div className="container">
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <h3>Loading Inventory...</h3>
+            <p style={{ color: '#64748b', marginTop: '8px' }}>
+              {useDirectScrape ? 'Fetching live data...' : 'Loading from CSV...'}
+            </p>
           </div>
         </div>
       </div>
@@ -181,29 +213,26 @@ const VehicleList = () => {
 
   if (error) {
     return (
-      <div className="container">
-        <div style={{ 
-          padding: '20px', 
-          border: '2px solid #ff6b6b', 
-          borderRadius: '8px', 
-          background: '#fff5f5',
-          margin: '20px 0'
-        }}>
-          <h3 style={{ color: '#d63031', margin: '0 0 10px 0' }}>Error Loading Data</h3>
-          <p style={{ margin: '0 0 15px 0' }}>{error}</p>
-          <button 
-            className="btn" 
-            onClick={() => window.location.reload()}
-            style={{ marginRight: '10px' }}
-          >
-            Retry
-          </button>
-          <button 
-            className="btn" 
-            onClick={() => setUseDirectScrape(!useDirectScrape)}
-          >
-            Try {useDirectScrape ? 'CSV' : 'API'} Mode
-          </button>
+      <div className="app-wrapper">
+        <div className="container">
+          <div className="error-container">
+            <h3 className="error-title">⚠️ Error Loading Data</h3>
+            <p className="error-message">{error}</p>
+            <div className="error-actions">
+              <button 
+                className="btn" 
+                onClick={() => window.location.reload()}
+              >
+                🔄 Retry
+              </button>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setUseDirectScrape(!useDirectScrape)}
+              >
+                Switch to {useDirectScrape ? 'CSV' : 'API'} Mode
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -211,82 +240,150 @@ const VehicleList = () => {
 
   if (!vehicles.length) {
     return (
-      <div className="container">
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <h3>No Vehicles Available</h3>
-          <p>No inventory data found. Try running the scraper to generate data.</p>
-          <button className="btn" onClick={triggerRefresh}>
-            Run Scraper Now
-          </button>
+      <div className="app-wrapper">
+        <div className="container">
+          <div className="empty-container">
+            <div style={{ fontSize: '64px', marginBottom: '20px' }}>🚗</div>
+            <h3>No Vehicles Available</h3>
+            <p style={{ color: '#64748b', marginBottom: '24px' }}>
+              No inventory data found. Try running the scraper to generate data.
+            </p>
+            <button className="btn" onClick={triggerRefresh}>
+              Run Scraper Now
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container">
-      <h1>Used Inventory Posters</h1>
-      <p className="hint">Click "Download PDF" on any vehicle to generate a windshield poster.</p>
-      
-      <div style={{ 
-        display: 'flex', 
-        gap: '12px', 
-        alignItems: 'center', 
-        marginBottom: '20px', 
-        flexWrap: 'wrap',
-        padding: '12px',
-        background: '#f8f9fa',
-        borderRadius: '8px'
-      }}>
-        <button 
-          className="btn" 
-          onClick={triggerRefresh} 
-          disabled={refreshing}
-          style={{ 
-            opacity: refreshing ? 0.6 : 1,
-            cursor: refreshing ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {refreshing ? 'Working...' : 'Refresh Inventory'}
-        </button>
-        
-        <label style={{ 
-          display: 'inline-flex', 
-          alignItems: 'center', 
-          gap: '6px', 
-          fontSize: '14px',
-          cursor: 'pointer'
-        }}>
-          <input 
-            type="checkbox" 
-            checked={useDirectScrape} 
-            onChange={(e) => setUseDirectScrape(e.target.checked)}
-            disabled={refreshing}
-          />
-          Direct scrape (live data)
-        </label>
-        
-        <div style={{ fontSize: '12px', color: '#666' }}>
-          {vehicles.length} vehicles loaded
-        </div>
-        
-        {refreshMsg && (
-          <span style={{ 
-            color: refreshMsg.startsWith('Error') ? '#d63031' : '#00b894', 
-            fontWeight: '600',
-            fontSize: '14px'
-          }}>
-            {refreshMsg}
-          </span>
-        )}
-      </div>
-
-      <div className="grid">
-        {vehicles.map((vehicle, index) => (
-          <div className="card" key={`${vehicle.stock_number || vehicle.model || index}-${index}`}>
-            <Poster vehicle={vehicle} compact />
+    <div className="app-wrapper">
+      <div className="container">
+        {/* Header Section */}
+        <div className="app-header-section">
+          <div className="header-content">
+            <div className="header-left">
+              <h1 className="app-title">🚗 Red Deer Toyota Inventory</h1>
+              <p className="app-subtitle">
+                Browse our selection and generate printable windshield posters
+              </p>
+            </div>
+            <div className="header-stats">
+              <div className="stat-badge">
+                📊 {filteredVehicles.length} Vehicle{filteredVehicles.length !== 1 ? 's' : ''}
+              </div>
+              {filteredVehicles.length !== vehicles.length && (
+                <div className="stat-badge" style={{ background: '#64748b' }}>
+                  Total: {vehicles.length}
+                </div>
+              )}
+            </div>
           </div>
-        ))}
+        </div>
+
+        {/* Controls Section */}
+        <div className="controls-section">
+          <div className="controls-grid">
+            {/* Search Bar */}
+            <div className="search-wrapper">
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search by make, model, year, trim, or stock number..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button 
+                  className="clear-search"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+              <span className="search-icon">🔍</span>
+            </div>
+
+            {/* Actions */}
+            <div className="action-buttons">
+              <button 
+                className="btn" 
+                onClick={triggerRefresh} 
+                disabled={refreshing}
+              >
+                {refreshing ? '⏳ Working...' : '🔄 Refresh'}
+              </button>
+              
+              <label className="mode-toggle">
+                <input 
+                  type="checkbox" 
+                  checked={useDirectScrape} 
+                  onChange={(e) => setUseDirectScrape(e.target.checked)}
+                  disabled={refreshing}
+                />
+                <span>Live scraping</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Brand Filters */}
+          {brands.length > 2 && (
+            <div className="filter-section">
+              <div className="filter-buttons">
+                {brands.map(brand => (
+                  <button
+                    key={brand}
+                    className={`filter-chip ${selectedBrand === brand ? 'active' : ''}`}
+                    onClick={() => setSelectedBrand(brand)}
+                  >
+                    {brand === 'all' ? 'All Brands' : brand}
+                    {brand !== 'all' && ` (${vehicles.filter(v => v.makeName === brand).length})`}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Status Message */}
+          {refreshMsg && (
+            <div className={`status-message ${refreshMsg.startsWith('Error') ? 'error' : 'success'}`}>
+              {refreshMsg}
+            </div>
+          )}
+        </div>
+
+        {/* No Results Message */}
+        {filteredVehicles.length === 0 && vehicles.length > 0 && (
+          <div className="empty-container">
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+            <h3>No Vehicles Found</h3>
+            <p style={{ color: '#64748b', marginBottom: '20px' }}>
+              Try adjusting your search or filter criteria
+            </p>
+            <button 
+              className="btn btn-secondary" 
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedBrand('all');
+              }}
+            >
+              Clear All Filters
+            </button>
+          </div>
+        )}
+
+        {/* Vehicle Grid */}
+        {filteredVehicles.length > 0 && (
+          <div className="grid">
+            {filteredVehicles.map((vehicle, index) => (
+              <div className="card" key={`${vehicle.stock_number || vehicle.model || index}-${index}`}>
+                <Poster vehicle={vehicle} compact />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
