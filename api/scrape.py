@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Red Deer Toyota Used Inventory Scraper - Fixed Version
-Extracts accurate data including sale prices for all brands/models
+Red Deer Toyota Used Inventory Scraper - Fixed Sale Price Version
+Accurately extracts sale prices for all vehicles
 """
 
 import requests
@@ -53,6 +53,8 @@ class UniversalRedDeerToyotaScraper:
             'Mazda': {'Mazda3', 'Mazda6', 'CX-3', 'CX-5', 'CX-9', 'CX-30', 'CX-50'},
             'Subaru': {'Outback', 'Forester', 'Impreza', 'Legacy', 'Crosstrek', 'Ascent'},
             'Jeep': {'Wrangler', 'Grand Cherokee', 'Cherokee', 'Compass', 'Gladiator'},
+            'Acura': {'MDX', 'RDX', 'TLX', 'ILX'},
+            'Cadillac': {'XT4', 'XT5', 'XT6', 'Escalade'},
         }
 
     def get_trim_patterns(self):
@@ -83,7 +85,8 @@ class UniversalRedDeerToyotaScraper:
             'Rubicon': r'\bRubicon\b', 'Sahara': r'\bSahara\b', 'Trailhawk': r'\bTrailhawk\b',
             'Overland': r'\bOverland\b', 'Summit': r'\bSummit\b', 'Mojave': r'\bMojave\b',
             'Willys': r'\bWillys\b', 'Sport': r'\bSport\b(?!\s+Utility)',
-            'AWD': r'\bAWD\b', '4WD': r'\b4WD\b',
+            'AWD': r'\bAWD\b', '4WD': r'\b4WD\b', 'Altitude': r'\bAltitude\b',
+            'Big Bend': r'\bBig\s+Bend\b', 'Black Diamond': r'\bBlack\s+Diamond\b',
         }
 
     def fetch_all_pages(self):
@@ -152,6 +155,117 @@ class UniversalRedDeerToyotaScraper:
                     return trim_name
         return ''
 
+    def extract_prices(self, element):
+        """
+        Extract regular and sale prices with improved logic.
+        Returns tuple: (regular_price, sale_price)
+        """
+        # Get full HTML to check structure
+        html_str = str(element)
+        text = element.get_text(separator=' ', strip=True)
+        
+        # Find all price-like patterns
+        price_info = []
+        
+        # Look for prices with class names that indicate their purpose
+        price_elements = element.find_all(['span', 'div', 'p'], class_=re.compile(r'price', re.I))
+        
+        for el in price_elements:
+            el_text = el.get_text(strip=True)
+            el_class = ' '.join(el.get('class', [])).lower()
+            el_html = str(el).lower()
+            
+            # Extract price value
+            price_match = re.search(r'\$\s*([0-9,]+)', el_text)
+            if price_match:
+                try:
+                    price = int(price_match.group(1).replace(',', ''))
+                    if 3000 <= price <= 300000:
+                        # Determine if this is a sale/internet/special price
+                        is_sale = any(keyword in el_class or keyword in el_html for keyword in 
+                                     ['sale', 'internet', 'special', 'now', 'reduced', 'offer', 'discount'])
+                        is_msrp = any(keyword in el_class or keyword in el_html for keyword in 
+                                     ['msrp', 'was', 'original', 'regular'])
+                        
+                        # Check strikethrough
+                        has_strikethrough = bool(el.find(['s', 'strike', 'del'])) or \
+                                          'text-decoration' in el_html and 'line-through' in el_html
+                        
+                        price_info.append({
+                            'price': price,
+                            'is_sale': is_sale,
+                            'is_msrp': is_msrp or has_strikethrough,
+                            'element': el_text,
+                            'class': el_class
+                        })
+                except:
+                    pass
+        
+        # If we didn't find specific price elements, search all text
+        if not price_info:
+            all_prices = []
+            for match in re.finditer(r'\$\s*([0-9,]+)', text):
+                try:
+                    price = int(match.group(0).replace('$', '').replace(',', '').strip())
+                    if 3000 <= price <= 300000:
+                        # Get context around the price
+                        start = max(0, match.start() - 50)
+                        end = min(len(text), match.end() + 50)
+                        context = text[start:end].lower()
+                        
+                        is_sale = any(kw in context for kw in ['sale', 'internet', 'special', 'now', 'reduced'])
+                        is_msrp = any(kw in context for kw in ['msrp', 'was', 'original'])
+                        
+                        all_prices.append({
+                            'price': price,
+                            'is_sale': is_sale,
+                            'is_msrp': is_msrp,
+                            'context': context
+                        })
+                except:
+                    pass
+            price_info = all_prices
+        
+        # Determine regular and sale prices
+        regular_price = None
+        sale_price = None
+        
+        if len(price_info) >= 2:
+            # Look for explicit sale and MSRP prices
+            msrp_prices = [p['price'] for p in price_info if p['is_msrp']]
+            sale_prices = [p['price'] for p in price_info if p['is_sale']]
+            
+            if msrp_prices and sale_prices:
+                regular_price = max(msrp_prices)
+                sale_price = min(sale_prices)
+            elif msrp_prices:
+                # MSRP found, assume other lower price is sale
+                regular_price = max(msrp_prices)
+                other_prices = [p['price'] for p in price_info if not p['is_msrp']]
+                if other_prices:
+                    potential_sale = min(other_prices)
+                    if potential_sale < regular_price:
+                        sale_price = potential_sale
+            elif sale_prices:
+                # Sale price found, assume other higher price is regular
+                sale_price = min(sale_prices)
+                other_prices = [p['price'] for p in price_info if not p['is_sale']]
+                if other_prices:
+                    potential_regular = max(other_prices)
+                    if potential_regular > sale_price:
+                        regular_price = potential_regular
+            else:
+                # No explicit indicators, use highest as regular, second highest as sale
+                sorted_prices = sorted([p['price'] for p in price_info], reverse=True)
+                regular_price = sorted_prices[0]
+                if sorted_prices[1] < sorted_prices[0]:
+                    sale_price = sorted_prices[1]
+        
+        elif len(price_info) == 1:
+            regular_price = price_info[0]['price']
+        
+        return regular_price, sale_price
+
     def extract_vehicle_data(self, element):
         vehicle = {
             'makeName': '', 'year': '', 'model': '', 'sub-model': '', 'trim': '',
@@ -180,92 +294,13 @@ class UniversalRedDeerToyotaScraper:
                 vehicle['trim'] = trim
                 vehicle['sub-model'] = trim
             
-            # FIXED PRICE EXTRACTION
-            all_prices = []
-            price_contexts = {}
+            # Extract prices using improved method
+            regular_price, sale_price = self.extract_prices(element)
             
-            # Find all dollar amounts with context
-            for match in re.finditer(r'\$\s*([0-9,]+)', text):
-                try:
-                    price = int(match.group(1).replace(',', ''))
-                    if 3000 <= price <= 300000:
-                        # Get 100 chars before and after for context
-                        start = max(0, match.start() - 100)
-                        end = min(len(text), match.end() + 100)
-                        context = text[start:end].lower()
-                        
-                        all_prices.append(price)
-                        price_contexts[price] = context
-                except:
-                    pass
-            
-            # Look for prices in HTML attributes
-            for attr, value in element.attrs.items():
-                attr_lower = attr.lower()
-                val_str = str(value)
-                
-                # Check for numeric values in attributes
-                for num_match in re.finditer(r'(\d{4,6})', val_str):
-                    try:
-                        price = int(num_match.group(1))
-                        if 3000 <= price <= 300000:
-                            all_prices.append(price)
-                            # Attribute context
-                            context = attr_lower + '=' + val_str.lower()
-                            price_contexts[price] = context
-                    except:
-                        pass
-            
-            # Categorize prices
-            sale_prices = []
-            original_prices = []
-            
-            sale_keywords = ['sale', 'special', 'internet', 'now', 'reduced', 'discount', 'offer', 'price']
-            original_keywords = ['was', 'msrp', 'list', 'retail', 'original']
-            
-            for price in set(all_prices):
-                context = price_contexts.get(price, '')
-                
-                # Check if this is a sale price
-                has_sale_keyword = any(kw in context for kw in sale_keywords)
-                has_original_keyword = any(kw in context for kw in original_keywords)
-                
-                if has_original_keyword:
-                    original_prices.append(price)
-                elif has_sale_keyword:
-                    sale_prices.append(price)
-            
-            # Decision logic
-            unique_prices = sorted(set(all_prices), reverse=True)
-            
-            if len(unique_prices) >= 2:
-                # If we have categorized prices, use them
-                if sale_prices and original_prices:
-                    vehicle['sale_value'] = str(min(sale_prices))
-                    vehicle['value'] = str(max(original_prices))
-                elif sale_prices:
-                    vehicle['sale_value'] = str(min(sale_prices))
-                    # Look for a higher price as original
-                    higher = [p for p in unique_prices if p > min(sale_prices)]
-                    if higher:
-                        vehicle['value'] = str(min(higher))
-                elif original_prices:
-                    vehicle['value'] = str(max(original_prices))
-                    # Look for a lower price as sale
-                    lower = [p for p in unique_prices if p < max(original_prices)]
-                    if lower:
-                        vehicle['sale_value'] = str(max(lower))
-                else:
-                    # No keywords - assume first is original, second is sale
-                    vehicle['value'] = str(unique_prices[0])
-                    vehicle['sale_value'] = str(unique_prices[1])
-            elif len(unique_prices) == 1:
-                vehicle['value'] = str(unique_prices[0])
-            
-            # Validate: sale should be lower than original
-            if vehicle['value'] and vehicle['sale_value']:
-                if int(vehicle['sale_value']) >= int(vehicle['value']):
-                    vehicle['sale_value'] = ''
+            if regular_price:
+                vehicle['value'] = str(regular_price)
+            if sale_price:
+                vehicle['sale_value'] = str(sale_price)
             
             # Extract mileage
             mileage_patterns = [
@@ -397,7 +432,7 @@ class UniversalRedDeerToyotaScraper:
 
     def scrape_inventory(self):
         logger.info("=" * 80)
-        logger.info("UNIVERSAL RED DEER TOYOTA SCRAPER")
+        logger.info("UNIVERSAL RED DEER TOYOTA SCRAPER - FIXED SALE PRICE VERSION")
         logger.info("=" * 80)
         
         all_pages = self.fetch_all_pages()
@@ -440,6 +475,11 @@ class UniversalRedDeerToyotaScraper:
         self.vehicles = unique
         logger.info("FINAL: {} unique vehicles".format(len(self.vehicles)))
         logger.info("Removed {} duplicates".format(len(all_vehicles) - len(self.vehicles)))
+        
+        # Count vehicles with sale prices
+        sale_count = sum(1 for v in self.vehicles if v.get('sale_value'))
+        logger.info("Vehicles with sale prices: {} ({:.1f}%)".format(
+            sale_count, 100.0 * sale_count / len(self.vehicles) if self.vehicles else 0))
         
         return self.vehicles
 
