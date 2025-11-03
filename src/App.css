@@ -31,7 +31,7 @@
 
 .price-sale-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .price-old {
-  font-size: 68px;
+  font-size: 76px;
   color: #6b7280;
   position: relative;
 }
@@ -43,7 +43,7 @@
   transform: rotate(-6deg);
 }
 .price-new-label { font-size: 34px; letter-spacing: 0.08em; font-weight: 900; color: #991b1b; }
-.price-now { font-size: 180px; color: #b91c1c; line-height: 0.95; }
+.price-now { font-size: 150px; color: #b91c1c; line-height: 0.95; }
 
 .poster-disclaimer {
   margin-top: 2px;
