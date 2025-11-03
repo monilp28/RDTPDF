@@ -479,6 +479,7 @@ class UniversalRedDeerToyotaScraper:
 
     def find_vehicles(self, soup):
         vehicles = []
+        seen_elements = set()  # Track processed elements to avoid duplicates
         
         selectors = [
             '[data-vehicle-id]', '[data-stock-number]', '[data-vin]',
@@ -490,23 +491,40 @@ class UniversalRedDeerToyotaScraper:
         for selector in selectors:
             elements = soup.select(selector)
             if elements:
-                logger.info("Found {} elements: {}".format(len(elements), selector))
+                logger.info("Found {} elements with selector: {}".format(len(elements), selector))
                 
+                extracted_count = 0
                 for idx, element in enumerate(elements):
+                    # Create unique identifier for this element to avoid processing same element twice
+                    element_id = id(element)
+                    if element_id in seen_elements:
+                        continue
+                    
                     vehicle = self.extract_vehicle_data(element, idx)
                     if self.is_valid_vehicle(vehicle):
                         vehicles.append(vehicle)
+                        seen_elements.add(element_id)
+                        extracted_count += 1
                         logger.info("Extracted: {} {} {} | Value: ${} | Sale: ${}".format(
                             vehicle['year'], vehicle['makeName'], 
                             vehicle['model'], vehicle.get('value', 'N/A'),
                             vehicle.get('sale_value', 'N/A')))
                 
-                if vehicles:
+                # If we successfully extracted vehicles with this selector, don't try other selectors
+                # This prevents matching nested elements
+                if extracted_count > 0:
+                    logger.info("Successfully extracted {} vehicles with selector '{}', stopping selector search".format(
+                        extracted_count, selector))
                     return vehicles
         
-        # Fallback search
+        # Fallback search only if no vehicles found with specific selectors
+        logger.info("No vehicles found with specific selectors, trying fallback search")
         all_divs = soup.find_all(['div', 'section', 'article', 'li'])
         for idx, div in enumerate(all_divs):
+            element_id = id(div)
+            if element_id in seen_elements:
+                continue
+                
             text = div.get_text(separator=' ', strip=True)
             if re.search(r'\b(19[89]\d|20[0-2]\d)\b', text):
                 for make in self.car_makes.keys():
@@ -514,6 +532,7 @@ class UniversalRedDeerToyotaScraper:
                         vehicle = self.extract_vehicle_data(div, idx)
                         if self.is_valid_vehicle(vehicle):
                             vehicles.append(vehicle)
+                            seen_elements.add(element_id)
                             break
         
         return vehicles
@@ -538,7 +557,7 @@ class UniversalRedDeerToyotaScraper:
         
         logger.info("Total before dedup: {}".format(len(all_vehicles)))
         
-        # Deduplicate
+        # Deduplicate by multiple criteria
         unique = []
         seen = set()
         
@@ -548,17 +567,32 @@ class UniversalRedDeerToyotaScraper:
             model = v.get('model', '')
             stock = v.get('stock_number', '')
             mileage = v.get('mileage', '')
+            trim = v.get('trim', '')
+            price = v.get('value', '')
             
+            # Create multiple keys to catch duplicates
+            # Priority 1: Stock number (most reliable if available)
             if stock:
-                key = (year, make, model, stock)
-            elif mileage:
-                key = (year, make, model, mileage)
+                key = ('stock', stock)
+            # Priority 2: Year + Make + Model + Mileage
+            elif year and make and model and mileage:
+                key = ('ymm_mileage', year, make, model, mileage)
+            # Priority 3: Year + Make + Model + Trim + Price
+            elif year and make and model and trim and price:
+                key = ('ymm_trim_price', year, make, model, trim, price)
+            # Priority 4: Year + Make + Model + Price
+            elif year and make and model and price:
+                key = ('ymm_price', year, make, model, price)
+            # Fallback: Everything we have
             else:
-                key = (year, make, model, v.get('trim', ''))
+                key = ('all', year, make, model, trim, mileage, price)
             
             if key not in seen:
                 seen.add(key)
                 unique.append(v)
+            else:
+                logger.debug("Duplicate found: {} {} {} (key: {})".format(
+                    year, make, model, key[0]))
         
         self.vehicles = unique
         logger.info("FINAL: {} unique vehicles".format(len(self.vehicles)))
