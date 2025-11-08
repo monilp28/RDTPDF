@@ -53,6 +53,8 @@ Toyota,2023,Tacoma,Trail,Trail,29767,53967,,11397,3.5L 6
 Toyota,2023,Tacoma,,,,53967,,,
 Ford,2022,F-150,Lariat,Lariat,60677,53967,,S70032,5.0L 8
 Ford,2022,F-150,,,,53967,,,
+Chevrolet,2021,Silverado 1500,High Country,High Country,47919,54967,,T71771,6.2L 8
+Chevrolet,2021,Silverado 1500,,,,54967,,,
 Toyota,2021,4Runner,Nightshade,Nightshade,82290,55967,,11380,4.0L 6
 Toyota,2021,4Runner,,,,55967,,,
 Toyota,2024,Tundra,SR5,SR5,58703,56967,,T64101,3.5L 6
@@ -69,5 +71,3 @@ Toyota,2020,Camry,SE,SE,50000,,,L380612,2.5L 4
 Toyota,2020,Camry,,,,,,,
 Hyundai,2023,Elantra,Essential,Essential,100,,,T64171,2.0L 4
 Hyundai,2023,Elantra,,,,,,,
-Chevrolet,2021,Silverado 1500,High Country,High Country,47919,,,T71771,6.2L 8
-Chevrolet,2021,Silverado 1500,,,,,,,
