@@ -1,6 +1,4 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
-Toyota,2006,Avalon,,,103611,10967,,11398,3.5L 6
-Toyota,2006,Avalon,,,,10967,,,
 Kia,2017,Sportage,EX,EX,181347,15967,,T64151,2.4L 4
 Kia,2017,Sportage,,,,15967,,,
 Jeep,2015,Cherokee,Trailhawk,Trailhawk,175584,15967,,T64081,3.2L 6
@@ -59,10 +57,6 @@ Toyota,2024,Tundra,SR5,SR5,58703,56967,,T64101,3.5L 6
 Toyota,2024,Tundra,,,,56967,,,
 Acura,2024,MDX,AWD,AWD,18577,58967,,11390,3.5L 6
 Acura,2024,MDX,,,,58967,,,
-Lexus,2024,RX,Sport,Sport,17415,66967,65967,T63861,2.4L 4
-Lexus,2024,RX,,,,66967,,,
-Toyota,2023,Tundra,Platinum,Platinum,59389,65967,,S70131,3.5L 6
-Toyota,2023,Tundra,,,,65967,,,
 Toyota,2024,Land Cruiser,4WD,4WD,13526,75967,,11386,2.4L 4
 Toyota,2024,Land Cruiser,,,,75967,,,
 Hyundai,2023,Elantra,Essential,Essential,100,,,T64171,2.0L 4
