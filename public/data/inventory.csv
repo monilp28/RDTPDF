@@ -27,8 +27,6 @@ Toyota,2021,C-HR,Limited,Limited,44082,30967,29977,S40071,2.0L 4
 Toyota,2021,C-HR,,,,30967,,,
 Ford,2024,Bronco Sport,Big Bend,Big Bend,47087,31977,,S20021,1.5L 3
 Ford,2024,Bronco Sport,,,,31977,,,
-GMC,2024,Terrain,Denali,Denali,31036,32977,,11381,1.5L 4
-Gmc,2024,Terrain,,,,32977,,,
 Chevrolet,2022,Blazer,AWD,AWD,83820,34977,,T64131,3.6L 6
 Chevrolet,2022,Blazer,,,,34977,,,
 Toyota,2016,Tacoma,SE,SE,140668,34977,,T71941,3.5L 6
@@ -39,6 +37,8 @@ Toyota,2023,RAV4,LE,LE,64508,37967,36977,11382,2.5L 4
 Toyota,2023,RAV4,,,,37967,,,
 Toyota,2023,RAV4,LE,LE,47543,37977,,11399,2.5L 4
 Toyota,2023,RAV4,,,,37977,,,
+GMC,2024,Terrain,Denali,Denali,31036,38977,,11381,1.5L 4
+Gmc,2024,Terrain,,,,38977,,,
 Ford,2022,Explorer,Platinum,Platinum,66525,46967,45977,T64071,3.0L 6
 Ford,2022,Explorer,,,,46967,,,
 Ford,2022,F-150,Hybrid,Hybrid,101733,47977,,S70221,3.5L 6
