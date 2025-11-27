@@ -47,6 +47,8 @@ Toyota,2023,Tacoma,Trail,Trail,29767,53977,,11397,3.5L 6
 Toyota,2023,Tacoma,,,,53977,,,
 Toyota,2021,4Runner,Nightshade,Nightshade,82290,57967,54977,11380,4.0L 6
 Toyota,2021,4Runner,,,,57967,,,
+Chevrolet,2021,Silverado 1500,High Country,High Country,47919,54977,,T71771,6.2L 8
+Chevrolet,2021,Silverado 1500,,,,54977,,,
 Toyota,2024,Tundra,TRD,TRD,33660,54977,,S70331,3.5L 6
 Toyota,2024,Tundra,,,,54977,,,
 Toyota,2024,Tundra,SR5,SR5,58703,56977,55977,T64101,3.5L 6
@@ -55,6 +57,8 @@ Acura,2024,MDX,AWD,AWD,18577,58977,,11390,3.5L 6
 Acura,2024,MDX,,,,58977,,,
 Toyota,2024,Land Cruiser,4WD,4WD,13786,75977,74977,11386,2.4L 4
 Toyota,2024,Land Cruiser,,,,75977,,,
+Ram,2013,1500,4WD,4WD,166957,,,T71951,5.7L 8
+Ram,2013,1500,,,,,,,
 Honda,2012,Odyssey,EX-L,EX-L,180131,,,S60031,3.5L 6
 Honda,2012,Odyssey,,,,,,,
 Ram,2017,1500,Laramie,Laramie,206421,,,S70001,5.7L 8
