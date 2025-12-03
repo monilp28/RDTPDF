@@ -21,13 +21,11 @@ Dodge,2023,Hornet,GT,GT,14567,29977,,T64051,2.0L 4
 Dodge,2023,Hornet,,,,29977,,,
 Ford,2024,Bronco Sport,Big Bend,Big Bend,47087,31977,30977,S20021,1.5L 3
 Ford,2024,Bronco Sport,,,,31977,,,
-Toyota,2024,Camry,SE,SE,25992,35967,34977,T64041,2.5L 4
-Toyota,2024,Camry,,,,35967,,,
 Chrysler,2022,Pacifica,Touring,Touring,100384,36977,,T80541,3.6L 6
 Chrysler,2022,Pacifica,,,,36977,,,
 GMC,2024,Terrain,Denali,Denali,31036,38977,,11381,1.5L 4
 Gmc,2024,Terrain,,,,38977,,,
-Toyota,2021,RAV4,Limited,Limited,55112,40977,,T64401,2.5L 4
+Toyota,2021,RAV4,Limited,Limited,55238,40977,,T64401,2.5L 4
 Toyota,2021,RAV4,,,,40977,,,
 Ford,2022,Explorer,Platinum,Platinum,66525,46967,44977,T64071,3.0L 6
 Ford,2022,Explorer,,,,46967,,,
@@ -53,10 +51,14 @@ Acura,2024,MDX,AWD,AWD,18577,58977,,11390,3.5L 6
 Acura,2024,MDX,,,,58977,,,
 Jeep,2021,Cherokee,Trailhawk,Trailhawk,125453,,,T71961,3.2L 6
 Jeep,2021,Cherokee,,,,,,,
+Hyundai,2014,Sonata,Limited,Limited,186923,,,113991,2.4L 4
+Hyundai,2014,Sonata Hybrid,,,,,,,
 Ram,2013,1500,4WD,4WD,167153,,,T71951,5.7L 8
 Ram,2013,1500,,,,,,,
 Honda,2012,Odyssey,EX-L,EX-L,180131,,,S60031,3.5L 6
 Honda,2012,Odyssey,,,,,,,
+Toyota,2018,Tacoma,SR5,SR5,104130,,,T71761,3.5L 6
+Toyota,2018,Tacoma,,,,,,,
 Chrysler,2015,300,,,147080,,,113821,3.6L 6
 Chrysler,2015,300,,,,,,,
 Ram,2022,1500,Limited,Limited,65356,,,S70201,5.7L 8
