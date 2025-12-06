@@ -1,6 +1,8 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
 Kia,2017,Sportage,EX,EX,181347,15977,14977,T64151,2.4L 4
 Kia,2017,Sportage,,,,15977,,,
+Honda,2012,Odyssey,EX-L,EX-L,180131,14977,,S60031,3.5L 6
+Honda,2012,Odyssey,,,,14977,,,
 Jeep,2015,Cherokee,Trailhawk,Trailhawk,175584,15977,14977,T64081,3.2L 6
 Jeep,2015,Cherokee,,,,15977,,,
 Chrysler,2015,300,,,147080,14977,,113821,3.6L 6
@@ -17,10 +19,10 @@ Honda,2017,CR-V,EX-L,EX-L,78876,25977,,T80571,1.5L 4
 Honda,2017,CR-V,,,,25977,,,
 Ford,2018,F-150,XLT,XLT,144888,27977,26977,T71711,5.0L 8
 Ford,2018,F-150,,,,27977,,,
+Toyota,2024,Corolla,LE,LE,30093,29977,28977,T20591,2.0L 4
+Toyota,2024,Corolla,,,,29977,,,
 Toyota,2021,C-HR,Limited,Limited,44082,30967,28977,S40071,2.0L 4
 Toyota,2021,C-HR,,,,30967,,,
-Toyota,2024,Corolla,LE,LE,30093,29977,,T20591,2.0L 4
-Toyota,2024,Corolla,,,,29977,,,
 Dodge,2023,Hornet,GT,GT,14567,29977,,T64051,2.0L 4
 Dodge,2023,Hornet,,,,29977,,,
 Ford,2024,Bronco Sport,Big Bend,Big Bend,47087,31977,30977,S20021,1.5L 3
@@ -29,6 +31,10 @@ GMC,2024,Terrain,Denali,Denali,31036,39977,36977,11381,1.5L 4
 Gmc,2024,Terrain,,,,39977,,,
 Chrysler,2022,Pacifica,Touring,Touring,100384,36977,,T80541,3.6L 6
 Chrysler,2022,Pacifica,,,,36977,,,
+Toyota,2024,RAV4,LE,LE,68532,36977,,11403,2.5L 4
+Toyota,2024,RAV4,,,,36977,,,
+Toyota,2024,RAV4,LE,LE,46761,37977,,11402,2.5L 4
+Toyota,2024,RAV4,,,,37977,,,
 Toyota,2018,Tacoma,TRD Sport,TRD Sport,104130,39977,,T71761,3.5L 6
 Toyota,2018,Tacoma,,,,39977,,,
 Ford,2022,Explorer,Platinum,Platinum,66525,46967,44977,T64071,3.0L 6
@@ -61,8 +67,3 @@ Toyota,2021,RAV4,XLE,XLE,100,,,11404,2.5L 4
 Toyota,2021,RAV4,,,,,,,
 Ram,2013,1500,4WD,4WD,167153,,,T71951,5.7L 8
 Ram,2013,1500,,,,,,,
-Honda,2012,Odyssey,EX-L,EX-L,180131,,,S60031,3.5L 6
-Honda,2012,Odyssey,,,,,,,
-Toyota,2024,RAV4,LE,LE,46761,,,11402,2.5L 4
-Toyota,2024,RAV4,,,,,,,
-Toyota,2024,RAV4,LE,LE,68532,,,11403,2.5L 4
