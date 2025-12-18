@@ -51,7 +51,7 @@ Ford,2024,Bronco,Black Diamond,Black Diamond,20497,49977,,T71731,2.3L 4
 Ford,2024,Bronco,,,,49977,,,
 Toyota,2024,Tundra,TRD,TRD,33660,54977,,S70331,3.5L 6
 Toyota,2024,Tundra,,,,54977,,,
-Toyota,2022,4Runner,Limited,Limited,65783,55977,,T64521,4.0L 6
+Toyota,2022,4Runner,Limited,Limited,66150,55977,,T64521,4.0L 6
 Toyota,2022,4Runner,,,,55977,,,
 Toyota,2024,Tundra,SR5,SR5,58703,56977,55977,T64101,3.5L 6
 Toyota,2024,Tundra,,,,56977,,,
@@ -59,3 +59,11 @@ Acura,2024,MDX,AWD,AWD,18954,58977,57977,11390,3.5L 6
 Acura,2024,MDX,,,,58977,,,
 Toyota,2022,Tundra,Limited,Limited,43508,58967,,S70161,3.5L 6
 Toyota,2022,Tundra,,,,58967,,,
+Hyundai,2020,Tucson,AWD,AWD,136691,,,T64601,2.4L 4
+Hyundai,2020,Tucson,,,,,,,
+Toyota,2015,4Runner,SR5,SR5,196125,,,T71851,4.0L 6
+Toyota,2015,4Runner,,,,,,,
+Jeep,2016,Renegade,4WD,4WD,119323,,,S40171,2.4L 4
+Jeep,2016,Renegade,,,,,,,
+Toyota,2015,RAV4,LE,LE,135032,,,T64621,2.5L 4
+Toyota,2015,RAV4,,,,,,,
