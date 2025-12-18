@@ -9,12 +9,16 @@ Hyundai,2017,Tucson,SE,SE,90723,19977,17977,T64091,2.0L 4
 Hyundai,2017,Tucson,,,,19977,,,
 Hyundai,2023,Elantra,Essential,Essential,98569,18977,,T64171,2.0L 4
 Hyundai,2023,Elantra,,,,18977,,,
+Toyota,2015,RAV4,LE,LE,135032,19967,,T64621,2.5L 4
+Toyota,2015,RAV4,,,,19967,,,
 Volkswagen,2020,Tiguan,AWD,AWD,163193,19977,,T71871,2.0L 4
 Volkswagen,2020,Tiguan,,,,19977,,,
+Hyundai,2020,Tucson,AWD,AWD,136691,20967,,T64601,2.4L 4
+Hyundai,2020,Tucson,,,,20967,,,
 Ford,2020,Escape,AWD,AWD,118049,23967,20977,T30291,1.5L 3
 Ford,2020,Escape,,,,23967,,,
-Toyota,2016,RAV4,XLE,XLE,169946,21977,,114041,2.5L 4
-Toyota,2016,RAV4,,,,21977,,,
+Toyota,2016,RAV4,XLE,XLE,169946,21967,,114041,2.5L 4
+Toyota,2016,RAV4,,,,21967,,,
 GMC,2019,Terrain,Denali,Denali,129102,23977,,T71772,2.0L 4
 Gmc,2019,Terrain,,,,23977,,,
 Toyota,2021,Corolla,SE,SE,59083,24977,,11412,2.0L 4
@@ -23,6 +27,8 @@ Toyota,2024,Corolla,LE,LE,30093,29977,26977,T20591,2.0L 4
 Toyota,2024,Corolla,,,,29977,,,
 Ford,2018,F-150,XLT,XLT,144888,27977,26977,T71711,5.0L 8
 Ford,2018,F-150,,,,27977,,,
+Toyota,2015,4Runner,SR5,SR5,196125,27967,,T71851,4.0L 6
+Toyota,2015,4Runner,,,,27967,,,
 Toyota,2021,C-HR,Limited,Limited,44082,30967,28977,S40071,2.0L 4
 Toyota,2021,C-HR,,,,30967,,,
 Dodge,2023,Hornet,GT,GT,14567,29977,,T64051,2.0L 4
@@ -51,19 +57,13 @@ Ford,2024,Bronco,Black Diamond,Black Diamond,20497,49977,,T71731,2.3L 4
 Ford,2024,Bronco,,,,49977,,,
 Toyota,2024,Tundra,TRD,TRD,33660,54977,,S70331,3.5L 6
 Toyota,2024,Tundra,,,,54977,,,
-Toyota,2022,4Runner,Limited,Limited,66150,55977,,T64521,4.0L 6
-Toyota,2022,4Runner,,,,55977,,,
 Toyota,2024,Tundra,SR5,SR5,58703,56977,55977,T64101,3.5L 6
 Toyota,2024,Tundra,,,,56977,,,
 Acura,2024,MDX,AWD,AWD,18954,58977,57977,11390,3.5L 6
 Acura,2024,MDX,,,,58977,,,
 Toyota,2022,Tundra,Limited,Limited,43508,58967,,S70161,3.5L 6
 Toyota,2022,Tundra,,,,58967,,,
-Hyundai,2020,Tucson,AWD,AWD,136691,,,T64601,2.4L 4
-Hyundai,2020,Tucson,,,,,,,
-Toyota,2015,4Runner,SR5,SR5,196125,,,T71851,4.0L 6
-Toyota,2015,4Runner,,,,,,,
+GMC,2024,Terrain,Denali,Denali,26129,,,11413,1.5L 4
+Gmc,2024,Terrain,,,,,,,
 Jeep,2016,Renegade,4WD,4WD,119323,,,S40171,2.4L 4
 Jeep,2016,Renegade,,,,,,,
-Toyota,2015,RAV4,LE,LE,135032,,,T64621,2.5L 4
-Toyota,2015,RAV4,,,,,,,
