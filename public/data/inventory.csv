@@ -5,8 +5,6 @@ Chrysler,2015,300,,,147080,14977,,113821,3.6L 6
 Chrysler,2015,300,,,,14977,,,
 Mazda,2022,Mazda3,Sport,Sport,209450,14977,,T71991,2.5L 4
 Mazda,2022,Mazda3 Sport,,,,14977,,,
-Hyundai,2017,Tucson,SE,SE,90723,19977,17977,T64091,2.0L 4
-Hyundai,2017,Tucson,,,,19977,,,
 Hyundai,2023,Elantra,Essential,Essential,98654,18977,,T64171,2.0L 4
 Hyundai,2023,Elantra,,,,18977,,,
 Volkswagen,2020,Tiguan,AWD,AWD,163193,19977,,T71871,2.0L 4
@@ -61,9 +59,11 @@ Acura,2024,MDX,AWD,AWD,18954,58977,57977,11390,3.5L 6
 Acura,2024,MDX,,,,58977,,,
 Toyota,2022,Tundra,Limited,Limited,43508,58967,,S70161,3.5L 6
 Toyota,2022,Tundra,,,,58967,,,
+Toyota,2022,Tundra,Platinum,Platinum,74054,59967,,11414,3.4L 6
+Toyota,2022,Tundra,,,,59967,,,
 GMC,2024,Terrain,Denali,Denali,26129,,,11413,1.5L 4
 Gmc,2024,Terrain,,,,,,,
 Jeep,2016,Renegade,4WD,4WD,119323,,,S40171,2.4L 4
 Jeep,2016,Renegade,,,,,,,
-Honda,2017,CR-V,EX,EX,160054,,,113801,1.5L 4
+Honda,2017,CR-V,EX,EX,160168,,,113801,1.5L 4
 Honda,2017,CR-V,,,,,,,
