@@ -9,8 +9,6 @@ Hyundai,2017,Tucson,SE,SE,90723,19977,17977,T64091,2.0L 4
 Hyundai,2017,Tucson,,,,19977,,,
 Hyundai,2023,Elantra,Essential,Essential,98654,18977,,T64171,2.0L 4
 Hyundai,2023,Elantra,,,,18977,,,
-Toyota,2015,RAV4,LE,LE,135032,19967,,T64621,2.5L 4
-Toyota,2015,RAV4,,,,19967,,,
 Volkswagen,2020,Tiguan,AWD,AWD,163193,19977,,T71871,2.0L 4
 Volkswagen,2020,Tiguan,,,,19977,,,
 Hyundai,2020,Tucson,AWD,AWD,136691,20967,,T64601,2.4L 4
@@ -27,7 +25,7 @@ Toyota,2024,Corolla,LE,LE,30093,29977,26977,T20591,2.0L 4
 Toyota,2024,Corolla,,,,29977,,,
 Ford,2018,F-150,XLT,XLT,144888,27977,26977,T71711,5.0L 8
 Ford,2018,F-150,,,,27977,,,
-Toyota,2015,4Runner,SR5,SR5,196125,27967,,T71851,4.0L 6
+Toyota,2015,4Runner,Limited,Limited,196125,27967,,T71851,4.0L 6
 Toyota,2015,4Runner,,,,27967,,,
 Toyota,2021,C-HR,Limited,Limited,44082,30967,28977,S40071,2.0L 4
 Toyota,2021,C-HR,,,,30967,,,
