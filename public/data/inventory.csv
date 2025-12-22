@@ -13,14 +13,12 @@ Hyundai,2020,Tucson,AWD,AWD,136691,20967,,T64601,2.4L 4
 Hyundai,2020,Tucson,,,,20967,,,
 Ford,2020,Escape,AWD,AWD,118049,23967,20977,T30291,1.5L 3
 Ford,2020,Escape,,,,23967,,,
-Toyota,2016,RAV4,XLE,XLE,169946,21967,,114041,2.5L 4
+Toyota,2016,RAV4,XLE,XLE,169982,21967,,114041,2.5L 4
 Toyota,2016,RAV4,,,,21967,,,
 GMC,2019,Terrain,Denali,Denali,129102,23977,,T71772,2.0L 4
 Gmc,2019,Terrain,,,,23977,,,
 Toyota,2021,Corolla,SE,SE,59083,24977,,11412,2.0L 4
 Toyota,2021,Corolla,,,,24977,,,
-Toyota,2024,Corolla,LE,LE,30093,29977,26977,T20591,2.0L 4
-Toyota,2024,Corolla,,,,29977,,,
 Ford,2018,F-150,XLT,XLT,144888,27977,26977,T71711,5.0L 8
 Ford,2018,F-150,,,,27977,,,
 Toyota,2015,4Runner,Limited,Limited,196125,27967,,T71851,4.0L 6
@@ -59,11 +57,13 @@ Acura,2024,MDX,AWD,AWD,18954,58977,57977,11390,3.5L 6
 Acura,2024,MDX,,,,58977,,,
 Toyota,2022,Tundra,Limited,Limited,43508,58967,,S70161,3.5L 6
 Toyota,2022,Tundra,,,,58967,,,
-Toyota,2022,Tundra,Platinum,Platinum,74054,59967,,11414,3.4L 6
+Toyota,2022,Tundra,Platinum,Platinum,74054,59967,,11414,3.5L 6
 Toyota,2022,Tundra,,,,59967,,,
 GMC,2024,Terrain,Denali,Denali,26129,,,11413,1.5L 4
 Gmc,2024,Terrain,,,,,,,
 Jeep,2016,Renegade,4WD,4WD,119323,,,S40171,2.4L 4
 Jeep,2016,Renegade,,,,,,,
+Toyota,2022,Corolla,SE,SE,70604,,,L110915,2.0L 4
+Toyota,2022,Corolla,,,,,,,
 Honda,2017,CR-V,EX,EX,160168,,,113801,1.5L 4
 Honda,2017,CR-V,,,,,,,
