@@ -1,10 +1,10 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
-Kia,2017,Sportage,EX,EX,181347,15977,14977,T64151,2.4L 4
-Kia,2017,Sportage,,,,15977,,,
 Chrysler,2015,300,,,147080,14977,,113821,3.6L 6
 Chrysler,2015,300,,,,14977,,,
 Mazda,2022,Mazda3,Sport,Sport,209450,14977,,T71991,2.5L 4
 Mazda,2022,Mazda3 Sport,,,,14977,,,
+Toyota,2021,RAV4,XLE,XLE,100316,17343,,L171226,2.5L 4
+Toyota,2021,RAV4,,,,17343,,,
 Hyundai,2023,Elantra,Essential,Essential,98654,18977,,T64171,2.0L 4
 Hyundai,2023,Elantra,,,,18977,,,
 Volkswagen,2020,Tiguan,AWD,AWD,163193,19977,,T71871,2.0L 4
@@ -23,8 +23,6 @@ Ford,2018,F-150,XLT,XLT,144888,27977,26977,T71711,5.0L 8
 Ford,2018,F-150,,,,27977,,,
 Toyota,2015,4Runner,Limited,Limited,196125,27967,,T71851,4.0L 6
 Toyota,2015,4Runner,,,,27967,,,
-Toyota,2021,C-HR,Limited,Limited,44082,30967,28977,S40071,2.0L 4
-Toyota,2021,C-HR,,,,30967,,,
 Dodge,2023,Hornet,GT,GT,14567,29977,,T64051,2.0L 4
 Dodge,2023,Hornet,,,,29977,,,
 Toyota,2021,Corolla,Nightshade,Nightshade,45392,29977,,S80001,2.0L 4
@@ -65,3 +63,5 @@ Jeep,2016,Renegade,4WD,4WD,119323,,,S40171,2.4L 4
 Jeep,2016,Renegade,,,,,,,
 Honda,2017,CR-V,EX,EX,160168,,,113801,1.5L 4
 Honda,2017,CR-V,,,,,,,
+Nissan,2018,Frontier,Pro-4X,Pro-4X,187005,,,S40191,4.0L 6
+Nissan,2018,Frontier,,,,,,,
