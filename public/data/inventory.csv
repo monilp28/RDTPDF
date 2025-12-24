@@ -9,8 +9,6 @@ Volkswagen,2020,Tiguan,AWD,AWD,163193,19977,,T71871,2.0L 4
 Volkswagen,2020,Tiguan,,,,19977,,,
 Hyundai,2020,Tucson,AWD,AWD,136691,20967,,T64601,2.4L 4
 Hyundai,2020,Tucson,,,,20967,,,
-Ford,2020,Escape,AWD,AWD,118049,23967,20977,T30291,1.5L 3
-Ford,2020,Escape,,,,23967,,,
 Toyota,2016,RAV4,XLE,XLE,169982,21967,,114041,2.5L 4
 Toyota,2016,RAV4,,,,21967,,,
 GMC,2019,Terrain,Denali,Denali,129102,23977,,T71772,2.0L 4
@@ -57,8 +55,12 @@ Toyota,2022,Tundra,Platinum,Platinum,74054,59967,,11414,3.5L 6
 Toyota,2022,Tundra,,,,59967,,,
 GMC,2024,Terrain,Denali,Denali,26129,,,11413,1.5L 4
 Gmc,2024,Terrain,,,,,,,
+Toyota,2021,Tacoma,,,96757,,,S70251,3.5L 6
+Toyota,2021,Tacoma,,,,,,,
 Jeep,2016,Renegade,4WD,4WD,119323,,,S40171,2.4L 4
 Jeep,2016,Renegade,,,,,,,
+Toyota,2025,RAV4,Limited,Limited,30536,,,S60121,2.5L 4
+Toyota,2025,RAV4,,,,,,,
 Honda,2017,CR-V,EX,EX,160168,,,113801,1.5L 4
 Honda,2017,CR-V,,,,,,,
 Nissan,2018,Frontier,Pro-4X,Pro-4X,187005,,,S40191,4.0L 6
