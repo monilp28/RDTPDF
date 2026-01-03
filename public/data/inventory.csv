@@ -21,8 +21,8 @@ Ford,2018,F-150,XLT,XLT,144888,27977,26977,T71711,5.0L 8
 Ford,2018,F-150,,,,27977,,,
 Dodge,2023,Hornet,GT,GT,14567,29977,,T64051,2.0L 4
 Dodge,2023,Hornet,,,,29977,,,
-Ford,2024,Bronco Sport,Big Bend,Big Bend,47087,31977,30977,S20021,1.5L 3
-Ford,2024,Bronco Sport,,,,31977,,,
+Ford,2024,Bronco Sport,Big Bend,Big Bend,47087,33511,32511,S20021,1.5L 3
+Ford,2024,Bronco Sport,,,,33511,,,
 GMC,2024,Terrain,Denali,Denali,26129,36977,,11413,1.5L 4
 Gmc,2024,Terrain,,,,36977,,,
 Chrysler,2022,Pacifica,Touring,Touring,100384,36977,,T80541,3.6L 6
@@ -53,7 +53,7 @@ Toyota,2022,Tundra,Limited,Limited,43508,58967,,S70161,3.5L 6
 Toyota,2022,Tundra,,,,58967,,,
 Toyota,2022,Tundra,Platinum,Platinum,74054,59967,,11414,3.5L 6
 Toyota,2022,Tundra,,,,59967,,,
-Toyota,2025,Tacoma,,,9573,59977,,11417,2.4L 4
+Toyota,2025,Tacoma,TRD Sport,TRD Sport,9573,59977,,11417,2.4L 4
 Toyota,2025,Tacoma,,,,59977,,,
 GMC,2015,Sierra 1500,Denali,Denali,174827,,,S60131,5.3L 8
 Gmc,2015,Sierra 1500,,,,,,,
