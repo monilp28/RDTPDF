@@ -21,20 +21,16 @@ Chrysler,2022,Pacifica,Touring,Touring,100384,36977,,T80541,3.6L 6
 Chrysler,2022,Pacifica,,,,36977,,,
 Toyota,2024,RAV4,LE,LE,68532,36977,,11403,2.5L 4
 Toyota,2024,RAV4,,,,36977,,,
-Toyota,2024,RAV4,LE,LE,46761,37977,,11402,2.5L 4
+Toyota,2024,RAV4,LE,LE,47124,37977,,11402,2.5L 4
 Toyota,2024,RAV4,,,,37977,,,
 Ford,2022,Explorer,Platinum,Platinum,66525,46967,43977,T64071,3.0L 6
 Ford,2022,Explorer,,,,46967,,,
-Toyota,2024,RAV4,XLE,XLE,48856,44977,,11411,2.5L 4
-Toyota,2024,RAV4,,,,44977,,,
 Toyota,2021,Tacoma,TRD Sport,TRD Sport,96757,45977,,S70251,3.5L 6
 Toyota,2021,Tacoma,,,,45977,,,
 Ford,2022,F-150,Hybrid,Hybrid,101733,47977,46977,S70221,3.5L 6
 Ford,2022,F-150,,,,47977,,,
 Ford,2024,Bronco,Black Diamond,Black Diamond,20497,49977,,T71731,2.3L 4
 Ford,2024,Bronco,,,,49977,,,
-Toyota,2024,Tundra,TRD,TRD,33660,54977,,S70331,3.5L 6
-Toyota,2024,Tundra,,,,54977,,,
 Toyota,2024,Tundra,SR5,SR5,58906,56977,55977,T64101,3.5L 6
 Toyota,2024,Tundra,,,,56977,,,
 Acura,2024,MDX,AWD,AWD,18954,58977,57977,11390,3.5L 6
@@ -45,6 +41,8 @@ Toyota,2022,Tundra,Platinum,Platinum,74054,59967,,11414,3.5L 6
 Toyota,2022,Tundra,,,,59967,,,
 Toyota,2025,Tacoma,TRD Sport,TRD Sport,9573,59977,,11417,2.4L 4
 Toyota,2025,Tacoma,,,,59977,,,
+Toyota,2024,RAV4,LE,LE,47778,,,11416,2.5L 4
+Toyota,2024,RAV4,,,,,,,
 GMC,2015,Sierra 1500,Denali,Denali,174827,,,S60131,5.3L 8
 Gmc,2015,Sierra 1500,,,,,,,
 Audi,2017,Q3,AWD,AWD,143227,,,S40211,2.0L 4
