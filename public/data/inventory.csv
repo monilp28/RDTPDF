@@ -35,17 +35,12 @@ Toyota,2021,C-HR,Limited,Limited,44082,30967,28977,S40071,2.0L 4
 Toyota,2021,C-HR,,,,30967,,,
 Chrysler,2022,Pacifica,Touring,Touring,100384,36977,35977,T80541,3.6L 6
 Chrysler,2022,Pacifica,,,,36977,,,
-GMC,2024,Terrain,Denali,Denali,26129,36977,,11413,1.5L 4
-Gmc,2024,Terrain,,,,36977,,,
 Toyota,2024,RAV4,LE,LE,68532,36977,,11403,2.5L 4
 Toyota,2024,RAV4,,,,36977,,,
 Toyota,2024,RAV4,LE,LE,47778,37977,,11416,2.5L 4
 Toyota,2024,RAV4,,,,37977,,,
-Toyota,2024,RAV4,LE,LE,47124,37977,,11402,2.5L 4
 Toyota,2021,RAV4,XLE,XLE,33754,38977,,11419,2.5L 4
 Toyota,2021,RAV4,,,,38977,,,
-Toyota,2023,RAV4,XLE,XLE,43178,39977,,S70341,2.5L 4
-Toyota,2023,RAV4,,,,39977,,,
 Ford,2022,Explorer,Platinum,Platinum,66653,46967,43977,T64071,3.0L 6
 Ford,2022,Explorer,,,,46967,,,
 Toyota,2021,Tacoma,TRD Sport,TRD Sport,96757,45977,,S70251,3.5L 6
@@ -67,3 +62,9 @@ Toyota,2025,Tacoma,TRD Sport,TRD Sport,9821,59977,,11417,2.4L 4
 Toyota,2025,Tacoma,,,,59977,,,
 Volkswagen,2021,Tiguan,AWD,AWD,120619,,,T64741,2.0L 4
 Volkswagen,2021,Tiguan,,,,,,,
+Toyota,2023,4Runner,4WD,4WD,106413,,,11420,4.0L 6
+Toyota,2023,4Runner,,,,,,,
+Toyota,2025,Corolla,LE,LE,44208,,,11421,1.8L 4
+Toyota,2025,Corolla,,,,,,,
+Toyota,2021,RAV4,Limited,Limited,47005,,,T64731,2.5L 4
+Toyota,2021,RAV4,,,,,,,
