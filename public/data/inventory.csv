@@ -15,14 +15,10 @@ Ford,2019,Escape,4WD,4WD,53322,21977,,T64711,1.5L 4
 Ford,2019,Escape,,,,21977,,,
 Nissan,2018,Frontier,Pro-4X,Pro-4X,187005,23977,,S40191,4.0L 6
 Nissan,2018,Frontier,,,,23977,,,
-GMC,2015,Sierra 1500,Denali,Denali,175048,24977,,S60131,5.3L 8
-Gmc,2015,Sierra 1500,,,,24977,,,
 Toyota,2021,Corolla,SE,SE,59083,24977,,11412,2.0L 4
 Toyota,2021,Corolla,,,,24977,,,
 Honda,2019,Accord,Touring,Touring,110004,26977,,T64641,2.0L 4
 Honda,2019,Accord Sedan,,,,26977,,,
-Toyota,2015,4Runner,Limited,Limited,196218,27967,,T71851,4.0L 6
-Toyota,2015,4Runner,,,,27967,,,
 Toyota,2021,Corolla,SE,SE,23663,27977,,S20091,2.0L 4
 Toyota,2021,Corolla,,,,27977,,,
 Dodge,2023,Hornet,GT,GT,14567,29977,28977,T64051,2.0L 4
@@ -63,7 +59,5 @@ Toyota,2025,Tacoma,TRD Sport,TRD Sport,9821,59977,,11417,2.4L 4
 Toyota,2025,Tacoma,,,,59977,,,
 Volkswagen,2021,Tiguan,AWD,AWD,120619,,,T64741,2.0L 4
 Volkswagen,2021,Tiguan,,,,,,,
-Ford,2016,Explorer,Platinum,Platinum,210000,,,S70411,3.5L 6
-Ford,2016,Explorer,,,,,,,
 Toyota,2025,Corolla,LE,LE,44208,,,11421,1.8L 4
 Toyota,2025,Corolla,,,,,,,
