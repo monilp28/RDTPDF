@@ -23,8 +23,6 @@ Toyota,2021,Corolla,SE,SE,23663,27977,,S20091,2.0L 4
 Toyota,2021,Corolla,,,,27977,,,
 Dodge,2023,Hornet,GT,GT,14567,29977,28977,T64051,2.0L 4
 Dodge,2023,Hornet,,,,29977,,,
-Toyota,2021,C-HR,Limited,Limited,44082,30967,28977,S40071,2.0L 4
-Toyota,2021,C-HR,,,,30967,,,
 Toyota,2025,Corolla Cross,LE,LE,31704,35967,,11418,2.0L 4
 Toyota,2025,Corolla Cross,,,,35967,,,
 Chrysler,2022,Pacifica,Touring,Touring,100384,36977,35977,T80541,3.6L 6
@@ -51,8 +49,6 @@ Acura,2024,MDX,AWD,AWD,18976,58977,57977,11390,3.5L 6
 Acura,2024,MDX,,,,58977,,,
 Toyota,2022,Tundra,Limited,Limited,43508,58967,,S70161,3.5L 6
 Toyota,2022,Tundra,,,,58967,,,
-Toyota,2022,Tundra,Platinum,Platinum,74056,59967,,11414,3.5L 6
-Toyota,2022,Tundra,,,,59967,,,
 Toyota,2025,Tacoma,TRD Sport,TRD Sport,9821,59977,,11417,2.4L 4
 Toyota,2025,Tacoma,,,,59977,,,
 Honda,2021,Pilot,Touring,Touring,68028,,,S60151,3.5L 6
