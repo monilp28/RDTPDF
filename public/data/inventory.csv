@@ -17,7 +17,7 @@ Nissan,2018,Frontier,Pro-4X,Pro-4X,187005,23977,,S40191,4.0L 6
 Nissan,2018,Frontier,,,,23977,,,
 Toyota,2021,Corolla,SE,SE,59083,24977,,11412,2.0L 4
 Toyota,2021,Corolla,,,,24977,,,
-Honda,2019,Accord,Touring,Touring,110004,26977,,T64641,2.0L 4
+Honda,2019,Accord,Touring,Touring,110038,26977,,T64641,2.0L 4
 Honda,2019,Accord Sedan,,,,26977,,,
 Toyota,2021,Corolla,SE,SE,23663,27977,,S20091,2.0L 4
 Toyota,2021,Corolla,,,,27977,,,
@@ -37,7 +37,7 @@ Toyota,2024,RAV4,LE,LE,47778,37977,,11416,2.5L 4
 Toyota,2024,RAV4,,,,37977,,,
 Toyota,2021,RAV4,Limited,Limited,47073,40977,,T64731,2.5L 4
 Toyota,2021,RAV4,,,,40977,,,
-Honda,2021,Pilot,Touring,Touring,68028,41977,,S60151,3.5L 6
+Honda,2021,Pilot,Touring,Touring,68068,41977,,S60151,3.5L 6
 Honda,2021,Pilot,,,,41977,,,
 Toyota,2021,Tacoma,TRD Sport,TRD Sport,96757,45977,,S70251,3.5L 6
 Toyota,2021,Tacoma,,,,45977,,,
@@ -57,5 +57,11 @@ Toyota,2025,Tacoma,TRD Sport,TRD Sport,9821,59977,,11417,2.4L 4
 Toyota,2025,Tacoma,,,,59977,,,
 Land Rover,2024,Range Rover Velar,AWD,AWD,60405,62977,,S70461,3.0L 6
 Land Rover,2024,Range Rover Velar,,,,62977,,,
+Ford,2012,F-150,4WD,4WD,321211,,,114141,3.5L 6
+Ford,2012,F-150,,,,,,,
 Volkswagen,2021,Tiguan,AWD,AWD,120619,,,T64741,2.0L 4
 Volkswagen,2021,Tiguan,,,,,,,
+GMC,2017,Terrain,Denali,Denali,132294,,,S70401,3.6L 6
+Gmc,2017,Terrain,,,,,,,
+Toyota,2023,Crown,Platinum,Platinum,14586,,,S40241,2.4L 4
+Toyota,2023,Crown,,,,,,,
