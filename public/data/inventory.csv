@@ -47,7 +47,7 @@ Ford,2022,F-150,Hybrid,Hybrid,101733,47977,45977,S70221,3.5L 6
 Ford,2022,F-150,,,,47977,,,
 Ford,2024,Bronco,Black Diamond,Black Diamond,20497,47977,,T71731,2.3L 4
 Ford,2024,Bronco,,,,47977,,,
-Toyota,2023,4Runner,4WD,4WD,106413,47977,,11420,4.0L 6
+Toyota,2023,4Runner,4WD,4WD,106485,47977,,11420,4.0L 6
 Toyota,2023,4Runner,,,,47977,,,
 Toyota,2023,Crown,Platinum,Platinum,14586,49977,,S40241,2.4L 4
 Toyota,2023,Crown,,,,49977,,,
@@ -61,9 +61,15 @@ Toyota,2025,Tacoma,TRD Sport,TRD Sport,9821,59977,,11417,2.4L 4
 Toyota,2025,Tacoma,,,,59977,,,
 Land Rover,2024,Range Rover Velar,AWD,AWD,60405,62977,,S70461,3.0L 6
 Land Rover,2024,Range Rover Velar,,,,62977,,,
+Toyota,2013,RAV4,XLE,XLE,218061,,,T64732,2.5L 4
+Toyota,2013,RAV4,,,,,,,
 Ford,2012,F-150,4WD,4WD,321211,,,114141,3.5L 6
 Ford,2012,F-150,,,,,,,
 Volkswagen,2021,Tiguan,AWD,AWD,120619,,,T64741,2.0L 4
 Volkswagen,2021,Tiguan,,,,,,,
+Toyota,2022,4Runner,4WD,4WD,100,,,11422,4.0L 6
+Toyota,2022,4Runner,,,,,,,
 GMC,2017,Terrain,Denali,Denali,132294,,,S70401,3.6L 6
 Gmc,2017,Terrain,,,,,,,
+Toyota,2024,Tundra,Limited,Limited,60466,,,11423,3.4L 6
+Toyota,2024,Tundra,,,,,,,
