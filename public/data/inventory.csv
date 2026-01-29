@@ -51,6 +51,8 @@ Toyota,2023,4Runner,4WD,4WD,106485,47977,,11420,4.0L 6
 Toyota,2023,4Runner,,,,47977,,,
 Toyota,2023,Crown,Platinum,Platinum,14586,49977,,S40241,2.4L 4
 Toyota,2023,Crown,,,,49977,,,
+Toyota,2022,Tundra,Limited,Limited,110469,50977,,11424,3.5L 6
+Toyota,2022,Tundra,,,,50977,,,
 Toyota,2024,Tundra,SR5,SR5,58906,53977,,T64101,3.5L 6
 Toyota,2024,Tundra,,,,53977,,,
 Toyota,2022,Tundra,Limited,Limited,43508,58967,,S70161,3.5L 6
@@ -71,8 +73,6 @@ Ford,2018,Escape,4WD,4WD,179950,,,S70501,2.0L 4
 Ford,2018,Escape,,,,,,,
 GMC,2017,Terrain,Denali,Denali,132294,,,S70401,3.6L 6
 Gmc,2017,Terrain,,,,,,,
-Toyota,2022,Tundra,Limited,Limited,110469,,,11424,3.5L 6
-Toyota,2022,Tundra,,,,,,,
 Ram,2016,1500,SLT,SLT,203739,,,113901,3.0L 6
 Ram,2016,1500,,,,,,,
 Toyota,2024,Tundra,Limited,Limited,61161,,,11423,3.4L 6
