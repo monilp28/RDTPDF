@@ -7,7 +7,7 @@ Volkswagen,2016,Tiguan,AWD,AWD,174319,14977,,114171,2.0L 4
 Volkswagen,2016,Tiguan,,,,14977,,,
 Jeep,2016,Renegade,4WD,4WD,119323,14977,,S40171,2.4L 4
 Jeep,2016,Renegade,,,,14977,,,
-Mazda,2022,Mazda3,Sport,Sport,209450,14977,,T71991,2.5L 4
+Mazda,2022,Mazda3,Sport,Sport,209853,14977,,T71991,2.5L 4
 Mazda,2022,Mazda3 Sport,,,,14977,,,
 Audi,2017,Q3,AWD,AWD,143227,17977,,S40211,2.0L 4
 Audi,2017,Q3,,,,17977,,,
@@ -31,7 +31,7 @@ Toyota,2025,Corolla,LE,LE,44208,32977,,11421,1.8L 4
 Toyota,2025,Corolla,,,,32977,,,
 Chevrolet,2025,Equinox,AWD,AWD,55142,33977,,114201,1.5L 4
 Chevrolet,2025,Equinox,,,,33977,,,
-Toyota,2021,RAV4,XLE,XLE,58125,34977,,11425,2.5L 4
+Toyota,2021,RAV4,XLE,XLE,58136,34977,,11425,2.5L 4
 Toyota,2021,RAV4,,,,34977,,,
 Chrysler,2022,Pacifica,Touring,Touring,100384,36977,35977,T80541,3.6L 6
 Chrysler,2022,Pacifica,,,,36977,,,
@@ -41,7 +41,7 @@ Toyota,2024,RAV4,LE,LE,47778,37977,,11416,2.5L 4
 Toyota,2024,RAV4,,,,37977,,,
 Chevrolet,2022,Silverado 1500,Trail,Trail,150340,44977,,S70162,3.0L 6
 Chevrolet,2022,Silverado 1500,,,,44977,,,
-Toyota,2021,Tacoma,TRD Sport,TRD Sport,96757,45977,,S70251,3.5L 6
+Toyota,2021,Tacoma,TRD Sport,TRD Sport,96809,45977,,S70251,3.5L 6
 Toyota,2021,Tacoma,,,,45977,,,
 Ford,2024,Bronco,Black Diamond,Black Diamond,20569,47977,,T71731,2.3L 4
 Ford,2024,Bronco,,,,47977,,,
@@ -55,5 +55,9 @@ Land Rover,2024,Range Rover Velar,AWD,AWD,60405,62977,,S70461,3.0L 6
 Land Rover,2024,Range Rover Velar,,,,62977,,,
 Toyota,2022,4Runner,TRD Pro,TRD Pro,110700,63977,,11422,4.0L 6
 Toyota,2022,4Runner,,,,63977,,,
+Toyota,2020,Tundra,,,50000,,,L945725,5.7L 8
+Toyota,2020,Tundra,,,,,,,
 GMC,2017,Terrain,Denali,Denali,132294,,,S70401,3.6L 6
 Gmc,2017,Terrain,,,,,,,
+Toyota,2023,Tundra,SR,SR,47983,,,114231,3.4L 6
+Toyota,2023,Tundra,,,,,,,
