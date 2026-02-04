@@ -27,6 +27,8 @@ Dodge,2023,Hornet,GT,GT,14567,29977,27977,T64051,2.0L 4
 Dodge,2023,Hornet,,,,29977,,,
 Toyota,2021,Corolla,SE,SE,23663,27977,,S20091,2.0L 4
 Toyota,2021,Corolla,,,,27977,,,
+Toyota,2024,Corolla,LE,LE,28618,28977,,11426,2.0L 4
+Toyota,2024,Corolla,,,,28977,,,
 Toyota,2025,Corolla,LE,LE,44208,32977,,11421,1.8L 4
 Toyota,2025,Corolla,,,,32977,,,
 Chevrolet,2025,Equinox,AWD,AWD,55142,33977,,114201,1.5L 4
@@ -51,8 +53,6 @@ Land Rover,2024,Range Rover Velar,AWD,AWD,60405,62977,,S70461,3.0L 6
 Land Rover,2024,Range Rover Velar,,,,62977,,,
 Toyota,2022,4Runner,TRD Pro,TRD Pro,110700,63977,,11422,4.0L 6
 Toyota,2022,4Runner,,,,63977,,,
-Toyota,2024,Corolla,LE,LE,28618,,,11426,2.0L 4
-Toyota,2024,Corolla,,,,,,,
 Subaru,2020,Impreza,Sport,Sport,110223,,,T71732,2.0L 4
 Subaru,2020,Impreza,,,,,,,
 Toyota,2023,Tundra,Platinum,Platinum,79429,,,S70521,3.5L 6
