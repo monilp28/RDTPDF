@@ -41,8 +41,6 @@ Toyota,2024,RAV4,LE,LE,47778,37977,,11416,2.5L 4
 Toyota,2024,RAV4,,,,37977,,,
 Chevrolet,2022,Silverado 1500,Trail,Trail,150340,44977,,S70162,3.0L 6
 Chevrolet,2022,Silverado 1500,,,,44977,,,
-Toyota,2021,Tacoma,TRD Sport,TRD Sport,96809,45977,,S70251,3.5L 6
-Toyota,2021,Tacoma,,,,45977,,,
 Toyota,2023,Tundra,TRD Off-Road,TRD Off-Road,47983,49977,,114231,3.5L 6
 Toyota,2023,Tundra,,,,49977,,,
 Toyota,2023,Crown,Platinum,Platinum,14586,49977,,S40241,2.4L 4
@@ -53,6 +51,8 @@ Land Rover,2024,Range Rover Velar,AWD,AWD,60405,62977,,S70461,3.0L 6
 Land Rover,2024,Range Rover Velar,,,,62977,,,
 Toyota,2022,4Runner,TRD Pro,TRD Pro,110700,63977,,11422,4.0L 6
 Toyota,2022,4Runner,,,,63977,,,
+Toyota,2022,Highlander,XLE,XLE,100,,,11427,3.5L 6
+Toyota,2022,Highlander,,,,,,,
 Subaru,2020,Impreza,Sport,Sport,110223,,,T71732,2.0L 4
 Subaru,2020,Impreza,,,,,,,
 Toyota,2023,Tundra,Platinum,Platinum,79429,,,S70521,3.5L 6
