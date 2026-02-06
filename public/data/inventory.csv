@@ -17,8 +17,6 @@ Ford,2019,Escape,4WD,4WD,53322,21977,,T64711,1.5L 4
 Ford,2019,Escape,,,,21977,,,
 Volkswagen,2021,Tiguan,AWD,AWD,120619,23977,,T64741,2.0L 4
 Volkswagen,2021,Tiguan,,,,23977,,,
-Toyota,2015,RAV4,Limited,Limited,131950,23977,,S70342,2.5L 4
-Toyota,2015,RAV4,,,,23977,,,
 Honda,2019,Accord,Touring,Touring,110038,26977,,T64641,2.0L 4
 Honda,2019,Accord Sedan,,,,26977,,,
 Dodge,2023,Hornet,GT,GT,14567,29977,27977,T64051,2.0L 4
@@ -45,7 +43,7 @@ Toyota,2023,Crown,Platinum,Platinum,14586,49977,,S40241,2.4L 4
 Toyota,2023,Crown,,,,49977,,,
 Toyota,2022,Tundra,Limited,Limited,110469,52977,,11424,3.5L 6
 Toyota,2022,Tundra,,,,52977,,,
-Land Rover,2024,Range Rover Velar,AWD,AWD,60405,62977,,S70461,3.0L 6
+Land Rover,2024,Range Rover Velar,AWD,AWD,60414,62977,,S70461,3.0L 6
 Land Rover,2024,Range Rover Velar,,,,62977,,,
 Toyota,2022,4Runner,TRD Pro,TRD Pro,110700,63977,,11422,4.0L 6
 Toyota,2022,4Runner,,,,63977,,,
