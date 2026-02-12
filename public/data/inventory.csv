@@ -35,12 +35,18 @@ Chrysler,2022,Pacifica,Touring,Touring,100384,36977,34977,T80541,3.6L 6
 Chrysler,2022,Pacifica,,,,36977,,,
 Toyota,2025,Corolla Cross,LE,LE,29217,35967,,11428,2.0L 4
 Toyota,2025,Corolla Cross,,,,35967,,,
+Toyota,2022,RAV4,XLE,XLE,94042,35977,,11430,2.5L 4
+Toyota,2022,RAV4,,,,35977,,,
 Toyota,2024,RAV4,LE,LE,68532,36977,,11403,2.5L 4
 Toyota,2024,RAV4,,,,36977,,,
 Toyota,2025,RAV4,LE,LE,100,39977,,11429,2.5L 4
 Toyota,2025,RAV4,,,,39977,,,
+Honda,2024,CR-V,Hybrid,Hybrid,47108,44977,,T61511,2.0L 4
+Honda,2024,CR-V Hybrid,,,,44977,,,
 Chevrolet,2022,Silverado 1500,Trail,Trail,150340,44977,,S70162,3.0L 6
 Chevrolet,2022,Silverado 1500,,,,44977,,,
+Toyota,2022,Highlander,XLE,XLE,64400,47977,,11427,3.5L 6
+Toyota,2022,Highlander,,,,47977,,,
 Toyota,2023,Tundra,TRD Off-Road,TRD Off-Road,47983,49977,,114231,3.5L 6
 Toyota,2023,Tundra,,,,49977,,,
 Toyota,2022,Tundra,Limited,Limited,110469,52977,,11424,3.5L 6
@@ -49,11 +55,5 @@ Land Rover,2024,Range Rover Velar,AWD,AWD,60414,62977,,S70461,3.0L 6
 Land Rover,2024,Range Rover Velar,,,,62977,,,
 Toyota,2022,4Runner,TRD Pro,TRD Pro,110700,63977,,11422,4.0L 6
 Toyota,2022,4Runner,,,,63977,,,
-Toyota,2022,RAV4,XLE,XLE,94042,,,11430,2.5L 4
-Toyota,2022,RAV4,,,,,,,
-Toyota,2022,Highlander,XLE,XLE,100,,,11427,3.5L 6
-Toyota,2022,Highlander,,,,,,,
-Honda,2024,CR-V,Hybrid,Hybrid,47108,,,T61511,2.0L 4
-Honda,2024,CR-V Hybrid,,,,,,,
 Toyota,2012,Tacoma,4WD,4WD,281383,,,S70252,4.0L 6
 Toyota,2012,Tacoma,,,,,,,
