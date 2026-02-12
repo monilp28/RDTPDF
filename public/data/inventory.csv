@@ -19,8 +19,6 @@ Volkswagen,2021,Tiguan,AWD,AWD,120619,23977,,T64741,2.0L 4
 Volkswagen,2021,Tiguan,,,,23977,,,
 Subaru,2020,Impreza,Sport,Sport,110223,23977,,T71732,2.0L 4
 Subaru,2020,Impreza,,,,23977,,,
-Dodge,2023,Hornet,GT,GT,14567,29977,26977,T64051,2.0L 4
-Dodge,2023,Hornet,,,,29977,,,
 Honda,2019,Accord,Touring,Touring,110038,26977,,T64641,2.0L 4
 Honda,2019,Accord Sedan,,,,26977,,,
 Toyota,2021,Corolla,SE,SE,23663,27977,,S20091,2.0L 4
@@ -39,12 +37,14 @@ Toyota,2022,RAV4,XLE,XLE,94042,35977,,11430,2.5L 4
 Toyota,2022,RAV4,,,,35977,,,
 Toyota,2024,RAV4,LE,LE,68532,36977,,11403,2.5L 4
 Toyota,2024,RAV4,,,,36977,,,
-Toyota,2025,RAV4,LE,LE,100,39977,,11429,2.5L 4
+Toyota,2025,RAV4,LE,LE,26817,39977,,11429,2.5L 4
 Toyota,2025,RAV4,,,,39977,,,
 Honda,2024,CR-V,Hybrid,Hybrid,47108,44977,,T61511,2.0L 4
 Honda,2024,CR-V Hybrid,,,,44977,,,
 Chevrolet,2022,Silverado 1500,Trail,Trail,150340,44977,,S70162,3.0L 6
 Chevrolet,2022,Silverado 1500,,,,44977,,,
+Toyota,2022,RAV4,Limited,Limited,9538,45967,,11431,2.5L 4
+Toyota,2022,RAV4,,,,45967,,,
 Toyota,2022,Highlander,XLE,XLE,64400,47977,,11427,3.5L 6
 Toyota,2022,Highlander,,,,47977,,,
 Toyota,2023,Tundra,TRD Off-Road,TRD Off-Road,47983,49977,,114231,3.5L 6
