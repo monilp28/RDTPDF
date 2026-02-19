@@ -19,7 +19,7 @@ Volkswagen,2021,Tiguan,AWD,AWD,120619,23977,22977,T64741,2.0L 4
 Volkswagen,2021,Tiguan,,,,23977,,,
 Subaru,2020,Impreza,Sport,Sport,110223,23977,,T71732,2.0L 4
 Subaru,2020,Impreza,,,,23977,,,
-Toyota,2018,Highlander,Limited,Limited,196791,24977,,S70522,3.5L 6
+Toyota,2018,Highlander,Limited,Limited,196821,24977,,S70522,3.5L 6
 Toyota,2018,Highlander,,,,24977,,,
 Honda,2019,Accord,Touring,Touring,110038,26977,,T64641,2.0L 4
 Honda,2019,Accord Sedan,,,,26977,,,
@@ -55,6 +55,6 @@ Toyota,2025,Tundra,TRD,TRD,33496,64977,,114202,3.4L 6
 Toyota,2025,Tundra,,,,64977,,,
 Toyota,2021,Corolla,SE,SE,129900,,,11433,2.0L 4
 Toyota,2021,Corolla,,,,,,,
-Toyota,2021,Corolla,LE,LE,99826,,,11432,1.8L 4
+Toyota,2021,Corolla,,,99826,,,11432,1.8L 4
 Toyota,2012,Tacoma,4WD,4WD,281383,,,S70252,4.0L 6
 Toyota,2012,Tacoma,,,,,,,
