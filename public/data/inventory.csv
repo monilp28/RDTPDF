@@ -7,7 +7,7 @@ Volkswagen,2016,Tiguan,AWD,AWD,174319,14977,,114171,2.0L 4
 Volkswagen,2016,Tiguan,,,,14977,,,
 Jeep,2016,Renegade,4WD,4WD,119323,14977,,S40171,2.4L 4
 Jeep,2016,Renegade,,,,14977,,,
-Audi,2017,Q3,AWD,AWD,143227,17977,,S40211,2.0L 4
+Audi,2017,Q3,AWD,AWD,143227,17977,16977,S40211,2.0L 4
 Audi,2017,Q3,,,,17977,,,
 GMC,2017,Terrain,Denali,Denali,132294,17977,,S70401,3.6L 6
 Gmc,2017,Terrain,,,,17977,,,
@@ -15,19 +15,23 @@ Hyundai,2020,Tucson,AWD,AWD,136691,20967,,T64601,2.4L 4
 Hyundai,2020,Tucson,,,,20967,,,
 Ford,2019,Escape,4WD,4WD,53322,21977,,T64711,1.5L 4
 Ford,2019,Escape,,,,21977,,,
-Volkswagen,2021,Tiguan,AWD,AWD,120619,23977,,T64741,2.0L 4
+Volkswagen,2021,Tiguan,AWD,AWD,120619,23977,22977,T64741,2.0L 4
 Volkswagen,2021,Tiguan,,,,23977,,,
 Subaru,2020,Impreza,Sport,Sport,110223,23977,,T71732,2.0L 4
 Subaru,2020,Impreza,,,,23977,,,
+Toyota,2018,Highlander,Limited,Limited,196791,24977,,S70522,3.5L 6
+Toyota,2018,Highlander,,,,24977,,,
 Honda,2019,Accord,Touring,Touring,110038,26977,,T64641,2.0L 4
 Honda,2019,Accord Sedan,,,,26977,,,
 Toyota,2021,Corolla,SE,SE,23663,27977,,S20091,2.0L 4
 Toyota,2021,Corolla,,,,27977,,,
 Toyota,2024,Corolla,LE,LE,28618,28977,,11426,2.0L 4
 Toyota,2024,Corolla,,,,28977,,,
+Buick,2024,Encore GX,Touring,Touring,30117,30977,,T64052,1.3L 3
+Buick,2024,Encore GX,,,,30977,,,
 Toyota,2025,Corolla,LE,LE,44208,32977,,11421,1.8L 4
 Toyota,2025,Corolla,,,,32977,,,
-Chrysler,2022,Pacifica,Touring,Touring,100384,36977,34977,T80541,3.6L 6
+Chrysler,2022,Pacifica,Touring,Touring,100384,36977,33977,T80541,3.6L 6
 Chrysler,2022,Pacifica,,,,36977,,,
 Toyota,2025,Corolla Cross,LE,LE,29217,35967,,11428,2.0L 4
 Toyota,2025,Corolla Cross,,,,35967,,,
@@ -49,12 +53,8 @@ Toyota,2022,4Runner,TRD Pro,TRD Pro,110700,63977,,11422,4.0L 6
 Toyota,2022,4Runner,,,,63977,,,
 Toyota,2025,Tundra,TRD,TRD,33496,64977,,114202,3.4L 6
 Toyota,2025,Tundra,,,,64977,,,
-Toyota,2018,Highlander,Limited,Limited,196791,,,S70522,3.5L 6
-Toyota,2018,Highlander,,,,,,,
 Toyota,2021,Corolla,SE,SE,129900,,,11433,2.0L 4
 Toyota,2021,Corolla,,,,,,,
-Buick,2024,Encore GX,Touring,Touring,30117,,,T64052,1.3L 3
-Buick,2024,Encore GX,,,,,,,
 Toyota,2021,Corolla,LE,LE,99826,,,11432,1.8L 4
 Toyota,2012,Tacoma,4WD,4WD,281383,,,S70252,4.0L 6
 Toyota,2012,Tacoma,,,,,,,
