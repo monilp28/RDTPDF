@@ -29,7 +29,7 @@ Buick,2024,Encore GX,Touring,Touring,30117,30977,,T64052,1.3L 3
 Buick,2024,Encore GX,,,,30977,,,
 Toyota,2025,Corolla,LE,LE,44208,32977,,11421,1.8L 4
 Toyota,2025,Corolla,,,,32977,,,
-Chrysler,2022,Pacifica,Touring,Touring,100384,36977,33977,T80541,3.6L 6
+Chrysler,2022,Pacifica,Touring,Touring,100439,36977,33977,T80541,3.6L 6
 Chrysler,2022,Pacifica,,,,36977,,,
 Toyota,2025,Corolla Cross,LE,LE,29217,35967,,11428,2.0L 4
 Toyota,2025,Corolla Cross,,,,35967,,,
@@ -41,6 +41,8 @@ Toyota,2025,RAV4,LE,LE,26817,39977,,11429,2.5L 4
 Toyota,2025,RAV4,,,,39977,,,
 Chevrolet,2022,Silverado 1500,Trail,Trail,150340,44977,,S70162,3.0L 6
 Chevrolet,2022,Silverado 1500,,,,44977,,,
+Toyota,2022,Highlander,XSE,XSE,72577,46977,,11434,3.5L 6
+Toyota,2022,Highlander,,,,46977,,,
 Toyota,2022,RAV4,Limited,Limited,9538,49977,,11431,2.5L 4
 Toyota,2022,RAV4,,,,49977,,,
 Toyota,2023,Tundra,TRD Off-Road,TRD Off-Road,47983,49977,,114231,3.5L 6
@@ -53,8 +55,9 @@ Toyota,2025,Tundra,TRD,TRD,33496,64977,,114202,3.4L 6
 Toyota,2025,Tundra,,,,64977,,,
 Toyota,2020,Highlander,XLE,XLE,228408,,,S60291,3.5L 6
 Toyota,2020,Highlander,,,,,,,
-Toyota,2021,Corolla,SE,SE,129900,,,11433,2.0L 4
+Toyota,2022,4Runner,Limited,Limited,73673,,,S60311,4.0L 6
+Toyota,2022,4Runner,,,,,,,
+Toyota,2023,Camry,SE,SE,76958,,,11435,2.5L 4
+Toyota,2023,Camry,,,,,,,
+Toyota,2021,Corolla,,,100819,,,11432,1.8L 4
 Toyota,2021,Corolla,,,,,,,
-Toyota,2021,Corolla,,,99826,,,11432,1.8L 4
-Toyota,2022,Highlander,XSE,XSE,72577,,,11434,3.5L 6
-Toyota,2022,Highlander,,,,,,,
