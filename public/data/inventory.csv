@@ -1,5 +1,5 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
-Chrysler,2015,300,,,147080,14977,13977,113821,3.6L 6
+Chrysler,2015,300,,,147292,14977,13977,113821,3.6L 6
 Chrysler,2015,300,,,,14977,,,
 Ford,2018,Escape,4WD,4WD,179950,14977,,S70501,2.0L 4
 Ford,2018,Escape,,,,14977,,,
@@ -63,3 +63,7 @@ Toyota,2023,Camry,SE,SE,76958,,,11435,2.5L 4
 Toyota,2023,Camry,,,,,,,
 Toyota,2021,Corolla,,,100819,,,11432,1.8L 4
 Toyota,2021,Corolla,,,,,,,
+Toyota,2024,Land Cruiser,4WD,4WD,47839,,,11437,2.4L 4
+Toyota,2024,Land Cruiser,,,,,,,
+Toyota,2021,Highlander,XSE,XSE,85909,,,L080784,3.5L 6
+Toyota,2021,Highlander,,,,,,,
