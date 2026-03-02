@@ -5,8 +5,6 @@ Ford,2018,Escape,4WD,4WD,179950,14977,,S70501,2.0L 4
 Ford,2018,Escape,,,,14977,,,
 Volkswagen,2016,Tiguan,AWD,AWD,174319,14977,,114171,2.0L 4
 Volkswagen,2016,Tiguan,,,,14977,,,
-Jeep,2016,Renegade,4WD,4WD,119323,14977,,S40171,2.4L 4
-Jeep,2016,Renegade,,,,14977,,,
 Audi,2017,Q3,AWD,AWD,143227,17977,16977,S40211,2.0L 4
 Audi,2017,Q3,,,,17977,,,
 GMC,2017,Terrain,Denali,Denali,132294,17977,,S70401,3.6L 6
@@ -45,10 +43,12 @@ Toyota,2022,Highlander,XSE,XSE,72577,46977,,11434,3.5L 6
 Toyota,2022,Highlander,,,,46977,,,
 Toyota,2022,RAV4,Limited,Limited,9538,49977,,11431,2.5L 4
 Toyota,2022,RAV4,,,,49977,,,
-Toyota,2023,Tundra,TRD Off-Road,TRD Off-Road,47983,49977,,114231,3.5L 6
+Toyota,2023,Tundra,TRD Off-Road,TRD Off-Road,48673,49977,,114231,3.5L 6
 Toyota,2023,Tundra,,,,49977,,,
 Toyota,2022,Tundra,Limited,Limited,110469,52977,,11424,3.5L 6
 Toyota,2022,Tundra,,,,52977,,,
+Toyota,2022,4Runner,Limited,Limited,73673,54977,,S60311,4.0L 6
+Toyota,2022,4Runner,,,,54977,,,
 Toyota,2022,4Runner,TRD Pro,TRD Pro,110700,63977,,11422,4.0L 6
 Toyota,2022,4Runner,,,,63977,,,
 Toyota,2025,Tundra,TRD,TRD,33496,64977,,114202,3.4L 6
@@ -57,12 +57,8 @@ Toyota,2020,Highlander,XLE,XLE,228408,,,S60291,3.5L 6
 Toyota,2020,Highlander,,,,,,,
 Ford,2022,Explorer,ST,ST,66913,,,S60421,3.0L 6
 Ford,2022,Explorer,,,,,,,
-Toyota,2022,4Runner,Limited,Limited,73673,,,S60311,4.0L 6
-Toyota,2022,4Runner,,,,,,,
 Toyota,2023,Camry,SE,SE,76958,,,11435,2.5L 4
 Toyota,2023,Camry,,,,,,,
-Toyota,2021,Corolla,,,100819,,,11432,1.8L 4
-Toyota,2021,Corolla,,,,,,,
 Toyota,2024,Land Cruiser,4WD,4WD,47839,,,11437,2.4L 4
 Toyota,2024,Land Cruiser,,,,,,,
 Toyota,2021,Highlander,XSE,XSE,85909,,,L080784,3.5L 6
