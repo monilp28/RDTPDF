@@ -9,6 +9,8 @@ Audi,2017,Q3,AWD,AWD,143227,17977,16977,S40211,2.0L 4
 Audi,2017,Q3,,,,17977,,,
 GMC,2017,Terrain,Denali,Denali,132294,17977,,S70401,3.6L 6
 Gmc,2017,Terrain,,,,17977,,,
+Scion,2016,iM,,,123305,18977,,113651,1.8L 4
+Scion,2016,iM,,,,18977,,,
 Hyundai,2020,Tucson,AWD,AWD,136691,20967,,T64601,2.4L 4
 Hyundai,2020,Tucson,,,,20967,,,
 Ford,2019,Escape,4WD,4WD,53322,21977,,T64711,1.5L 4
@@ -19,6 +21,8 @@ Subaru,2020,Impreza,Sport,Sport,110223,23977,,T71732,2.0L 4
 Subaru,2020,Impreza,,,,23977,,,
 Honda,2019,Accord,Touring,Touring,110038,26977,,T64641,2.0L 4
 Honda,2019,Accord Sedan,,,,26977,,,
+Toyota,2020,Highlander,XLE,XLE,228408,27977,,S60291,3.5L 6
+Toyota,2020,Highlander,,,,27977,,,
 Toyota,2021,Corolla,SE,SE,23663,27977,,S20091,2.0L 4
 Toyota,2021,Corolla,,,,27977,,,
 Toyota,2024,Corolla,LE,LE,28618,28977,,11426,2.0L 4
@@ -33,10 +37,14 @@ Toyota,2025,Corolla Cross,LE,LE,29217,35967,,11428,2.0L 4
 Toyota,2025,Corolla Cross,,,,35967,,,
 Toyota,2022,RAV4,XLE,XLE,94042,35977,,11430,2.5L 4
 Toyota,2022,RAV4,,,,35977,,,
+Toyota,2023,Camry,SE,SE,76958,35977,,11435,2.5L 4
+Toyota,2023,Camry,,,,35977,,,
 Toyota,2024,RAV4,LE,LE,68532,36977,,11403,2.5L 4
 Toyota,2024,RAV4,,,,36977,,,
 Toyota,2025,RAV4,LE,LE,26817,39977,,11429,2.5L 4
 Toyota,2025,RAV4,,,,39977,,,
+Ford,2022,Explorer,ST,ST,66913,44977,,S60421,3.0L 6
+Ford,2022,Explorer,,,,44977,,,
 Chevrolet,2022,Silverado 1500,Trail,Trail,150340,44977,,S70162,3.0L 6
 Chevrolet,2022,Silverado 1500,,,,44977,,,
 Toyota,2022,Highlander,XSE,XSE,72577,46977,,11434,3.5L 6
@@ -53,13 +61,5 @@ Toyota,2022,4Runner,TRD Pro,TRD Pro,110700,63977,,11422,4.0L 6
 Toyota,2022,4Runner,,,,63977,,,
 Toyota,2025,Tundra,TRD,TRD,33496,64977,,114202,3.4L 6
 Toyota,2025,Tundra,,,,64977,,,
-Toyota,2020,Highlander,XLE,XLE,228408,,,S60291,3.5L 6
-Toyota,2020,Highlander,,,,,,,
-Ford,2022,Explorer,ST,ST,66913,,,S60421,3.0L 6
-Ford,2022,Explorer,,,,,,,
-Toyota,2023,Camry,SE,SE,76958,,,11435,2.5L 4
-Toyota,2023,Camry,,,,,,,
-Toyota,2024,Land Cruiser,4WD,4WD,47839,,,11437,2.4L 4
-Toyota,2024,Land Cruiser,,,,,,,
-Toyota,2021,Highlander,XSE,XSE,85909,,,L080784,3.5L 6
-Toyota,2021,Highlander,,,,,,,
+Toyota,2024,Land Cruiser,,,47839,84977,,11437,2.4L 4
+Toyota,2024,Land Cruiser,,,,84977,,,
