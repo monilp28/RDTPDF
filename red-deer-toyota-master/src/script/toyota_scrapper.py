@@ -26,19 +26,19 @@ class UniversalRedDeerToyotaScraper:
         self.target_url = "https://www.reddeertoyota.com/inventory/used/"
         self.session = requests.Session()
         
-        # Enhanced headers
+        # Full browser-like headers — matches what Chrome 122 actually sends
         self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
             'Accept-Language': 'en-US,en;q=0.9',
             'Accept-Encoding': 'gzip, deflate, br',
             'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
             'Sec-Fetch-Dest': 'document',
             'Sec-Fetch-Mode': 'navigate',
             'Sec-Fetch-Site': 'none',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
-            'DNT': '1'
+            'Sec-Fetch-User': '?1',
+            'Cache-Control': 'max-age=0',
         })
         
         self.vehicles = []
@@ -46,751 +46,509 @@ class UniversalRedDeerToyotaScraper:
         
         # Universal car makes and models
         self.car_makes = {
-            # Toyota models
             'Toyota': {
-                'Camry', 'RAV4', 'Highlander', 'Prius', 'Corolla', 'Tacoma', 'Tundra', 
-                'Sienna', '4Runner', 'Sequoia', 'Avalon', 'C-HR', 'Venza', 'Land Cruiser', 
-                'GR86', 'Supra', 'Yaris', 'Matrix', 'FJ Cruiser', 'Celica', 'MR2'
+                'Camry', 'RAV4', 'Highlander', 'Prius', 'Corolla', 'Corolla Cross', 'Tacoma',
+                'Tundra', 'Sienna', '4Runner', 'Sequoia', 'Avalon', 'C-HR', 'Venza',
+                'Land Cruiser', 'GR86', 'Supra', 'Yaris', 'Matrix', 'FJ Cruiser', 'Crown'
             },
-            # Honda models
             'Honda': {
-                'Civic', 'Accord', 'CR-V', 'HR-V', 'Pilot', 'Odyssey', 'Fit', 'Insight', 
-                'Ridgeline', 'Passport', 'Element', 'S2000', 'NSX', 'Prelude', 'del Sol'
+                'Civic', 'Accord', 'CR-V', 'HR-V', 'Pilot', 'Odyssey', 'Fit',
+                'Ridgeline', 'Passport', 'Element', 'Insight'
             },
-            # Ford models
             'Ford': {
-                'F-150', 'F-250', 'F-350', 'Escape', 'Explorer', 'Expedition', 'Edge', 
-                'Fusion', 'Focus', 'Fiesta', 'Mustang', 'Bronco', 'Ranger', 'Transit', 
-                'Taurus', 'Crown Victoria', 'Thunderbird'
+                'F-150', 'F-250', 'F-350', 'Escape', 'Explorer', 'Expedition', 'Edge',
+                'Fusion', 'Focus', 'Mustang', 'Bronco', 'Bronco Sport', 'Ranger', 'Maverick',
+                'Taurus', 'Transit'
             },
-            # Chevrolet models
             'Chevrolet': {
-                'Silverado', 'Tahoe', 'Suburban', 'Equinox', 'Traverse', 'Malibu', 
-                'Cruze', 'Impala', 'Camaro', 'Corvette', 'Colorado', 'Blazer', 'Trax'
+                'Silverado', 'Silverado 1500', 'Silverado 2500', 'Tahoe', 'Suburban',
+                'Equinox', 'Traverse', 'Malibu', 'Cruze', 'Camaro', 'Colorado', 'Blazer', 'Trax'
             },
-            # GMC models
             'GMC': {
-                'Sierra', 'Yukon', 'Acadia', 'Terrain', 'Canyon', 'Savana', 'Envoy'
+                'Sierra', 'Sierra 1500', 'Sierra 2500', 'Yukon', 'Acadia', 'Terrain', 'Canyon'
             },
-            # Dodge/Ram models
             'Dodge': {
-                'Charger', 'Challenger', 'Journey', 'Durango', 'Grand Caravan', 'Dart', 'Avenger'
+                'Charger', 'Challenger', 'Journey', 'Durango', 'Grand Caravan', 'Hornet'
             },
-            'Ram': {
-                '1500', '2500', '3500', 'ProMaster'
-            },
-            # Nissan models
+            'Ram': {'1500', '2500', '3500', 'ProMaster'},
             'Nissan': {
-                'Altima', 'Sentra', 'Rogue', 'Murano', 'Pathfinder', 'Armada', 'Titan', 
-                'Frontier', '370Z', 'GT-R', 'Leaf', 'Kicks', 'Versa'
+                'Altima', 'Sentra', 'Rogue', 'Murano', 'Pathfinder', 'Armada',
+                'Titan', 'Frontier', '370Z', 'Leaf', 'Kicks', 'Versa'
             },
-            # Hyundai models
             'Hyundai': {
-                'Elantra', 'Sonata', 'Tucson', 'Santa Fe', 'Palisade', 'Accent', 'Veloster', 
-                'Genesis', 'Azera', 'Venue'
+                'Elantra', 'Sonata', 'Tucson', 'Santa Fe', 'Palisade',
+                'Accent', 'Veloster', 'Kona', 'Venue'
             },
-            # Kia models
             'Kia': {
-                'Forte', 'Optima', 'Sportage', 'Sorento', 'Telluride', 'Soul', 'Stinger', 
-                'Rio', 'Sedona', 'Niro'
+                'Forte', 'Optima', 'Sportage', 'Sorento', 'Telluride',
+                'Soul', 'Stinger', 'Rio', 'Sedona', 'Niro', 'Seltos'
             },
-            # Mazda models
             'Mazda': {
-                'Mazda3', 'Mazda6', 'CX-3', 'CX-5', 'CX-9', 'MX-5', 'CX-30', 'RX-7', 'RX-8'
+                'Mazda3', 'Mazda6', 'CX-3', 'CX-5', 'CX-9', 'CX-30', 'CX-50', 'MX-5'
             },
-            # Subaru models
             'Subaru': {
                 'Outback', 'Forester', 'Impreza', 'Legacy', 'Crosstrek', 'Ascent', 'WRX', 'BRZ'
             },
-            # Volkswagen models
             'Volkswagen': {
                 'Jetta', 'Passat', 'Golf', 'Tiguan', 'Atlas', 'Beetle', 'GTI', 'Touareg'
             },
-            # Luxury brands
-            'BMW': {
-                '3 Series', '5 Series', '7 Series', 'X1', 'X3', 'X5', 'X7', 'Z4', 'i3', 'i8'
-            },
-            'Mercedes-Benz': {
-                'C-Class', 'E-Class', 'S-Class', 'GLA', 'GLC', 'GLE', 'GLS', 'CLA', 'SL'
-            },
-            'Audi': {
-                'A3', 'A4', 'A6', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'TT', 'R8'
-            },
-            'Lexus': {
-                'ES', 'IS', 'GS', 'LS', 'NX', 'RX', 'GX', 'LX', 'UX', 'LC'
-            },
-            'Infiniti': {
-                'Q50', 'Q60', 'QX50', 'QX60', 'QX80', 'G35', 'G37', 'FX35', 'FX37'
-            },
-            'Acura': {
-                'ILX', 'TLX', 'RLX', 'RDX', 'MDX', 'NSX', 'TSX', 'TL', 'RSX'
-            },
-            # Jeep models
+            'BMW': {'3 Series', '5 Series', '7 Series', 'X1', 'X3', 'X5', 'X7', 'Z4'},
+            'Mercedes-Benz': {'C-Class', 'E-Class', 'S-Class', 'GLA', 'GLC', 'GLE', 'GLS', 'CLA'},
+            'Audi': {'A3', 'A4', 'A6', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'TT', 'R8'},
+            'Lexus': {'ES', 'IS', 'GS', 'LS', 'NX', 'RX', 'GX', 'LX', 'UX'},
+            'Acura': {'ILX', 'TLX', 'RDX', 'MDX', 'NSX'},
             'Jeep': {
-                'Wrangler', 'Grand Cherokee', 'Cherokee', 'Compass', 'Renegade', 'Gladiator', 'Liberty'
+                'Wrangler', 'Grand Cherokee', 'Cherokee', 'Compass', 'Renegade', 'Gladiator'
             },
-            # Cadillac models
-            'Cadillac': {
-                'Escalade', 'XT4', 'XT5', 'XT6', 'CT4', 'CT5', 'CTS', 'ATS', 'SRX'
-            },
-            # Lincoln models
-            'Lincoln': {
-                'Navigator', 'Aviator', 'Corsair', 'Nautilus', 'Continental', 'MKZ', 'MKX'
-            },
-            # Buick models
-            'Buick': {
-                'Enclave', 'Encore', 'Envision', 'LaCrosse', 'Regal', 'Verano'
-            }
+            'Cadillac': {'Escalade', 'XT4', 'XT5', 'XT6', 'CT4', 'CT5'},
+            'Buick': {'Enclave', 'Encore', 'Encore GX', 'Envision', 'LaCrosse'},
+            'Lincoln': {'Navigator', 'Aviator', 'Corsair', 'Nautilus'},
+            'Chrysler': {'300', 'Pacifica', 'Voyager'},
+            'Scion': {'tC', 'xB', 'xD', 'iA', 'iM', 'FR-S'},
+            'Infiniti': {'Q50', 'Q60', 'QX50', 'QX60', 'QX80'},
+            'Gmc': {'Terrain'},  # lowercase variant the site sometimes uses
         }
 
-    def fetch_main_page(self):
-        """Fetch the main inventory page"""
+    # ------------------------------------------------------------------
+    # Session warm-up: visit homepage first to collect cookies & bypass
+    # basic bot-detection that checks for a prior session.
+    # ------------------------------------------------------------------
+    def warm_up_session(self):
+        """Visit the dealer homepage so we look like a real browser session."""
         try:
-            logger.info("Fetching: {}".format(self.target_url))
-            response = self.session.get(self.target_url, timeout=30)
-            response.raise_for_status()
-            
-            logger.info("Response: {}, Size: {} bytes".format(response.status_code, len(response.content)))
-            soup = BeautifulSoup(response.content, 'html.parser')
-            
-            # Log page info
-            title = soup.find('title')
-            if title:
-                logger.info("Page title: {}".format(title.get_text().strip()))
-            
-            return soup
-            
+            logger.info("Warming up session via homepage: {}".format(self.base_url))
+            resp = self.session.get(self.base_url, timeout=30)
+            logger.info("Homepage status: {}".format(resp.status_code))
+            time.sleep(1.5)  # brief pause — mimics human navigation speed
         except Exception as e:
-            logger.error("Failed to fetch main page: {}".format(str(e)))
-            return None
+            logger.warning("Session warm-up failed (non-fatal): {}".format(e))
+
+    def fetch_page(self, url, attempt=1, max_attempts=3):
+        """Fetch a single page with retry logic."""
+        for attempt_num in range(1, max_attempts + 1):
+            try:
+                logger.info("Fetching (attempt {}/{}): {}".format(attempt_num, max_attempts, url))
+
+                # After the first attempt add a Referer so subsequent requests look
+                # like normal in-site navigation.
+                if attempt_num > 1:
+                    self.session.headers.update({'Referer': self.base_url + '/'})
+
+                response = self.session.get(url, timeout=30)
+
+                if response.status_code == 403:
+                    logger.warning("403 on attempt {} — waiting before retry...".format(attempt_num))
+                    time.sleep(3 * attempt_num)
+                    continue
+
+                response.raise_for_status()
+                logger.info("OK {} — {} bytes".format(response.status_code, len(response.content)))
+                return BeautifulSoup(response.content, 'html.parser')
+
+            except requests.exceptions.HTTPError as e:
+                logger.error("HTTP error: {}".format(e))
+                if attempt_num < max_attempts:
+                    time.sleep(2 * attempt_num)
+                else:
+                    return None
+            except Exception as e:
+                logger.error("Request failed: {}".format(e))
+                if attempt_num < max_attempts:
+                    time.sleep(2 * attempt_num)
+                else:
+                    return None
+        return None
+
+    def fetch_all_pages(self):
+        """Fetch all paginated inventory pages."""
+        # Warm up before hitting the inventory endpoint
+        self.warm_up_session()
+
+        all_soups = []
+        page_num = 1
+        max_pages = 10
+
+        while page_num <= max_pages:
+            url = "{}?page={}".format(self.target_url.rstrip('/'), page_num)
+            soup = self.fetch_page(url)
+
+            if not soup:
+                logger.info("Stopping pagination — could not fetch page {}".format(page_num))
+                break
+
+            page_text = soup.get_text()
+            has_vehicles = bool(re.search(r'\b(19[89]\d|20[0-2]\d)\b', page_text))
+            no_results = ('no vehicles found' in page_text.lower() or
+                          'no results' in page_text.lower())
+
+            if not has_vehicles or no_results:
+                logger.info("Page {} has no vehicles — stopping".format(page_num))
+                break
+
+            # Save first page HTML for debugging
+            if page_num == 1:
+                try:
+                    with open('debug_page1.html', 'w', encoding='utf-8') as f:
+                        f.write(soup.prettify())
+                    logger.info("Saved debug_page1.html")
+                except Exception:
+                    pass
+
+            all_soups.append((page_num, soup))
+            page_num += 1
+            time.sleep(1.0)   # polite crawl delay
+
+        logger.info("Fetched {} pages total".format(len(all_soups)))
+        return all_soups
+
+    # ------------------------------------------------------------------
+    # Extraction helpers (unchanged from original)
+    # ------------------------------------------------------------------
 
     def extract_make_and_model(self, text):
-        """Extract make and model from text using comprehensive patterns"""
-        # Clean up text
         text = re.sub(r'\s+', ' ', text.strip())
-        
-        # Try to find make and model combinations
         for make, models in self.car_makes.items():
-            # Create patterns for this make
-            make_patterns = [
-                r'\b{}\b'.format(re.escape(make)),
-                r'\b{}\b'.format(re.escape(make.upper())),
-                r'\b{}\b'.format(re.escape(make.lower()))
-            ]
-            
-            for make_pattern in make_patterns:
-                if re.search(make_pattern, text, re.IGNORECASE):
-                    # Found the make, now look for models
-                    for model in models:
-                        model_patterns = [
-                            r'\b{}\b'.format(re.escape(model)),
-                            r'\b{}\b'.format(re.escape(model.replace("-", ""))),  # Handle hyphens
-                            r'\b{}\b'.format(re.escape(model.replace(" ", "")))   # Handle spaces
-                        ]
-                        
-                        for model_pattern in model_patterns:
-                            if re.search(model_pattern, text, re.IGNORECASE):
-                                return make, model
-        
-        # If no exact match found, try generic patterns
-        # Look for Year Make Model patterns
-        generic_pattern = r'\b(20[0-2][0-9])\s+([A-Z][a-zA-Z-]+)\s+([A-Z][a-zA-Z0-9-]+)\b'
-        match = re.search(generic_pattern, text)
-        if match:
-            year, potential_make, potential_model = match.groups()
-            # Validate the potential make against known makes
-            for make in self.car_makes.keys():
-                if make.lower() == potential_make.lower():
-                    return make, potential_model
-        
+            if re.search(r'\b{}\b'.format(re.escape(make)), text, re.IGNORECASE):
+                for model in sorted(models, key=len, reverse=True):
+                    if re.search(r'\b{}\b'.format(re.escape(model)), text, re.IGNORECASE):
+                        return make, model
         return None, None
 
-    def extract_clean_vehicle_data(self, element):
-        """Extract clean, accurate vehicle data from element - universal version"""
+    def extract_clean_vehicle_data(self, element, element_index=0):
         vehicle = {
-            'makeName': '',
-            'year': '',
-            'model': '',
-            'sub-model': '',
-            'trim': '',
-            'mileage': '',
-            'value': '',
-            'stock_number': '',
-            'engine': ''
+            'makeName': '', 'year': '', 'model': '', 'sub-model': '', 'trim': '',
+            'mileage': '', 'value': '', 'sale_value': '', 'stock_number': '', 'engine': ''
         }
-        
+
         try:
-            # Get clean text without extra whitespace
-            element_text = element.get_text(separator=' ', strip=True)
-            element_text = re.sub(r'\s+', ' ', element_text)
-            
-            logger.debug("Processing element text: {}...".format(element_text[:100]))
-            
-            # Extract year - must be 4 digits starting with 19 or 20
-            year_match = re.search(r'\b(19[8-9][0-9]|20[0-2][0-9])\b', element_text)
+            element_text = re.sub(r'\s+', ' ', element.get_text(separator=' ', strip=True))
+
+            year_match = re.search(r'\b(19[89]\d|20[0-2]\d)\b', element_text)
             if year_match:
                 vehicle['year'] = year_match.group(1)
-            
-            # Extract make and model using universal method
+
             make, model = self.extract_make_and_model(element_text)
             if make:
                 vehicle['makeName'] = make
             if model:
                 vehicle['model'] = model
-            
-            # Extract trim levels - comprehensive patterns for all brands
+
             trim_patterns = {
-                # Toyota trims
-                'LE': r'\bLE\b(?!\w)',
-                'SE': r'\bSE\b(?!\w)',
-                'XLE': r'\bXLE\b(?!\w)',
-                'XSE': r'\bXSE\b(?!\w)',
-                'Limited': r'\bLimited\b(?!\w)',
-                'Platinum': r'\bPlatinum\b(?!\w)',
-                'Hybrid': r'\bHybrid\b(?!\w)',
-                'Prime': r'\bPrime\b(?!\w)',
-                'TRD': r'\bTRD\b(?!\w)',
-                'SR': r'\bSR\b(?!\w)',
-                'SR5': r'\bSR5\b(?!\w)',
-                'TRD Pro': r'\bTRD\s+Pro\b',
-                'TRD Off-Road': r'\bTRD\s+Off-?Road\b',
-                'TRD Sport': r'\bTRD\s+Sport\b',
-                # Honda trims
-                'LX': r'\bLX\b(?!\w)',
-                'EX': r'\bEX\b(?!\w)',
-                'EX-L': r'\bEX-L\b(?!\w)',
-                'Touring': r'\bTouring\b(?!\w)',
-                'Sport': r'\bSport\b(?!\w)',
-                'Type R': r'\bType\s+R\b',
-                'Si': r'\bSi\b(?!\w)',
-                # Ford trims - Enhanced
-                'XL': r'\bXL\b(?!\w)',
-                'XLT': r'\bXLT\b(?!\w)',
-                'Lariat': r'\bLariat\b(?!\w)',
-                'King Ranch': r'\bKing\s+Ranch\b',
-                'Raptor': r'\bRaptor\b(?!\w)',
-                'ST': r'\bST\b(?!\w)',
-                'RS': r'\bRS\b(?!\w)',
-                'GT': r'\bGT\b(?!\w)',
-                'Shelby': r'\bShelby\b(?!\w)',
-                'Tremor': r'\bTremor\b(?!\w)',
-                'FX4': r'\bFX4\b(?!\w)',
-                'STX': r'\bSTX\b(?!\w)',
-                'SuperCrew': r'\bSuperCrew\b(?!\w)',
-                'SuperCab': r'\bSuperCab\b(?!\w)',
-                'Titanium': r'\bTitanium\b(?!\w)',
-                'SEL': r'\bSEL\b(?!\w)',
-                'SES': r'\bSES\b(?!\w)',
-                'ST-Line': r'\bST-Line\b(?!\w)',
-                'Vignale': r'\bVignale\b(?!\w)',
-                'Wildtrak': r'\bWildtrak\b(?!\w)',
-                # Dodge trims - Enhanced
-                'SXT': r'\bSXT\b(?!\w)',
-                'R/T': r'\bR/T\b(?!\w)',
-                'RT': r'\bRT\b(?!\w)',
-                'SRT': r'\bSRT\b(?!\w)',
-                'Hellcat': r'\bHellcat\b(?!\w)',
-                'Redeye': r'\bRedeye\b(?!\w)',
-                'Demon': r'\bDemon\b(?!\w)',
-                'Scat Pack': r'\bScat\s+Pack\b',
-                'ScatPack': r'\bScatPack\b(?!\w)',
-                'Pursuit': r'\bPursuit\b(?!\w)',
-                'Police': r'\bPolice\b(?!\w)',
-                'Express': r'\bExpress\b(?!\w)',
-                'Tradesman': r'\bTradesman\b(?!\w)',
-                'Big Horn': r'\bBig\s+Horn\b',
-                'Laramie': r'\bLaramie\b(?!\w)',
-                'Rebel': r'\bRebel\b(?!\w)',
-                'TRX': r'\bTRX\b(?!\w)',
-                'Warlock': r'\bWarlock\b(?!\w)',
-                'Night Edition': r'\bNight\s+Edition\b',
-                'Blacktop': r'\bBlacktop\b(?!\w)',
-                'Rallye': r'\bRallye\b(?!\w)',
-                'AWD': r'\bAWD\b(?!\w)',
-                'Plus': r'\bPlus\b(?!\w)',
-                'Crew': r'\bCrew\b(?!\w)',
-                'Quad Cab': r'\bQuad\s+Cab\b',
-                'Regular Cab': r'\bRegular\s+Cab\b',
-                # Hyundai trims - Enhanced
-                'Blue': r'\bBlue\b(?!\w)',
-                'SE': r'\bSE\b(?!\w)', # Already defined but important for Hyundai
-                'SEL': r'\bSEL\b(?!\w)', # Already defined but important for Hyundai
-                'Ultimate': r'\bUltimate\b(?!\w)',
-                'Calligraphy': r'\bCalligraphy\b(?!\w)',
-                'N Line': r'\bN\s+Line\b',
-                'N-Line': r'\bN-Line\b(?!\w)',
-                'Preferred': r'\bPreferred\b(?!\w)',
-                'Essential': r'\bEssential\b(?!\w)',
-                'Luxury': r'\bLuxury\b(?!\w)',
-                'Trend': r'\bTrend\b(?!\w)',
-                'GL': r'\bGL\b(?!\w)',
-                'GLS': r'\bGLS\b(?!\w)',
-                'Limited': r'\bLimited\b(?!\w)', # Already defined but important
-                'Sport': r'\bSport\b(?!\w)', # Already defined but important
-                'Value Edition': r'\bValue\s+Edition\b',
-                'Tech': r'\bTech\b(?!\w)',
-                'Convenience': r'\bConvenience\b(?!\w)',
-                'Premium': r'\bPremium\b(?!\w)', # Already defined but important
-                'Active': r'\bActive\b(?!\w)',
-                'Preferred AWD': r'\bPreferred\s+AWD\b',
-                'Ultimate AWD': r'\bUltimate\s+AWD\b',
-                # Chevrolet trims
-                'LS': r'\bLS\b(?!\w)',
-                'LT': r'\bLT\b(?!\w)',
-                'LTZ': r'\bLTZ\b(?!\w)',
-                'SS': r'\bSS\b(?!\w)',
-                'Z71': r'\bZ71\b(?!\w)',
-                'High Country': r'\bHigh\s+Country\b',
-                'Premier': r'\bPremier\b(?!\w)',
-                'RS': r'\bRS\b(?!\w)', # Already defined but important for Chevy
-                'Redline': r'\bRedline\b(?!\w)',
-                'Midnight': r'\bMidnight\b(?!\w)',
-                # GMC trims
-                'Denali': r'\bDenali\b(?!\w)',
-                'SLE': r'\bSLE\b(?!\w)',
-                'SLT': r'\bSLT\b(?!\w)',
-                'AT4': r'\bAT4\b(?!\w)',
-                'Elevation': r'\bElevation\b(?!\w)',
-                # Nissan trims
-                'S': r'\bS\b(?!\w)',
-                'SV': r'\bSV\b(?!\w)',
-                'SL': r'\bSL\b(?!\w)',
-                'SR': r'\bSR\b(?!\w)', # Already defined
-                'Nismo': r'\bNismo\b(?!\w)',
-                'Midnight Edition': r'\bMidnight\s+Edition\b',
-                'Pro-4X': r'\bPro-4X\b(?!\w)',
-                # Kia trims  
-                'LX': r'\bLX\b(?!\w)', # Already defined
-                'S': r'\bS\b(?!\w)', # Already defined
-                'EX': r'\bEX\b(?!\w)', # Already defined
-                'SX': r'\bSX\b(?!\w)',
-                'GT': r'\bGT\b(?!\w)', # Already defined
-                'GT-Line': r'\bGT-Line\b(?!\w)',
-                'Turbo': r'\bTurbo\b(?!\w)',
-                # Mazda trims
-                'Sport': r'\bSport\b(?!\w)', # Already defined
-                'Touring': r'\bTouring\b(?!\w)', # Already defined
-                'Grand Touring': r'\bGrand\s+Touring\b',
-                'Signature': r'\bSignature\b(?!\w)',
-                'Carbon Edition': r'\bCarbon\s+Edition\b',
-                # Subaru trims
-                'Base': r'\bBase\b(?!\w)', # Already defined
-                'Premium': r'\bPremium\b(?!\w)', # Already defined
-                'Limited': r'\bLimited\b(?!\w)', # Already defined
-                'Touring': r'\bTouring\b(?!\w)', # Already defined
-                'Onyx Edition': r'\bOnyx\s+Edition\b',
-                'Wilderness': r'\bWilderness\b(?!\w)',
-                'STI': r'\bSTI\b(?!\w)',
-                # Luxury trims
-                'Base': r'\bBase\b(?!\w)', # Already defined
-                'Premium': r'\bPremium\b(?!\w)', # Already defined
-                'Luxury': r'\bLuxury\b(?!\w)', # Already defined
-                'Executive': r'\bExecutive\b(?!\w)', # Already defined
-                'M Sport': r'\bM\s+Sport\b', # Already defined
-                'AMG': r'\bAMG\b(?!\w)', # Already defined
-                'S-Line': r'\bS-Line\b(?!\w)', # Already defined
-                'F Sport': r'\bF\s+Sport\b' # Already defined
+                'Capstone': r'\bCapstone\b', 'Platinum': r'\bPlatinum\b',
+                'Limited': r'\bLimited\b', 'XLE': r'\bXLE\b', 'XSE': r'\bXSE\b',
+                'LE': r'\bLE\b(?!\w)', 'SE': r'\bSE\b(?!\w)',
+                'TRD Pro': r'\bTRD\s+Pro\b', 'TRD Off-Road': r'\bTRD\s+Off-?Road\b',
+                'TRD Sport': r'\bTRD\s+Sport\b', 'TRD': r'\bTRD\b', 'SR5': r'\bSR5\b',
+                'SR': r'\bSR\b(?!\d)', 'Hybrid': r'\bHybrid\b', 'Prime': r'\bPrime\b',
+                'Nightshade': r'\bNightshade\b', 'Trail': r'\bTrail\b(?!\w)',
+                'Adventure': r'\bAdventure\b', 'CrewMax': r'\bCrewMax\b',
+                'Touring': r'\bTouring\b', 'EX-L': r'\bEX-L\b', 'EX': r'\bEX\b(?!\w)',
+                'LX': r'\bLX\b(?!\w)', 'Type R': r'\bType\s+R\b', 'Si': r'\bSi\b',
+                'TrailSport': r'\bTrailSport\b', 'Elite': r'\bElite\b',
+                'Raptor': r'\bRaptor\b', 'King Ranch': r'\bKing\s+Ranch\b',
+                'Lariat': r'\bLariat\b', 'XLT': r'\bXLT\b', 'XL': r'\bXL\b(?!\w)',
+                'Tremor': r'\bTremor\b', 'Wildtrak': r'\bWildtrak\b',
+                'ST': r'\bST\b(?!\w)', 'GT': r'\bGT\b(?!\w)', 'Shelby': r'\bShelby\b',
+                'Hellcat': r'\bHellcat\b', 'SRT': r'\bSRT\b', 'Scat Pack': r'\bScat\s+Pack\b',
+                'R/T': r'\bR/T\b', 'SXT': r'\bSXT\b', 'TRX': r'\bTRX\b', 'Rebel': r'\bRebel\b',
+                'Laramie': r'\bLaramie\b', 'Big Horn': r'\bBig\s+Horn\b',
+                'High Country': r'\bHigh\s+Country\b', 'LTZ': r'\bLTZ\b',
+                'LT': r'\bLT\b(?!\w)', 'LS': r'\bLS\b(?!\w)', 'Z71': r'\bZ71\b',
+                'Denali': r'\bDenali\b', 'AT4': r'\bAT4\b', 'SLT': r'\bSLT\b',
+                'SLE': r'\bSLE\b', 'Pro-4X': r'\bPro-4X\b', 'Nismo': r'\bNismo\b',
+                'SL': r'\bSL\b(?!\w)', 'SV': r'\bSV\b',
+                'Calligraphy': r'\bCalligraphy\b', 'Ultimate': r'\bUltimate\b',
+                'Preferred': r'\bPreferred\b', 'N Line': r'\bN\s+Line\b',
+                'Rubicon': r'\bRubicon\b', 'Sahara': r'\bSahara\b',
+                'Overland': r'\bOverland\b', 'Summit': r'\bSummit\b',
+                'Sport': r'\bSport\b(?!\s+Utility)',
+                'AWD': r'\bAWD\b', '4WD': r'\b4WD\b',
+                'Essential': r'\bEssential\b', 'IVT': r'\bIVT\b',
             }
-            
+
             for trim_name, pattern in trim_patterns.items():
                 if re.search(pattern, element_text, re.IGNORECASE):
                     vehicle['trim'] = trim_name
-                    vehicle['sub-model'] = trim_name  # Use same value for both
+                    vehicle['sub-model'] = trim_name
                     break
-            
-            # Extract price - be more specific about format
-            price_patterns = [
-                r'\$([0-9]{2}[0-9,]*)',  # $XX,XXX format
-                r'Price[:\s]*\$([0-9,]+)',
-                r'MSRP[:\s]*\$([0-9,]+)',
-                r'Starting at[:\s]*\$([0-9,]+)'
-            ]
-            
-            for pattern in price_patterns:
-                price_match = re.search(pattern, element_text)
-                if price_match:
-                    price_value = price_match.group(1).replace(',', '')
-                    # Validate price is reasonable (between $3,000 and $300,000 for used cars)
-                    try:
-                        price_int = int(price_value)
-                        if 3000 <= price_int <= 300000:
-                            vehicle['value'] = price_value
-                            break
-                    except ValueError:
-                        continue
-            
-            # Extract mileage - more accurate patterns including miles and km
-            mileage_patterns = [
+
+            # Prices
+            all_prices = []
+            for match in re.finditer(r'\$\s*([0-9,]{4,})', element_text):
+                try:
+                    p = int(match.group(1).replace(',', ''))
+                    if 3000 <= p <= 300000:
+                        start = max(0, match.start() - 80)
+                        ctx = element_text[start:match.end() + 80].lower()
+                        is_sale = any(k in ctx for k in ['sale', 'special', 'internet', 'now', 'reduced'])
+                        is_msrp = any(k in ctx for k in ['msrp', 'was', 'original', 'regular'])
+                        all_prices.append({'price': p, 'is_sale': is_sale, 'is_msrp': is_msrp})
+                except Exception:
+                    pass
+
+            if all_prices:
+                msrp = [x['price'] for x in all_prices if x['is_msrp']]
+                sale = [x['price'] for x in all_prices if x['is_sale']]
+                other = [x['price'] for x in all_prices if not x['is_msrp'] and not x['is_sale']]
+
+                if msrp and sale:
+                    vehicle['value'] = str(max(msrp))
+                    vehicle['sale_value'] = str(min(sale))
+                elif len(all_prices) >= 2:
+                    sorted_p = sorted([x['price'] for x in all_prices], reverse=True)
+                    vehicle['value'] = str(sorted_p[0])
+                    if sorted_p[1] < sorted_p[0]:
+                        vehicle['sale_value'] = str(sorted_p[1])
+                elif all_prices:
+                    vehicle['value'] = str(all_prices[0]['price'])
+
+            # Validate sale < regular
+            if vehicle['value'] and vehicle['sale_value']:
+                if int(vehicle['sale_value']) >= int(vehicle['value']):
+                    vehicle['sale_value'] = ''
+
+            # Mileage
+            for pattern in [
                 r'(\d{1,3}(?:,\d{3})*)\s*(?:km|kilometers?)\b',
                 r'(\d{1,3}(?:,\d{3})*)\s*(?:miles?|mi)\b',
-                r'Odometer[:\s]*(\d{1,3}(?:,\d{3})*)',
-                r'Mileage[:\s]*(\d{1,3}(?:,\d{3})*)',
-                r'(\d{1,3}(?:,\d{3})*)\s*(?:k|K)\s*(?:km|mi|miles?)\b'
-            ]
-            
-            for pattern in mileage_patterns:
-                mileage_match = re.search(pattern, element_text, re.IGNORECASE)
-                if mileage_match:
-                    mileage_value = mileage_match.group(1).replace(',', '')
-                    # Validate mileage is reasonable (0 to 500,000)
-                    try:
-                        mileage_int = int(mileage_value)
-                        if 0 <= mileage_int <= 500000:
-                            vehicle['mileage'] = mileage_value
-                            break
-                    except ValueError:
-                        continue
-            
-            # Extract stock number - more specific
-            stock_patterns = [
-                r'Stock[#\s]*([A-Z0-9]{3,10})\b',
-                r'#([A-Z0-9]{3,10})\b',
-                r'ID[:\s]*([A-Z0-9]{3,10})\b',
-                r'VIN[:\s]*([A-Z0-9]{17})\b'  # VIN numbers
-            ]
-            
-            for pattern in stock_patterns:
-                stock_match = re.search(pattern, element_text, re.IGNORECASE)
-                if stock_match:
-                    stock_value = stock_match.group(1)
-                    # Validate stock number format
-                    if len(stock_value) >= 3 and stock_value.isalnum():
-                        vehicle['stock_number'] = stock_value
+            ]:
+                m = re.search(pattern, element_text, re.IGNORECASE)
+                if m:
+                    val = m.group(1).replace(',', '')
+                    if 0 <= int(val) <= 500000:
+                        vehicle['mileage'] = val
                         break
-            
-            # Extract engine - much more comprehensive patterns for all brands
-            engine_patterns = [
-                r'(\d\.\d+L\s*(?:V?\d+|I\d+|[0-9]-?Cyl|Cylinder))',  # 2.5L V6, 1.8L 4Cyl
-                r'(\d\.\d+\s*L\s*(?:V?\d+|I\d+|[0-9]-?Cyl))',        # 3.5 L V6
-                r'(\d\.\d+L)\s*(?:Engine|Motor)',                     # 2.4L Engine
-                r'Engine[:\s]*(\d\.\d+L[^,\n]*)',                     # Engine: 2.0L description
-                r'(\d\.\d+L\s*Hybrid)',                               # 1.8L Hybrid
-                r'(\d\.\d+L\s*Turbo)',                                # 2.0L Turbo
-                r'(\d\.\d+L\s*Supercharged)',                         # 6.2L Supercharged
-                r'(\d\.\d+L\s*Diesel)',                               # 3.0L Diesel
-                r'(V\d+\s*\d\.\d+L)',                                 # V8 5.0L
-                r'(\d+\.\d+\s*Liter)',                                # 3.6 Liter
-                r'Electric\s*Motor',                                   # Electric vehicles
-                r'(\d+kWh\s*Battery)'                                 # Battery capacity
-            ]
-            
-            for pattern in engine_patterns:
-                engine_match = re.search(pattern, element_text, re.IGNORECASE)
-                if engine_match:
-                    engine_text = engine_match.group(1).strip()
-                    # Clean up engine text
-                    engine_text = re.sub(r'\s+', ' ', engine_text)
-                    
-                    # For electric vehicles
-                    if 'Electric' in engine_text or 'kWh' in engine_text:
-                        vehicle['engine'] = engine_text
-                        break
-                    
-                    # Validate engine size is reasonable (0.8L to 8.0L for most cars)
-                    engine_size_match = re.search(r'(\d+\.\d+)L', engine_text)
-                    if engine_size_match:
-                        engine_size = float(engine_size_match.group(1))
-                        if 0.8 <= engine_size <= 8.0:
-                            vehicle['engine'] = engine_text
-                            break
-            
-            # Check HTML attributes for additional data
+
+            # Stock number
+            for pattern in [
+                r'Stock[#:\s]*([A-Z0-9]{3,15})\b',
+                r'#\s*([A-Z0-9]{3,15})\b',
+            ]:
+                m = re.search(pattern, element_text, re.IGNORECASE)
+                if m and m.group(1).isalnum() and len(m.group(1)) >= 3:
+                    vehicle['stock_number'] = m.group(1)
+                    break
+
+            # Engine
+            for pattern in [
+                r'(\d\.\d+L\s*(?:V?\d+|I\d+))',
+                r'(\d\.\d+L\s*Hybrid)',
+                r'(\d\.\d+L\s*Turbo)',
+            ]:
+                m = re.search(pattern, element_text, re.IGNORECASE)
+                if m:
+                    vehicle['engine'] = m.group(1).strip()
+                    break
+
+            # Data attributes
             for attr, value in element.attrs.items():
-                attr_lower = attr.lower()
-                if 'data-' in attr_lower:
-                    if 'year' in attr_lower and not vehicle['year']:
-                        if re.match(r'^(19[8-9][0-9]|20[0-2][0-9])$', str(value)):
-                            vehicle['year'] = str(value)
-                    elif 'make' in attr_lower and not vehicle['makeName']:
-                        vehicle['makeName'] = str(value).title()
-                    elif 'model' in attr_lower and not vehicle['model']:
-                        vehicle['model'] = str(value)
-                    elif 'price' in attr_lower and not vehicle['value']:
-                        price_clean = re.sub(r'[^\d]', '', str(value))
-                        if price_clean and 3000 <= int(price_clean) <= 300000:
-                            vehicle['value'] = price_clean
-                    elif 'stock' in attr_lower and not vehicle['stock_number']:
-                        if len(str(value)) >= 3:
-                            vehicle['stock_number'] = str(value)
-            
-            return vehicle
-            
+                al = attr.lower()
+                if 'data-' not in al:
+                    continue
+                vs = str(value)
+                if 'year' in al and not vehicle['year']:
+                    if re.match(r'^(19[89]\d|20[0-2]\d)$', vs):
+                        vehicle['year'] = vs
+                elif 'make' in al and not vehicle['makeName']:
+                    vehicle['makeName'] = vs.title()
+                elif 'model' in al and not vehicle['model']:
+                    vehicle['model'] = vs
+                elif 'mileage' in al and not vehicle['mileage']:
+                    clean = re.sub(r'[^\d]', '', vs)
+                    if clean and clean.isdigit():
+                        vehicle['mileage'] = clean
+
         except Exception as e:
-            logger.debug("Error extracting vehicle data: {}".format(str(e)))
-            return vehicle
+            logger.debug("Extraction error (element {}): {}".format(element_index, e))
+
+        return vehicle
 
     def is_complete_vehicle(self, vehicle):
-        """Check if vehicle has enough accurate data"""
         if not isinstance(vehicle, dict):
             return False
-        
-        # Must have at least these essential fields
-        required_fields = ['year', 'makeName']  # Changed from just model to include make
-        has_required = all(vehicle.get(field, '').strip() for field in required_fields)
-        
-        # Must have at least 1 of these identifying fields
-        identifying_fields = ['model', 'value', 'stock_number', 'mileage']
-        has_identifying = sum(1 for field in identifying_fields if vehicle.get(field, '').strip()) >= 1
-        
-        return has_required and has_identifying
+        has_year = bool(vehicle.get('year', '').strip())
+        has_make = bool(vehicle.get('makeName', '').strip())
+        if not (has_year and has_make):
+            return False
+        extras = ['model', 'value', 'sale_value', 'stock_number', 'mileage']
+        return sum(1 for f in extras if vehicle.get(f, '').strip()) >= 1
 
     def find_vehicle_containers(self, soup):
-        """Find vehicle container elements with accurate data"""
         vehicles = []
-        
-        # Try more specific selectors first
-        priority_selectors = [
-            '[data-vehicle-id]',
-            '[data-stock-number]',
-            '[data-vin]',
-            '.vehicle-card',
-            '.inventory-item',
-            '.vehicle-listing',
-            '.srp-list-item'
+        seen = set()
+
+        selectors = [
+            '[data-vehicle-id]', '[data-stock-number]', '[data-vin]',
+            '.vehicle-card', '.inventory-item', '.vehicle-listing',
+            'article[class*="vehicle"]', 'div[class*="vehicle"]',
+            'li[class*="vehicle"]', '.vehicle', 'article', 'li[class*="item"]'
         ]
-        
-        for selector in priority_selectors:
+
+        for selector in selectors:
             elements = soup.select(selector)
-            if elements:
-                logger.info("Found {} elements with selector: {}".format(len(elements), selector))
-                
-                for element in elements:
-                    vehicle = self.extract_clean_vehicle_data(element)
-                    
-                    if self.is_complete_vehicle(vehicle):
-                        vehicles.append(vehicle)
-                        logger.info("Extracted complete vehicle: {} {} {} - Stock: {}".format(
-                            vehicle['year'], vehicle['makeName'], vehicle['model'], vehicle['stock_number']))
-                
-                if vehicles:
-                    logger.info("Successfully extracted {} vehicles using {}".format(len(vehicles), selector))
-                    return vehicles
-        
-        # Try broader selectors if specific ones fail
-        fallback_selectors = [
-            '.vehicle',
-            '.car-item',
-            '.listing-item',
-            '.inventory-card',
-            '[class*="vehicle"]',
-            '[class*="inventory"]'
-        ]
-        
-        for selector in fallback_selectors:
-            elements = soup.select(selector)
-            if elements:
-                logger.info("Trying fallback selector: {} ({} elements)".format(selector, len(elements)))
-                
-                for element in elements:
-                    vehicle = self.extract_clean_vehicle_data(element)
-                    
-                    if self.is_complete_vehicle(vehicle):
-                        vehicles.append(vehicle)
-                
-                if vehicles:
-                    logger.info("Extracted {} vehicles using fallback {}".format(len(vehicles), selector))
-                    return vehicles
-        
+            if not elements:
+                continue
+
+            logger.info("Trying selector '{}' — {} elements".format(selector, len(elements)))
+            count = 0
+            for idx, el in enumerate(elements):
+                eid = id(el)
+                if eid in seen:
+                    continue
+                v = self.extract_clean_vehicle_data(el, idx)
+                if self.is_complete_vehicle(v):
+                    vehicles.append(v)
+                    seen.add(eid)
+                    count += 1
+                    logger.info("  ✓ {} {} {} — ${}".format(
+                        v['year'], v['makeName'], v['model'], v.get('value', '?')))
+
+            if count > 0:
+                logger.info("Extracted {} vehicles with selector '{}'".format(count, selector))
+                return vehicles
+
+        # Broad fallback
+        logger.info("No vehicles found with specific selectors — trying broad fallback")
+        for idx, div in enumerate(soup.find_all(['div', 'section', 'article', 'li'])):
+            eid = id(div)
+            if eid in seen:
+                continue
+            txt = div.get_text(separator=' ', strip=True)
+            if re.search(r'\b(19[89]\d|20[0-2]\d)\b', txt):
+                for make in self.car_makes:
+                    if re.search(r'\b' + re.escape(make) + r'\b', txt, re.IGNORECASE):
+                        v = self.extract_clean_vehicle_data(div, idx)
+                        if self.is_complete_vehicle(v):
+                            vehicles.append(v)
+                            seen.add(eid)
+                        break
+
         return vehicles
 
     def scrape_inventory(self):
-        """Main scraping method - only returns accurate data for any brand"""
         logger.info("=" * 80)
         logger.info("UNIVERSAL RED DEER TOYOTA USED INVENTORY SCRAPER")
-        logger.info("Extracting accurate data for ANY brand/model - no fallback samples")
         logger.info("=" * 80)
-        
-        # Fetch main page
-        soup = self.fetch_main_page()
-        if not soup:
-            logger.error("Cannot proceed without main page")
+
+        all_pages = self.fetch_all_pages()
+        if not all_pages:
+            logger.error("No pages fetched")
             return []
-        
-        # Find and extract vehicle data
-        logger.info("Searching for vehicle containers...")
-        vehicles = self.find_vehicle_containers(soup)
-        
-        if not vehicles:
-            logger.warning("No complete vehicles found with current selectors")
-            
-            # Try one more approach - look for any text that contains vehicle info
-            logger.info("Attempting text-based extraction as final attempt...")
-            page_text = soup.get_text()
-            
-            # Look for structured vehicle information patterns (any brand)
-            make_list = '|'.join(self.car_makes.keys())
-            vehicle_pattern = r'(19[8-9][0-9]|20[0-2][0-9])\s+({0})\s+([A-Za-z0-9-]+).*?\$([0-9,]+)'.format(make_list)
-            
-            matches = re.findall(vehicle_pattern, page_text, re.IGNORECASE)
-            
-            for match in matches[:20]:  # Limit results
-                vehicle = {
-                    'makeName': match[1],
-                    'year': match[0],
-                    'model': match[2],
-                    'sub-model': '',
-                    'trim': '',
-                    'mileage': '',
-                    'value': "${:,}".format(int(match[3].replace(',', ''))),
-                    'stock_number': '',
-                    'engine': ''
-                }
-                
-                if self.is_complete_vehicle(vehicle):
-                    vehicles.append(vehicle)
-        
-        # Remove duplicates based on multiple criteria
-        unique_vehicles = []
-        seen_combinations = set()
-        
-        for vehicle in vehicles:
-            # Create unique identifier
-            identifier = (
-                vehicle.get('year', ''),
-                vehicle.get('makeName', ''),
-                vehicle.get('model', ''),
-                vehicle.get('stock_number', ''),
-                vehicle.get('value', '')
-            )
-            
-            if identifier not in seen_combinations and any(identifier):
-                seen_combinations.add(identifier)
-                unique_vehicles.append(vehicle)
-        
-        self.vehicles = unique_vehicles
-        logger.info("FINAL RESULT: {} unique vehicles with accurate data".format(len(self.vehicles)))
-        
+
+        all_vehicles = []
+        for page_num, soup in all_pages:
+            logger.info("Processing page {}".format(page_num))
+            page_vehicles = self.find_vehicle_containers(soup)
+            logger.info("Page {} — {} vehicles".format(page_num, len(page_vehicles)))
+            all_vehicles.extend(page_vehicles)
+
+        logger.info("Total before dedup: {}".format(len(all_vehicles)))
+
+        # Deduplication
+        unique, seen = [], set()
+        for v in all_vehicles:
+            stock = v.get('stock_number', '')
+            year = v.get('year', '')
+            make = v.get('makeName', '')
+            model = v.get('model', '')
+            mileage = v.get('mileage', '')
+            price = v.get('value', '')
+            trim = v.get('trim', '')
+
+            if stock:
+                key = ('stock', stock)
+            elif year and make and model and mileage:
+                key = ('ymml', year, make, model, mileage)
+            elif year and make and model and trim and price:
+                key = ('ymmtp', year, make, model, trim, price)
+            elif year and make and model and price:
+                key = ('ymmp', year, make, model, price)
+            else:
+                key = ('all', year, make, model, trim, mileage, price)
+
+            if key not in seen:
+                seen.add(key)
+                unique.append(v)
+
+        self.vehicles = unique
+        logger.info("FINAL: {} unique vehicles".format(len(self.vehicles)))
+        sale_count = sum(1 for v in self.vehicles if v.get('sale_value'))
+        logger.info("Vehicles with sale prices: {}".format(sale_count))
         return self.vehicles
 
     def save_to_csv(self, filename):
-        """Save only if we have real vehicle data - accepts full path"""
-        fieldnames = ['makeName', 'year', 'model', 'sub-model', 'trim', 'mileage', 'value', 'stock_number', 'engine']
-        
+        fields = ['makeName', 'year', 'model', 'sub-model', 'trim', 'mileage',
+                  'value', 'sale_value', 'stock_number', 'engine']
         if not self.vehicles:
-            logger.info("No vehicles found - NOT creating CSV file")
+            logger.info("No vehicles — skipping CSV")
             return False
-        
         try:
-            # Ensure directory exists
             os.makedirs(os.path.dirname(filename), exist_ok=True)
-            
-            with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            with open(filename, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=fields)
                 writer.writeheader()
-                
-                for vehicle in self.vehicles:
-                    row = {field: vehicle.get(field, '') for field in fieldnames}
-                    writer.writerow(row)
-            
-            logger.info("CSV saved with {} accurate vehicle records to {}".format(len(self.vehicles), filename))
+                for v in self.vehicles:
+                    writer.writerow({field: v.get(field, '') for field in fields})
+            logger.info("CSV saved: {}".format(filename))
             return True
-            
         except Exception as e:
-            logger.error("Error saving CSV: {}".format(str(e)))
+            logger.error("CSV error: {}".format(e))
             return False
 
     def print_results(self):
-        """Print results with accuracy validation"""
         print("\n" + "=" * 100)
-        print("RED DEER TOYOTA USED INVENTORY - UNIVERSAL SCRAPER (ALL BRANDS)")
+        print("RED DEER TOYOTA USED INVENTORY")
         print("=" * 100)
-        
         if not self.vehicles:
-            print("No vehicles with complete, accurate data were found.")
-            print("\nThis indicates:")
-            print("- Website structure may have changed")
-            print("- JavaScript-heavy content requires browser automation")
-            print("- Anti-scraping protection is active")
-            print("- No used vehicles currently available with accessible data")
-            print("\nNO CSV file will be created without accurate data.")
+            print("No vehicles found")
             return
-        
-        print("Found {} vehicles with accurate, complete data".format(len(self.vehicles)))
-        print("Generated: {}".format(datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        
-        # Show brand distribution
-        brand_counts = {}
-        for vehicle in self.vehicles:
-            brand = vehicle.get('makeName', 'Unknown')
-            brand_counts[brand] = brand_counts.get(brand, 0) + 1
-        
+        print("Found {} vehicles".format(len(self.vehicles)))
+        brands = {}
+        for v in self.vehicles:
+            b = v.get('makeName', 'Unknown')
+            brands[b] = brands.get(b, 0) + 1
         print("\nBrand Distribution:")
-        for brand, count in sorted(brand_counts.items()):
-            print("  {}: {} vehicles".format(brand, count))
-        
-        # Print header using .format() to avoid any string issues
-        print("\n{:<12} {:<6} {:<15} {:<12} {:<10} {:<10} {:<10} {:<10} {:<20}".format(
-            'Make', 'Year', 'Model', 'Sub-Model', 'Trim', 'Mileage', 'Value', 'Stock#', 'Engine'))
-        print("-" * 110)
-        
-        # Print each vehicle
-        for vehicle in self.vehicles:
-            make = vehicle.get('makeName', '')[:11]
-            year = vehicle.get('year', '')
-            model = vehicle.get('model', '')[:14]
-            submodel = vehicle.get('sub-model', '')[:11]
-            trim = vehicle.get('trim', '')[:9]
-            mileage = vehicle.get('mileage', '')[:9]
-            value = vehicle.get('value', '')[:9]
-            stock = vehicle.get('stock_number', '')[:9]
-            engine = vehicle.get('engine', '')[:19]
-            
-            print("{:<12} {:<6} {:<15} {:<12} {:<10} {:<10} {:<10} {:<10} {:<20}".format(
-                make, year, model, submodel, trim, mileage, value, stock, engine))
+        for b, c in sorted(brands.items()):
+            print("  {}: {}".format(b, c))
+        print("\n{:<10} {:<6} {:<15} {:<10} {:<12} {:<12} {:<10}".format(
+            'Make', 'Year', 'Model', 'Trim', 'Value', 'Sale Price', 'Stock#'))
+        print("-" * 85)
+        for v in self.vehicles:
+            print("{:<10} {:<6} {:<15} {:<10} {:<12} {:<12} {:<10}".format(
+                v.get('makeName', '')[:9], v.get('year', ''), v.get('model', '')[:14],
+                v.get('trim', '')[:9], v.get('value', '')[:11],
+                v.get('sale_value', '')[:11], v.get('stock_number', '')[:9]))
+
 
 def main():
-    """Main execution - no fallback data"""
     scraper = UniversalRedDeerToyotaScraper()
-    
     try:
-        # Run the precise scraper
         vehicles = scraper.scrape_inventory()
-        
-        # Display results
         scraper.print_results()
-        
-        # Determine project root and public/data path so the React app can fetch the CSV
+
         script_dir = os.path.dirname(os.path.abspath(__file__))
         project_root = os.path.abspath(os.path.join(script_dir, '..', '..'))
         public_data_dir = os.path.join(project_root, 'public', 'data')
         os.makedirs(public_data_dir, exist_ok=True)
         csv_path = os.path.join(public_data_dir, 'inventory.csv')
-        
-        # Only save CSV if we have real data
+
         if vehicles:
-            csv_saved = scraper.save_to_csv(csv_path)
-            print("\nCSV Status: {}".format('Successfully created with accurate data' if csv_saved else 'Failed to create'))
-            
-            if csv_saved and os.path.exists(csv_path):
-                with open(csv_path, 'r') as f:
-                    lines = f.readlines()
-                    print("{} contains {} lines (including header)".format(csv_path, len(lines)))
+            scraper.save_to_csv(csv_path)
+            print("\nCSV created: {}".format(csv_path))
+            print("DEBUG: Check 'debug_page1.html' for raw HTML structure")
         else:
-            print("\nCSV Status: No file created - no accurate vehicle data found")
-            # Remove any existing CSV file to avoid stale data
+            print("\nNo CSV created")
             if os.path.exists(csv_path):
                 os.remove(csv_path)
-                print("Removed any existing CSV file to prevent stale data")
-        
+
         return 0 if vehicles else 1
-        
+
     except Exception as e:
-        logger.error("Scraper failed: {}".format(str(e)))
-        print("Error: {}".format(str(e)))
-        
-        # Remove any existing CSV file on error (inside public/data)
-        try:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            project_root = os.path.abspath(os.path.join(script_dir, '..', '..'))
-            csv_path = os.path.join(project_root, 'public', 'data', 'inventory.csv')
-            if os.path.exists(csv_path):
-                os.remove(csv_path)
-                print("Removed existing CSV file due to scraper error")
-        except Exception:
-            pass
-        
+        logger.error("Scraper failed: {}".format(e))
+        import traceback
+        traceback.print_exc()
         return 1
 
+
 if __name__ == "__main__":
-    exit_code = main()
-    exit(exit_code)
+    exit(main())
