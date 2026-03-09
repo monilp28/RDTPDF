@@ -1,10 +1,20 @@
 #!/usr/bin/env python3
 """
 Red Deer Toyota Used Inventory Scraper - Enhanced Sale Price Extraction
-Now with multiple extraction strategies and detailed debugging
+Uses curl_cffi to impersonate Chrome TLS fingerprint and bypass Cloudflare.
 """
 
-import requests
+# curl_cffi impersonates Chrome's TLS fingerprint — this is what bypasses
+# Cloudflare bot-detection. Plain `requests` has a distinctive handshake
+# that Cloudflare blocks regardless of User-Agent or headers.
+try:
+    from curl_cffi import requests
+except ImportError:
+    raise SystemExit(
+        "Missing dependency: pip install curl_cffi\n"
+        "Add 'curl_cffi' to requirements.txt and re-run."
+    )
+
 from bs4 import BeautifulSoup
 import csv
 import time
@@ -21,25 +31,13 @@ class UniversalRedDeerToyotaScraper:
     def __init__(self):
         self.base_url = "https://www.reddeertoyota.com"
         self.target_url = "https://www.reddeertoyota.com/inventory/used/"
-        self.session = requests.Session()
-
-        # FIX 1: Proper browser headers. Added Sec-Fetch-User and
-        # Upgrade-Insecure-Requests which WAFs check to distinguish real
-        # browsers from bots. Also bumped Chrome version to 122.
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        # curl_cffi uses a plain dict for headers, not a Session object
+        self.headers = {
             'Accept-Language': 'en-US,en;q=0.9',
             'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
             'Cache-Control': 'max-age=0',
-        })
-
+        }
+        self.cookies = {}
         self.vehicles = []
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.car_makes = self._build_car_makes()
@@ -109,77 +107,78 @@ class UniversalRedDeerToyotaScraper:
             'Essential': r'\bEssential\b', '2 DOOR': r'\b2\s+DOOR\b', 'IVT': r'\bIVT\b',
         }
 
-    # FIX 2: warm_up_session visits the homepage first to obtain session
-    # cookies. Many WAFs (Cloudflare, etc.) issue a 403 on the first cold
-    # request to a deep URL when there is no prior session cookie.
-    def warm_up_session(self):
-        try:
-            logger.info("Warming up session: {}".format(self.base_url))
-            resp = self.session.get(self.base_url, timeout=30)
-            logger.info("Homepage status: {}".format(resp.status_code))
-            time.sleep(1.5)
-        except Exception as e:
-            logger.warning("Session warm-up failed (non-fatal): {}".format(e))
+    def _get(self, url):
+        """Wrapper around curl_cffi get with Chrome impersonation and retry."""
+        for attempt in range(1, 4):
+            try:
+                logger.info("GET {} (attempt {})".format(url, attempt))
+                resp = requests.get(
+                    url,
+                    headers=self.headers,
+                    cookies=self.cookies,
+                    impersonate="chrome122",   # <-- the key fix: real Chrome TLS fingerprint
+                    timeout=30,
+                    allow_redirects=True,
+                )
+                # Persist any cookies the server sets (e.g. Cloudflare cf_clearance)
+                self.cookies.update(resp.cookies)
+
+                if resp.status_code == 403:
+                    logger.warning("403 on attempt {} — waiting {}s".format(attempt, 3 * attempt))
+                    time.sleep(3 * attempt)
+                    continue
+
+                resp.raise_for_status()
+                logger.info("OK {} — {} bytes".format(resp.status_code, len(resp.content)))
+                return resp
+
+            except Exception as e:
+                logger.error("Request error attempt {}: {}".format(attempt, e))
+                if attempt < 3:
+                    time.sleep(2 * attempt)
+
+        return None
 
     def fetch_all_pages(self):
         all_soups = []
         page_num = 1
         max_pages = 10
 
-        # FIX 3: warm up BEFORE hitting the inventory endpoint.
-        self.warm_up_session()
+        # Warm up: visit homepage first to collect any session/challenge cookies
+        logger.info("Warming up session via homepage...")
+        warmup = self._get(self.base_url)
+        if warmup:
+            logger.info("Homepage OK — cookies: {}".format(list(self.cookies.keys())))
+        time.sleep(1.5)
 
         while page_num <= max_pages:
             url = "{}?page={}".format(self.target_url.rstrip('/'), page_num)
 
-            # Retry loop with back-off on 403
-            soup = None
-            for attempt in range(1, 4):
-                try:
-                    logger.info("Fetching page {} (attempt {}): {}".format(page_num, attempt, url))
+            # Add Referer for pages after the first
+            if page_num > 1:
+                self.headers['Referer'] = self.target_url
+            else:
+                self.headers['Referer'] = self.base_url + '/'
 
-                    if attempt > 1:
-                        self.session.headers.update({'Referer': self.base_url + '/inventory/used/'})
-                        time.sleep(3 * attempt)
-
-                    response = self.session.get(url, timeout=30)
-
-                    if response.status_code == 403:
-                        logger.warning("403 on attempt {} for page {} — retrying...".format(attempt, page_num))
-                        time.sleep(3 * attempt)
-                        continue
-
-                    response.raise_for_status()
-                    soup = BeautifulSoup(response.content, 'html.parser')
-                    break
-
-                except requests.exceptions.HTTPError as e:
-                    logger.error("HTTP error on page {} attempt {}: {}".format(page_num, attempt, str(e)))
-                    if attempt == 3:
-                        break
-                    time.sleep(2 * attempt)
-                except Exception as e:
-                    logger.error("Failed to fetch page {} attempt {}: {}".format(page_num, attempt, str(e)))
-                    if attempt == 3:
-                        break
-                    time.sleep(2 * attempt)
-
-            if soup is None:
-                logger.info("Could not fetch page {} after retries — stopping pagination".format(page_num))
+            resp = self._get(url)
+            if resp is None:
+                logger.info("Stopping at page {} — could not fetch".format(page_num))
                 break
 
+            soup = BeautifulSoup(resp.content, 'html.parser')
+
             if page_num == 1 and self.debug_mode:
-                debug_file = 'debug_page1.html'
-                with open(debug_file, 'w', encoding='utf-8') as f:
+                with open('debug_page1.html', 'w', encoding='utf-8') as f:
                     f.write(soup.prettify())
-                logger.info("Saved page 1 HTML to {}".format(debug_file))
+                logger.info("Saved debug_page1.html")
 
             page_text = soup.get_text()
             has_vehicles = bool(re.search(r'\b(19[89]\d|20[0-2]\d)\b', page_text))
-            no_results = 'no vehicles found' in page_text.lower() or 'no results' in page_text.lower()
+            no_results = ('no vehicles found' in page_text.lower() or
+                          'no results' in page_text.lower())
 
             if not has_vehicles or no_results:
-                logger.info("Page {} has no vehicles, stopping".format(page_num))
+                logger.info("Page {} has no vehicles — stopping".format(page_num))
                 break
 
             all_soups.append((page_num, soup))
@@ -192,20 +191,16 @@ class UniversalRedDeerToyotaScraper:
     def extract_make_and_model(self, text):
         text = re.sub(r'\s+', ' ', text.strip())
         for make, models in self.car_makes.items():
-            make_pattern = r'\b{}\b'.format(re.escape(make))
-            if re.search(make_pattern, text, re.IGNORECASE):
-                sorted_models = sorted(models, key=len, reverse=True)
-                for model in sorted_models:
-                    model_pattern = r'\b{}\b'.format(re.escape(model))
-                    if re.search(model_pattern, text, re.IGNORECASE):
+            if re.search(r'\b{}\b'.format(re.escape(make)), text, re.IGNORECASE):
+                for model in sorted(models, key=len, reverse=True):
+                    if re.search(r'\b{}\b'.format(re.escape(model)), text, re.IGNORECASE):
                         return make, model
         return None, None
 
     def extract_trim(self, text, model):
         if not text:
             return ''
-        trim_patterns = self.get_trim_patterns()
-        for trim_name, pattern in trim_patterns.items():
+        for trim_name, pattern in self.get_trim_patterns().items():
             if re.search(pattern, text, re.IGNORECASE):
                 if model and trim_name.lower() not in model.lower():
                     return trim_name
@@ -220,8 +215,7 @@ class UniversalRedDeerToyotaScraper:
         for attr, value in element.attrs.items():
             attr_lower = attr.lower()
             if 'price' in attr_lower or 'msrp' in attr_lower:
-                val_str = str(value)
-                price_match = re.search(r'(\d{4,6})', val_str)
+                price_match = re.search(r'(\d{4,6})', str(value))
                 if price_match:
                     price = int(price_match.group(1))
                     if 3000 <= price <= 300000:
@@ -232,60 +226,38 @@ class UniversalRedDeerToyotaScraper:
                         elif not regular_price:
                             regular_price = price
 
-        scripts = element.find_all('script', type='application/ld+json')
-        for script in scripts:
+        for script in element.find_all('script', type='application/ld+json'):
             try:
                 data = json.loads(script.string)
                 if isinstance(data, dict):
-                    if 'offers' in data:
-                        offer = data['offers']
-                        if isinstance(offer, dict) and 'price' in offer:
-                            price = float(offer['price'])
-                            if 3000 <= price <= 300000:
-                                regular_price = int(price)
+                    if 'offers' in data and isinstance(data['offers'], dict):
+                        p = float(data['offers'].get('price', 0))
+                        if 3000 <= p <= 300000:
+                            regular_price = int(p)
                     if 'price' in data:
-                        price = float(data['price'])
-                        if 3000 <= price <= 300000:
-                            regular_price = int(price)
+                        p = float(data['price'])
+                        if 3000 <= p <= 300000:
+                            regular_price = int(p)
             except:
                 pass
 
-        price_searches = [
+        all_found_prices = []
+        for els, source in [
             (element.find_all(class_=re.compile(r'(price|cost|amount)', re.I)), 'class'),
             (element.find_all(id=re.compile(r'(price|cost|amount)', re.I)), 'id'),
-            (element.find_all(['span', 'div', 'p', 'strong'], attrs={'data-price': True}), 'data-price'),
-        ]
-
-        all_found_prices = []
-
-        for elements, source in price_searches:
-            for el in elements:
+        ]:
+            for el in els:
                 el_text = el.get_text(strip=True)
-                el_classes = ' '.join(el.get('class', [])).lower()
-                el_id = (el.get('id') or '').lower()
-                parent_classes = ' '.join(el.parent.get('class', [])).lower() if el.parent else ''
-                price_matches = re.findall(r'\$?\s*([0-9]{1,3}(?:,\d{3})*)\s*(?:\$|dollars?)?', el_text)
-                for price_str in price_matches:
+                context = (el_text + ' ' + ' '.join(el.get('class', [])) +
+                           (el.get('id') or '')).lower()
+                for price_str in re.findall(r'\$?\s*([0-9]{1,3}(?:,\d{3})*)', el_text):
                     try:
                         price = int(price_str.replace(',', ''))
                         if 3000 <= price <= 300000:
-                            context = (el_text + ' ' + el_classes + ' ' + el_id + ' ' + parent_classes).lower()
-                            is_sale = any(kw in context for kw in [
-                                'sale', 'special', 'internet', 'now', 'reduced',
-                                'discount', 'offer', 'savings', 'you save', 'clearance'
-                            ])
-                            is_msrp = any(kw in context for kw in [
-                                'msrp', 'was', 'original', 'regular', 'list',
-                                'retail', 'before', 'strikethrough'
-                            ])
-                            style = el.get('style', '')
-                            has_strikethrough = ('line-through' in style or
-                                               el.find(['s', 'strike', 'del']) is not None)
-                            all_found_prices.append({
-                                'price': price, 'is_sale': is_sale,
-                                'is_msrp': is_msrp or has_strikethrough,
-                                'source': source, 'text': el_text[:50], 'context': context[:100]
-                            })
+                            is_sale = any(k in context for k in ['sale','special','internet','now','reduced','discount'])
+                            is_msrp = any(k in context for k in ['msrp','was','original','regular','list','retail'])
+                            has_strike = 'line-through' in el.get('style', '') or el.find(['s','strike','del']) is not None
+                            all_found_prices.append({'price': price, 'is_sale': is_sale, 'is_msrp': is_msrp or has_strike})
                     except:
                         pass
 
@@ -295,54 +267,42 @@ class UniversalRedDeerToyotaScraper:
                 try:
                     price = int(match.group(1).replace(',', ''))
                     if 3000 <= price <= 300000:
-                        start = max(0, match.start() - 100)
-                        end = min(len(text), match.end() + 100)
-                        context = text[start:end].lower()
-                        is_sale = any(kw in context for kw in ['sale', 'internet', 'special', 'now'])
-                        is_msrp = any(kw in context for kw in ['msrp', 'was', 'original'])
+                        ctx = text[max(0, match.start()-100):match.end()+100].lower()
                         all_found_prices.append({
-                            'price': price, 'is_sale': is_sale, 'is_msrp': is_msrp,
-                            'source': 'text', 'context': context
+                            'price': price,
+                            'is_sale': any(k in ctx for k in ['sale','internet','special','now']),
+                            'is_msrp': any(k in ctx for k in ['msrp','was','original']),
                         })
                 except:
                     pass
 
         if all_found_prices:
-            unique_prices = {}
+            deduped = {}
             for p in all_found_prices:
-                if p['price'] not in unique_prices:
-                    unique_prices[p['price']] = p
-                else:
-                    if p['is_sale'] or p['is_msrp']:
-                        unique_prices[p['price']] = p
-            all_found_prices = list(unique_prices.values())
-            msrp_prices = [p['price'] for p in all_found_prices if p['is_msrp']]
-            sale_prices = [p['price'] for p in all_found_prices if p['is_sale']]
-            unknown_prices = [p['price'] for p in all_found_prices if not p['is_sale'] and not p['is_msrp']]
-            if msrp_prices and sale_prices:
-                regular_price = max(msrp_prices)
-                sale_price = min(sale_prices)
-            elif msrp_prices and unknown_prices:
-                regular_price = max(msrp_prices)
-                lower = [p for p in unknown_prices if p < regular_price]
+                if p['price'] not in deduped or p['is_sale'] or p['is_msrp']:
+                    deduped[p['price']] = p
+            prices = list(deduped.values())
+            msrp = [p['price'] for p in prices if p['is_msrp']]
+            sale = [p['price'] for p in prices if p['is_sale']]
+            other = [p['price'] for p in prices if not p['is_msrp'] and not p['is_sale']]
+
+            if msrp and sale:
+                regular_price, sale_price = max(msrp), min(sale)
+            elif msrp and other:
+                regular_price = max(msrp)
+                lower = [p for p in other if p < regular_price]
                 if lower:
                     sale_price = max(lower)
-            elif sale_prices and unknown_prices:
-                sale_price = min(sale_prices)
-                higher = [p for p in unknown_prices if p > sale_price]
-                if higher:
-                    regular_price = min(higher)
-            elif len(all_found_prices) >= 2:
-                sorted_prices = sorted([p['price'] for p in all_found_prices], reverse=True)
-                regular_price = sorted_prices[0]
-                if sorted_prices[1] < sorted_prices[0]:
-                    sale_price = sorted_prices[1]
-            elif len(all_found_prices) == 1:
-                regular_price = all_found_prices[0]['price']
+            elif len(prices) >= 2:
+                sp = sorted([p['price'] for p in prices], reverse=True)
+                regular_price = sp[0]
+                if sp[1] < sp[0]:
+                    sale_price = sp[1]
+            elif prices:
+                regular_price = prices[0]['price']
 
-        if regular_price and sale_price:
-            if sale_price >= regular_price:
-                sale_price = None
+        if regular_price and sale_price and sale_price >= regular_price:
+            sale_price = None
 
         return regular_price, sale_price
 
@@ -352,96 +312,74 @@ class UniversalRedDeerToyotaScraper:
             'mileage': '', 'value': '', 'sale_value': '', 'stock_number': '', 'engine': ''
         }
         try:
-            text = element.get_text(separator=' ', strip=True)
-            text = re.sub(r'\s+', ' ', text)
-            year_match = re.search(r'\b(19[89]\d|20[0-2]\d)\b', text)
-            if year_match:
-                vehicle['year'] = year_match.group(1)
+            text = re.sub(r'\s+', ' ', element.get_text(separator=' ', strip=True))
+
+            m = re.search(r'\b(19[89]\d|20[0-2]\d)\b', text)
+            if m:
+                vehicle['year'] = m.group(1)
+
             make, model = self.extract_make_and_model(text)
-            if make:
-                vehicle['makeName'] = make
-            if model:
-                vehicle['model'] = model
+            if make: vehicle['makeName'] = make
+            if model: vehicle['model'] = model
+
             trim = self.extract_trim(text, model)
             if trim:
                 vehicle['trim'] = trim
                 vehicle['sub-model'] = trim
-            stock_patterns = [r'Stock[#:\s]*([A-Z0-9]{3,15})\b', r'#\s*([A-Z0-9]{3,15})\b']
-            for pattern in stock_patterns:
-                m = re.search(pattern, text, re.IGNORECASE)
-                if m:
-                    val = m.group(1)
-                    if len(val) >= 3 and val.isalnum():
-                        vehicle['stock_number'] = val
-                        break
-            vehicle_id = vehicle.get('stock_number') or "{}".format(element_index)
-            regular_price, sale_price = self.extract_prices_enhanced(element, vehicle_id)
-            if regular_price:
-                vehicle['value'] = str(regular_price)
-            if sale_price:
-                vehicle['sale_value'] = str(sale_price)
-            mileage_patterns = [
-                r'(\d{1,3}(?:,\d{3})*)\s*(?:km|kilometers?)\b',
-                r'(\d{1,3}(?:,\d{3})*)\s*(?:miles?|mi)\b',
-            ]
-            for pattern in mileage_patterns:
-                m = re.search(pattern, text, re.IGNORECASE)
+
+            for pat in [r'Stock[#:\s]*([A-Z0-9]{3,15})\b', r'#\s*([A-Z0-9]{3,15})\b']:
+                m = re.search(pat, text, re.IGNORECASE)
+                if m and m.group(1).isalnum() and len(m.group(1)) >= 3:
+                    vehicle['stock_number'] = m.group(1)
+                    break
+
+            reg, sale = self.extract_prices_enhanced(element, vehicle.get('stock_number') or str(element_index))
+            if reg: vehicle['value'] = str(reg)
+            if sale: vehicle['sale_value'] = str(sale)
+
+            for pat in [r'(\d{1,3}(?:,\d{3})*)\s*(?:km|kilometers?)\b',
+                        r'(\d{1,3}(?:,\d{3})*)\s*(?:miles?|mi)\b']:
+                m = re.search(pat, text, re.IGNORECASE)
                 if m:
                     val = m.group(1).replace(',', '')
-                    try:
-                        if 0 <= int(val) <= 500000:
-                            vehicle['mileage'] = val
-                            break
-                    except:
-                        pass
-            engine_patterns = [
-                r'(\d\.\d+L\s*(?:V?\d+|I\d+))',
-                r'(\d\.\d+L\s*Hybrid)',
-                r'(\d\.\d+L\s*Turbo)',
-            ]
-            for pattern in engine_patterns:
-                m = re.search(pattern, text, re.IGNORECASE)
+                    if 0 <= int(val) <= 500000:
+                        vehicle['mileage'] = val
+                        break
+
+            for pat in [r'(\d\.\d+L\s*(?:V?\d+|I\d+))', r'(\d\.\d+L\s*Hybrid)', r'(\d\.\d+L\s*Turbo)']:
+                m = re.search(pat, text, re.IGNORECASE)
                 if m:
                     vehicle['engine'] = m.group(1).strip()
                     break
+
             for attr, value in element.attrs.items():
-                if 'data-' not in attr.lower():
-                    continue
-                attr_lower = attr.lower()
-                val_str = str(value)
-                if 'year' in attr_lower and not vehicle['year']:
-                    if re.match(r'^(19[89]\d|20[0-2]\d)$', val_str):
-                        vehicle['year'] = val_str
-                elif 'make' in attr_lower and not vehicle['makeName']:
-                    vehicle['makeName'] = val_str.title()
-                elif 'model' in attr_lower and not vehicle['model']:
-                    vehicle['model'] = val_str
-                elif 'mileage' in attr_lower and not vehicle['mileage']:
-                    clean = re.sub(r'[^\d]', '', val_str)
-                    if clean and clean.isdigit():
-                        vehicle['mileage'] = clean
-            return vehicle
+                if 'data-' not in attr.lower(): continue
+                al, vs = attr.lower(), str(value)
+                if 'year' in al and not vehicle['year'] and re.match(r'^(19[89]\d|20[0-2]\d)$', vs):
+                    vehicle['year'] = vs
+                elif 'make' in al and not vehicle['makeName']:
+                    vehicle['makeName'] = vs.title()
+                elif 'model' in al and not vehicle['model']:
+                    vehicle['model'] = vs
+                elif 'mileage' in al and not vehicle['mileage']:
+                    clean = re.sub(r'[^\d]', '', vs)
+                    if clean: vehicle['mileage'] = clean
+
         except Exception as e:
-            logger.error("Error extracting vehicle {}: {}".format(element_index, str(e)))
-            return vehicle
+            logger.error("Error extracting vehicle {}: {}".format(element_index, e))
+        return vehicle
 
     def is_valid_vehicle(self, vehicle):
-        if not isinstance(vehicle, dict):
+        if not isinstance(vehicle, dict): return False
+        if not (vehicle.get('year', '').strip() and vehicle.get('makeName', '').strip()):
             return False
-        has_year = bool(vehicle.get('year', '').strip())
-        has_make = bool(vehicle.get('makeName', '').strip())
-        if not (has_year and has_make):
-            return False
-        has_model = bool(vehicle.get('model', '').strip())
-        has_price = bool(vehicle.get('value', '').strip() or vehicle.get('sale_value', '').strip())
-        has_mileage = bool(vehicle.get('mileage', '').strip())
-        has_stock = bool(vehicle.get('stock_number', '').strip())
-        count = sum([has_price, has_mileage, has_stock])
-        return has_model or count >= 2
+        extras = ['model', 'value', 'sale_value', 'stock_number', 'mileage']
+        return bool(vehicle.get('model', '').strip()) or \
+               sum(1 for f in extras if vehicle.get(f, '').strip()) >= 2
 
     def find_vehicles(self, soup):
         vehicles = []
-        seen_elements = set()
+        seen = set()
         selectors = [
             '[data-vehicle-id]', '[data-stock-number]', '[data-vin]',
             '.vehicle-card', '.inventory-item', '.vehicle-listing',
@@ -450,92 +388,77 @@ class UniversalRedDeerToyotaScraper:
         ]
         for selector in selectors:
             elements = soup.select(selector)
-            if elements:
-                logger.info("Found {} elements with selector: {}".format(len(elements), selector))
-                extracted_count = 0
-                for idx, element in enumerate(elements):
-                    element_id = id(element)
-                    if element_id in seen_elements:
-                        continue
-                    vehicle = self.extract_vehicle_data(element, idx)
-                    if self.is_valid_vehicle(vehicle):
-                        vehicles.append(vehicle)
-                        seen_elements.add(element_id)
-                        extracted_count += 1
-                        logger.info("Extracted: {} {} {} | Value: ${} | Sale: ${}".format(
-                            vehicle['year'], vehicle['makeName'], vehicle['model'],
-                            vehicle.get('value', 'N/A'), vehicle.get('sale_value', 'N/A')))
-                if extracted_count > 0:
-                    logger.info("Extracted {} vehicles with selector '{}'".format(extracted_count, selector))
-                    return vehicles
-        logger.info("No vehicles found with specific selectors, trying fallback search")
-        all_divs = soup.find_all(['div', 'section', 'article', 'li'])
-        for idx, div in enumerate(all_divs):
-            element_id = id(div)
-            if element_id in seen_elements:
-                continue
-            text = div.get_text(separator=' ', strip=True)
-            if re.search(r'\b(19[89]\d|20[0-2]\d)\b', text):
-                for make in self.car_makes.keys():
-                    if re.search(r'\b' + re.escape(make) + r'\b', text, re.IGNORECASE):
-                        vehicle = self.extract_vehicle_data(div, idx)
-                        if self.is_valid_vehicle(vehicle):
-                            vehicles.append(vehicle)
-                            seen_elements.add(element_id)
-                            break
+            if not elements: continue
+            logger.info("Selector '{}' — {} elements".format(selector, len(elements)))
+            count = 0
+            for idx, el in enumerate(elements):
+                eid = id(el)
+                if eid in seen: continue
+                v = self.extract_vehicle_data(el, idx)
+                if self.is_valid_vehicle(v):
+                    vehicles.append(v)
+                    seen.add(eid)
+                    count += 1
+                    logger.info("  + {} {} {} ${}".format(v['year'], v['makeName'], v['model'], v.get('value','')))
+            if count > 0:
+                logger.info("Extracted {} vehicles with '{}'".format(count, selector))
+                return vehicles
+
+        logger.info("Trying broad fallback...")
+        for idx, div in enumerate(soup.find_all(['div','section','article','li'])):
+            eid = id(div)
+            if eid in seen: continue
+            txt = div.get_text(separator=' ', strip=True)
+            if re.search(r'\b(19[89]\d|20[0-2]\d)\b', txt):
+                for make in self.car_makes:
+                    if re.search(r'\b' + re.escape(make) + r'\b', txt, re.IGNORECASE):
+                        v = self.extract_vehicle_data(div, idx)
+                        if self.is_valid_vehicle(v):
+                            vehicles.append(v)
+                            seen.add(eid)
+                        break
         return vehicles
 
     def scrape_inventory(self):
         logger.info("=" * 80)
         logger.info("RED DEER TOYOTA SCRAPER - ENHANCED SALE PRICE EXTRACTION")
         logger.info("=" * 80)
+
         all_pages = self.fetch_all_pages()
         if not all_pages:
             logger.error("No pages fetched")
             return []
+
         all_vehicles = []
         for page_num, soup in all_pages:
-            logger.info("Processing page {}".format(page_num))
-            page_vehicles = self.find_vehicles(soup)
-            logger.info("Page {} found {} vehicles".format(page_num, len(page_vehicles)))
-            all_vehicles.extend(page_vehicles)
-        logger.info("Total before dedup: {}".format(len(all_vehicles)))
-        unique = []
-        seen = set()
+            pv = self.find_vehicles(soup)
+            logger.info("Page {} — {} vehicles".format(page_num, len(pv)))
+            all_vehicles.extend(pv)
+
+        unique, seen = [], set()
         for v in all_vehicles:
-            year = v.get('year', '')
-            make = v.get('makeName', '')
-            model = v.get('model', '')
             stock = v.get('stock_number', '')
-            mileage = v.get('mileage', '')
-            trim = v.get('trim', '')
-            price = v.get('value', '')
-            if stock:
-                key = ('stock', stock)
-            elif year and make and model and mileage:
-                key = ('ymm_mileage', year, make, model, mileage)
-            elif year and make and model and trim and price:
-                key = ('ymm_trim_price', year, make, model, trim, price)
-            elif year and make and model and price:
-                key = ('ymm_price', year, make, model, price)
-            else:
-                key = ('all', year, make, model, trim, mileage, price)
+            y, mk, mo = v.get('year',''), v.get('makeName',''), v.get('model','')
+            mil, pr, tr = v.get('mileage',''), v.get('value',''), v.get('trim','')
+            if stock:             key = ('s', stock)
+            elif y and mk and mo and mil: key = ('ymml', y, mk, mo, mil)
+            elif y and mk and mo and tr and pr: key = ('ymmtp', y, mk, mo, tr, pr)
+            elif y and mk and mo and pr: key = ('ymmp', y, mk, mo, pr)
+            else:                 key = ('all', y, mk, mo, tr, mil, pr)
             if key not in seen:
                 seen.add(key)
                 unique.append(v)
+
         self.vehicles = unique
         logger.info("FINAL: {} unique vehicles".format(len(self.vehicles)))
-        logger.info("Removed {} duplicates".format(len(all_vehicles) - len(self.vehicles)))
         sale_count = sum(1 for v in self.vehicles if v.get('sale_value'))
-        logger.info("Vehicles with sale prices: {} ({:.1f}%)".format(
-            sale_count, 100.0 * sale_count / len(self.vehicles) if self.vehicles else 0))
+        logger.info("With sale prices: {}".format(sale_count))
         return self.vehicles
 
     def save_to_csv(self, filename):
-        fields = ['makeName', 'year', 'model', 'sub-model', 'trim', 'mileage',
-                 'value', 'sale_value', 'stock_number', 'engine']
+        fields = ['makeName','year','model','sub-model','trim','mileage',
+                  'value','sale_value','stock_number','engine']
         if not self.vehicles:
-            logger.info("No vehicles - not creating CSV")
             return False
         try:
             os.makedirs(os.path.dirname(filename), exist_ok=True)
@@ -543,43 +466,35 @@ class UniversalRedDeerToyotaScraper:
                 writer = csv.DictWriter(f, fieldnames=fields)
                 writer.writeheader()
                 for v in self.vehicles:
-                    row = {field: v.get(field, '') for field in fields}
-                    writer.writerow(row)
+                    writer.writerow({field: v.get(field,'') for field in fields})
             logger.info("CSV saved: {}".format(filename))
             return True
         except Exception as e:
-            logger.error("CSV error: {}".format(str(e)))
+            logger.error("CSV error: {}".format(e))
             return False
 
     def print_results(self):
-        print("\n" + "=" * 100)
+        print("\n" + "="*100)
         print("RED DEER TOYOTA USED INVENTORY")
-        print("=" * 100)
+        print("="*100)
         if not self.vehicles:
             print("No vehicles found")
             return
         print("Found {} vehicles".format(len(self.vehicles)))
         brands = {}
-        sale_count = 0
         for v in self.vehicles:
-            brand = v.get('makeName', 'Unknown')
-            brands[brand] = brands.get(brand, 0) + 1
-            if v.get('sale_value'):
-                sale_count += 1
-        print("\nBrand Distribution:")
-        for brand, count in sorted(brands.items()):
-            print("  {}: {}".format(brand, count))
-        print("\nPricing Info:")
-        print("  Vehicles with sale prices: {} ({:.1f}%)".format(
-            sale_count, 100.0 * sale_count / len(self.vehicles) if self.vehicles else 0))
+            b = v.get('makeName','Unknown')
+            brands[b] = brands.get(b, 0) + 1
+        for b, c in sorted(brands.items()):
+            print("  {}: {}".format(b, c))
         print("\n{:<10} {:<6} {:<15} {:<10} {:<12} {:<12} {:<10}".format(
-            'Make', 'Year', 'Model', 'Trim', 'Value', 'Sale Price', 'Stock#'))
-        print("-" * 85)
+            'Make','Year','Model','Trim','Value','Sale Price','Stock#'))
+        print("-"*85)
         for v in self.vehicles:
             print("{:<10} {:<6} {:<15} {:<10} {:<12} {:<12} {:<10}".format(
-                v.get('makeName', '')[:9], v.get('year', ''), v.get('model', '')[:14],
-                v.get('trim', '')[:9], v.get('value', '')[:11],
-                v.get('sale_value', '')[:11], v.get('stock_number', '')[:9]))
+                v.get('makeName','')[:9], v.get('year',''), v.get('model','')[:14],
+                v.get('trim','')[:9], v.get('value','')[:11],
+                v.get('sale_value','')[:11], v.get('stock_number','')[:9]))
 
 
 def main():
@@ -587,24 +502,24 @@ def main():
     try:
         vehicles = scraper.scrape_inventory()
         scraper.print_results()
+
         script_dir = os.path.dirname(os.path.abspath(__file__))
         project_root = os.path.abspath(os.path.join(script_dir, '..', '..'))
-        public_data_dir = os.path.join(project_root, 'public', 'data')
-        os.makedirs(public_data_dir, exist_ok=True)
-        csv_path = os.path.join(public_data_dir, 'inventory.csv')
+        csv_path = os.path.join(project_root, 'public', 'data', 'inventory.csv')
+
         if vehicles:
             scraper.save_to_csv(csv_path)
             print("\nCSV created: {}".format(csv_path))
-            print("\nDEBUG: Check 'debug_page1.html' to see the HTML structure")
         else:
             print("\nNo CSV created")
             if os.path.exists(csv_path):
                 os.remove(csv_path)
+
         return 0 if vehicles else 1
+
     except Exception as e:
-        logger.error("Scraper failed: {}".format(str(e)))
-        import traceback
-        traceback.print_exc()
+        logger.error("Scraper failed: {}".format(e))
+        import traceback; traceback.print_exc()
         return 1
 
 
