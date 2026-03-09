@@ -4,16 +4,10 @@ Red Deer Toyota Used Inventory Scraper - Enhanced Sale Price Extraction
 Uses curl_cffi to impersonate Chrome TLS fingerprint and bypass Cloudflare.
 """
 
-# curl_cffi impersonates Chrome's TLS fingerprint — this is what bypasses
-# Cloudflare bot-detection. Plain `requests` has a distinctive handshake
-# that Cloudflare blocks regardless of User-Agent or headers.
 try:
     from curl_cffi import requests
 except ImportError:
-    raise SystemExit(
-        "Missing dependency: pip install curl_cffi\n"
-        "Add 'curl_cffi' to requirements.txt and re-run."
-    )
+    raise SystemExit("Missing dependency: add 'curl_cffi' to requirements.txt")
 
 from bs4 import BeautifulSoup
 import csv
@@ -27,11 +21,38 @@ import json
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# Detect the best available Chrome impersonation target for this curl_cffi version.
+# Different curl_cffi releases ship different browser fingerprints; we pick the
+# newest one that actually works rather than hard-coding a single name.
+def _detect_impersonate():
+    candidates = [
+        'chrome131', 'chrome130', 'chrome124', 'chrome123', 'chrome120',
+        'chrome119', 'chrome116', 'chrome110', 'chrome107', 'chrome104',
+        'chrome101', 'chrome100', 'chrome99',
+    ]
+    for browser in candidates:
+        try:
+            requests.get('https://example.com', impersonate=browser, timeout=5)
+            logger.info("curl_cffi impersonate target: {}".format(browser))
+            return browser
+        except Exception as e:
+            err = str(e).lower()
+            if 'not supported' in err or 'invalid' in err or 'unknown' in err:
+                continue
+            # Any other error (network, timeout) means the value IS valid
+            logger.info("curl_cffi impersonate target: {} (network error is fine)".format(browser))
+            return browser
+    # Ultimate fallback — let curl_cffi use its own default
+    logger.warning("Could not detect impersonate target, using 'chrome110'")
+    return 'chrome110'
+
+IMPERSONATE = _detect_impersonate()
+
+
 class UniversalRedDeerToyotaScraper:
     def __init__(self):
         self.base_url = "https://www.reddeertoyota.com"
         self.target_url = "https://www.reddeertoyota.com/inventory/used/"
-        # curl_cffi uses a plain dict for headers, not a Session object
         self.headers = {
             'Accept-Language': 'en-US,en;q=0.9',
             'Accept-Encoding': 'gzip, deflate, br',
@@ -108,7 +129,7 @@ class UniversalRedDeerToyotaScraper:
         }
 
     def _get(self, url):
-        """Wrapper around curl_cffi get with Chrome impersonation and retry."""
+        """curl_cffi GET with Chrome TLS impersonation and retry."""
         for attempt in range(1, 4):
             try:
                 logger.info("GET {} (attempt {})".format(url, attempt))
@@ -116,11 +137,10 @@ class UniversalRedDeerToyotaScraper:
                     url,
                     headers=self.headers,
                     cookies=self.cookies,
-                    impersonate="chrome122",   # <-- the key fix: real Chrome TLS fingerprint
+                    impersonate=IMPERSONATE,
                     timeout=30,
                     allow_redirects=True,
                 )
-                # Persist any cookies the server sets (e.g. Cloudflare cf_clearance)
                 self.cookies.update(resp.cookies)
 
                 if resp.status_code == 403:
@@ -136,7 +156,6 @@ class UniversalRedDeerToyotaScraper:
                 logger.error("Request error attempt {}: {}".format(attempt, e))
                 if attempt < 3:
                     time.sleep(2 * attempt)
-
         return None
 
     def fetch_all_pages(self):
@@ -144,7 +163,6 @@ class UniversalRedDeerToyotaScraper:
         page_num = 1
         max_pages = 10
 
-        # Warm up: visit homepage first to collect any session/challenge cookies
         logger.info("Warming up session via homepage...")
         warmup = self._get(self.base_url)
         if warmup:
@@ -153,12 +171,7 @@ class UniversalRedDeerToyotaScraper:
 
         while page_num <= max_pages:
             url = "{}?page={}".format(self.target_url.rstrip('/'), page_num)
-
-            # Add Referer for pages after the first
-            if page_num > 1:
-                self.headers['Referer'] = self.target_url
-            else:
-                self.headers['Referer'] = self.base_url + '/'
+            self.headers['Referer'] = self.base_url + '/' if page_num == 1 else self.target_url
 
             resp = self._get(url)
             if resp is None:
@@ -313,10 +326,8 @@ class UniversalRedDeerToyotaScraper:
         }
         try:
             text = re.sub(r'\s+', ' ', element.get_text(separator=' ', strip=True))
-
             m = re.search(r'\b(19[89]\d|20[0-2]\d)\b', text)
-            if m:
-                vehicle['year'] = m.group(1)
+            if m: vehicle['year'] = m.group(1)
 
             make, model = self.extract_make_and_model(text)
             if make: vehicle['makeName'] = make
@@ -371,11 +382,11 @@ class UniversalRedDeerToyotaScraper:
 
     def is_valid_vehicle(self, vehicle):
         if not isinstance(vehicle, dict): return False
-        if not (vehicle.get('year', '').strip() and vehicle.get('makeName', '').strip()):
+        if not (vehicle.get('year','').strip() and vehicle.get('makeName','').strip()):
             return False
-        extras = ['model', 'value', 'sale_value', 'stock_number', 'mileage']
-        return bool(vehicle.get('model', '').strip()) or \
-               sum(1 for f in extras if vehicle.get(f, '').strip()) >= 2
+        extras = ['model','value','sale_value','stock_number','mileage']
+        return bool(vehicle.get('model','').strip()) or \
+               sum(1 for f in extras if vehicle.get(f,'').strip()) >= 2
 
     def find_vehicles(self, soup):
         vehicles = []
@@ -437,22 +448,21 @@ class UniversalRedDeerToyotaScraper:
 
         unique, seen = [], set()
         for v in all_vehicles:
-            stock = v.get('stock_number', '')
+            stock = v.get('stock_number','')
             y, mk, mo = v.get('year',''), v.get('makeName',''), v.get('model','')
             mil, pr, tr = v.get('mileage',''), v.get('value',''), v.get('trim','')
-            if stock:             key = ('s', stock)
+            if stock:                     key = ('s', stock)
             elif y and mk and mo and mil: key = ('ymml', y, mk, mo, mil)
             elif y and mk and mo and tr and pr: key = ('ymmtp', y, mk, mo, tr, pr)
             elif y and mk and mo and pr: key = ('ymmp', y, mk, mo, pr)
-            else:                 key = ('all', y, mk, mo, tr, mil, pr)
+            else:                         key = ('all', y, mk, mo, tr, mil, pr)
             if key not in seen:
                 seen.add(key)
                 unique.append(v)
 
         self.vehicles = unique
         logger.info("FINAL: {} unique vehicles".format(len(self.vehicles)))
-        sale_count = sum(1 for v in self.vehicles if v.get('sale_value'))
-        logger.info("With sale prices: {}".format(sale_count))
+        logger.info("With sale prices: {}".format(sum(1 for v in self.vehicles if v.get('sale_value'))))
         return self.vehicles
 
     def save_to_csv(self, filename):
