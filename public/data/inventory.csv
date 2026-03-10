@@ -1,14 +1,10 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
 Chrysler,2015,300,,,147292,14977,13977,113821,3.6L 6
-Chrysler,2015,300,,,,14977,,,
+Chrysler,2015,300,,,,14977,13977,,
 Ford,2018,Escape,4WD,4WD,179950,14977,,S70501,2.0L 4
 Ford,2018,Escape,,,,14977,,,
 Volkswagen,2016,Tiguan,AWD,AWD,174319,14977,,114171,2.0L 4
 Volkswagen,2016,Tiguan,,,,14977,,,
-Audi,2017,Q3,AWD,AWD,144480,17977,16977,S40211,2.0L 4
-Audi,2017,Q3,,,,17977,,,
-GMC,2017,Terrain,Denali,Denali,132627,17977,,S70401,3.6L 6
-Gmc,2017,Terrain,,,,17977,,,
 Scion,2016,iM,,,123305,18977,,113651,1.8L 4
 Scion,2016,iM,,,,18977,,,
 Hyundai,2020,Tucson,AWD,AWD,136691,20967,,T64601,2.4L 4
@@ -16,7 +12,7 @@ Hyundai,2020,Tucson,,,,20967,,,
 Ford,2019,Escape,4WD,4WD,53322,21977,,T64711,1.5L 4
 Ford,2019,Escape,,,,21977,,,
 Volkswagen,2021,Tiguan,AWD,AWD,120619,23977,22977,T64741,2.0L 4
-Volkswagen,2021,Tiguan,,,,23977,,,
+Volkswagen,2021,Tiguan,,,,23977,22977,,
 Subaru,2020,Impreza,Sport,Sport,110223,23977,,T71732,2.0L 4
 Subaru,2020,Impreza,,,,23977,,,
 Honda,2019,Accord,Touring,Touring,110038,26977,,T64641,2.0L 4
@@ -31,8 +27,6 @@ Buick,2024,Encore GX,Touring,Touring,30117,30977,,T64052,1.3L 3
 Buick,2024,Encore GX,,,,30977,,,
 Toyota,2025,Corolla,LE,LE,44208,32977,,11421,1.8L 4
 Toyota,2025,Corolla,,,,32977,,,
-Chrysler,2022,Pacifica,Touring,Touring,100439,36977,33977,T80541,3.6L 6
-Chrysler,2022,Pacifica,,,,36977,,,
 Toyota,2025,Corolla Cross,LE,LE,29217,35967,,11428,2.0L 4
 Toyota,2025,Corolla Cross,,,,35967,,,
 Toyota,2022,RAV4,XLE,XLE,94042,35977,,11430,2.5L 4
@@ -43,35 +37,39 @@ Toyota,2024,RAV4,LE,LE,68532,36977,,11403,2.5L 4
 Toyota,2024,RAV4,,,,36977,,,
 Toyota,2025,RAV4,LE,LE,26817,39977,,11429,2.5L 4
 Toyota,2025,RAV4,,,,39977,,,
+Toyota,2019,Tacoma,TRD Sport,TRD Sport,149629,39977,,S70611,3.5L 6
+Toyota,2019,Tacoma,,,,39977,,,
 Ford,2022,Explorer,ST,ST,66913,44977,,S60421,3.0L 6
 Ford,2022,Explorer,,,,44977,,,
 Chevrolet,2022,Silverado 1500,Trail,Trail,150340,44977,,S70162,3.0L 6
 Chevrolet,2022,Silverado 1500,,,,44977,,,
-Toyota,2022,Highlander,XSE,XSE,72577,46977,,11434,3.5L 6
+Toyota,2022,Highlander,XLE,XLE,77330,46977,,11436,3.5L 6
 Toyota,2022,Highlander,,,,46977,,,
 Toyota,2022,RAV4,Limited,Limited,9538,49977,,11431,2.5L 4
 Toyota,2022,RAV4,,,,49977,,,
-Toyota,2023,Tundra,TRD Off-Road,TRD Off-Road,48673,49977,,114231,3.5L 6
-Toyota,2023,Tundra,,,,49977,,,
 Toyota,2022,Tundra,Limited,Limited,110469,52977,,11424,3.5L 6
 Toyota,2022,Tundra,,,,52977,,,
 Ford,2022,F-150,Lariat,Lariat,60732,53967,,S70591,3.5L 6
 Ford,2022,F-150,,,,53967,,,
-Toyota,2022,4Runner,Limited,Limited,73673,54977,,S60311,4.0L 6
-Toyota,2022,4Runner,,,,54977,,,
 Toyota,2022,4Runner,TRD Pro,TRD Pro,110700,63977,,11422,4.0L 6
 Toyota,2022,4Runner,,,,63977,,,
 Toyota,2025,Tundra,TRD,TRD,33496,64977,,114202,3.4L 6
 Toyota,2025,Tundra,,,,64977,,,
-Toyota,2024,Land Cruiser,,,47839,84977,,11437,2.4L 4
+Toyota,2024,Land Cruiser,Hybrid,Hybrid,47839,84977,,11437,2.4L 4
 Toyota,2024,Land Cruiser,,,,84977,,,
-Toyota,2019,Tacoma,SR5,SR5,149613,,,S70611,3.5L 6
-Toyota,2019,Tacoma,,,,,,,
-Ford,2011,Explorer,Limited,Limited,199265,,,S60391,3.5L 6
-Ford,2011,Explorer,,,,,,,
+Toyota,2020,Tacoma,TRD Sport,TRD Sport,157894,,,S70621,3.5L 6
+Toyota,2020,Tacoma,,,,,,,
+Volkswagen,2022,Tiguan,AWD,AWD,60123,,,S60312,2.0L 4
+Volkswagen,2022,Tiguan,,,,,,,
 Toyota,2018,C-HR,XLE,XLE,214374,,,S40172,2.0L 4
 Toyota,2018,C-HR,,,,,,,
-Toyota,2022,Highlander,XLE,XLE,100,,,11436,3.5L 6
-Toyota,2022,Highlander,,,,,,,
+Chevrolet,2021,Silverado 1500,LT,LT,203506,,,114232,5.3L 8
+Chevrolet,2021,Silverado 1500,,,,,,,
 Honda,2005,Accord,LX,LX,172289,,,S30171,2.4L 4
 Honda,2005,Accord Sdn,,,,,,,
+Toyota,2026,Tundra,TRD,TRD,,84595,,S7066,
+Toyota,2026,Tacoma,,,,,,S7065,
+Toyota,2026,Tacoma,TRD,TRD,,72295,,S7062,
+Toyota,2026,Corolla,SE,SE,,32555,,S2018,
+Toyota,2026,Corolla Cross,,,,32995,,S4033,
+Toyota,2026,Tundra,TRD,TRD,,85595,,S7063,
