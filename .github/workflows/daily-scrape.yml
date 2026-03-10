@@ -18,6 +18,9 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
 
+      - name: Install Playwright browsers
+        run: python3 -m playwright install chromium
+
       - name: Run scraper
         env:
           TOYOTA_API_URL: ${{ secrets.TOYOTA_API_URL }}
