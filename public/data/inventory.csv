@@ -1,5 +1,4 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
-Ford,2018,Escape,Titanium,Titanium,179950,14977,,S70501,2.0L 4
 Volkswagen,2016,Tiguan,AWD,AWD,174319,14977,,114171,2.0L 4
 Toyota,2018,C-HR,XLE,XLE,214404,15977,,S40172,2.0L 4
 Ford,2016,Explorer,Platinum,Platinum,216152,16977,,S70411,3.5L 6
@@ -12,15 +11,13 @@ Honda,2019,Accord,Touring,Touring,110038,26977,25977,T64641,2.0L 4
 Cadillac,2019,XT4,Sport,Sport,128000,26977,,S40311,2.0L 4
 Toyota,2024,Corolla,LE,LE,28618,28977,27977,11426,2.0L 4
 Volkswagen,2022,Tiguan,Comfortline,Comfortline,60123,28977,,S60312,2.0L 4
-Toyota,2022,Corolla Cross,LE,LE,50786,28977,,11442,2.0L 4
 Ford,2023,Escape,ST-Line,ST-Line,53340,28977,,S70551,2.0L 4
 Toyota,2018,RAV4,Trail,Trail,97671,29977,,S60611,2.5L 4
 Buick,2024,Encore GX,Sport,Sport,30117,30977,,T64052,1.3L 3
-Toyota,2018,Highlander,XLE,XLE,102082,32977,,S60601,3.5L 6
 Cadillac,2020,XT6,Luxury,Luxury,85891,34977,,114391,3.6L 6
 Toyota,2023,Camry,SE,SE,76958,35977,34977,11435,2.5L 4
 Toyota,2025,Corolla Cross,LE,LE,29217,35977,,11428,2.0L 4
-Toyota,2021,Highlander,XLE,XLE,78821,40977,,S40342,3.5L 6
+Toyota,2021,Highlander,XLE,XLE,78852,40977,,S40342,3.5L 6
 Toyota,2019,Highlander,Limited,Limited,27988,40977,,S60731,3.5L 6
 Toyota,2022,Tundra,SR5,SR5,96073,42977,,11440,3.5L 6
 Chevrolet,2022,Silverado 1500,Trail,Trail,150340,44977,42977,S70162,3.0L 6
@@ -39,4 +36,5 @@ Toyota,2024,Tacoma,Double Cab,Double Cab,57204,,,S70771,2.4L 4
 Jeep,2021,Grand Cherokee,Limited,Limited,122360,,,S60621,3.6L 6
 Toyota,2023,Corolla,SE,SE,80862,,,S40371,2.0L 4
 Toyota,2019,C-HR,,,171746,,,S70261,2.0L 4
+Toyota,2022,RAV4,XSE,XSE,120638,,,S60671,2.5L 4
 Nissan,2011,Titan,4WD,4WD,195681,,,114361,5.6L 8
