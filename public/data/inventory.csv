@@ -1,6 +1,7 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
 Volkswagen,2016,Tiguan,AWD,AWD,174319,14977,,114171,2.0L 4
 Toyota,2018,C-HR,XLE,XLE,214404,15977,,S40172,2.0L 4
+Toyota,2019,C-HR,,,171746,16977,,S70261,2.0L 4
 Ford,2016,Explorer,Platinum,Platinum,216152,16977,,S70411,3.5L 6
 Volkswagen,2021,Tiguan,Comfortline,Comfortline,120619,23977,20977,T64741,2.0L 4
 Subaru,2020,Impreza,Sport,Sport,110223,23977,22977,T71732,2.0L 4
@@ -11,6 +12,7 @@ Toyota,2024,Corolla,LE,LE,33280,28977,27977,11426,2.0L 4
 Volkswagen,2022,Tiguan,Comfortline,Comfortline,60123,28977,,S60312,2.0L 4
 Ford,2023,Escape,ST-Line,ST-Line,53340,28977,,S70551,2.0L 4
 Buick,2024,Encore GX,Sport,Sport,30117,30977,,T64052,1.3L 3
+Jeep,2021,Grand Cherokee,Limited,Limited,122360,33977,,S60621,3.6L 6
 Toyota,2022,RAV4,XSE,XSE,120638,33977,,S60671,2.5L 4
 Cadillac,2020,XT6,Luxury,Luxury,85891,34977,,114391,3.6L 6
 Toyota,2023,Camry,SE,SE,76958,35977,34977,11435,2.5L 4
@@ -29,7 +31,4 @@ Toyota,2026,Tundra,CrewMax,CrewMax,2527,74977,,11441,3.4L 6
 Toyota,2024,Land Cruiser,Hybrid,Hybrid,47839,84977,,11437,2.4L 4
 Toyota,2024,Tacoma,TRD Sport,TRD Sport,57204,,,S70771,2.4L 4
 Toyota,2019,RAV4,LE,LE,143007,,,S60701,2.5L 4
-Jeep,2021,Grand Cherokee,Limited,Limited,122360,,,S60621,3.6L 6
-Toyota,2021,Tundra,SR5,SR5,50000,,,L960401,5.7L 8
 Toyota,2023,Corolla,SE,SE,80862,,,S40371,2.0L 4
-Toyota,2019,C-HR,,,171746,,,S70261,2.0L 4
