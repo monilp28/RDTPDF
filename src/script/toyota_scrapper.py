@@ -17,11 +17,6 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# -----------------------------------------------------------------------
-# SET THIS after finding the API URL with Chrome DevTools (see above).
-# Leave as empty string to run auto-discovery first.
-# Can also be set via environment variable: TOYOTA_API_URL
-# -----------------------------------------------------------------------
 JSON_API_URL = os.environ.get("TOYOTA_API_URL", "")
 
 import requests
@@ -40,542 +35,607 @@ BASE = "https://www.reddeertoyota.com"
 TARGET = "https://www.reddeertoyota.com/inventory/used/"
 
 CAR_MAKES = {
-    # ── Japanese Mainstream ──────────────────────────────────────────────
+    # ── Toyota ───────────────────────────────────────────────────────────
     'Toyota': {
-        # Cars
-        'Camry','Corolla','Corolla Cross','Yaris','Avalon','Echo','Prius','Prius C',
-        'Prius V','Prius Prime','Crown','GR86','86','Supra','Matrix','Venza',
-        # SUVs / Crossovers
-        'RAV4','RAV4 Prime','Highlander','Highlander Hybrid','4Runner','Sequoia',
-        'C-HR','Land Cruiser','FJ Cruiser','bZ4X',
-        # Trucks & Vans
-        'Tacoma','Tundra','Sienna',
+        'Camry','Camry Hybrid','Corolla','Corolla Cross','Corolla Cross Hybrid',
+        'Corolla Hatchback','Yaris','Yaris Sedan','Avalon','Avalon Hybrid',
+        'Echo','Prius','Prius C','Prius V','Prius Prime','Crown','Crown Signia',
+        'GR86','86','GR Corolla','GR Supra','Supra','Matrix','Venza',
+        'RAV4','RAV4 Prime','RAV4 Hybrid','RAV4 Adventure',
+        'Highlander','Highlander Hybrid','4Runner','Sequoia',
+        'C-HR','Land Cruiser','FJ Cruiser','bZ4X','Tacoma','Tundra','Sienna',
     },
+    # ── Honda ─────────────────────────────────────────────────────────────
     'Honda': {
-        # Cars
-        'Civic','Accord','Insight','Jazz','Fit','HR-V','City',
-        # SUVs / Crossovers
-        'CR-V','Pilot','Passport','Ridgeline',
-        # Vans
-        'Odyssey',
-        # Performance
-        'CR-Z','S2000','Element',
+        'Civic','Civic Hatchback','Civic Si','Civic Type R',
+        'Accord','Accord Hybrid','Accord Sedan','Accord Coupe',
+        'Insight','Jazz','Fit','HR-V','City','CR-V','CR-V Hybrid',
+        'Pilot','Passport','Ridgeline','Odyssey','CR-Z','S2000','Element',
     },
+    # ── Mazda ─────────────────────────────────────────────────────────────
     'Mazda': {
-        # Cars
-        'Mazda2','Mazda3','Mazda5','Mazda6','MX-5','MX-5 Miata',
-        # SUVs / Crossovers
-        'CX-3','CX-30','CX-5','CX-50','CX-7','CX-8','CX-9','CX-90','MX-30',
-        # Trucks
-        'B-Series',
+        'Mazda2','Mazda3','Mazda3 Sport','Mazda5','Mazda6',
+        'MX-5','MX-5 Miata','MX-5 RF',
+        'CX-3','CX-30','CX-5','CX-50','CX-60','CX-7','CX-8','CX-9','CX-90','MX-30',
+        'Tribute','B-Series','B2300','B3000','B4000',
     },
+    # ── Nissan ────────────────────────────────────────────────────────────
     'Nissan': {
-        # Cars
-        'Altima','Sentra','Maxima','Versa','Versa Note','Micra','Leaf',
-        # SUVs / Crossovers
-        'Rogue','Rogue Sport','Murano','Pathfinder','Armada','Kicks','Juke','Xterra','Qashqai',
-        # Trucks & Vans
-        'Frontier','Titan','Titan XD','Quest','NV200','NV Cargo',
-        # Performance
+        'Altima','Sentra','Maxima','Versa','Versa Note','Micra','Leaf','Ariya',
+        'Rogue','Rogue Sport','Rogue Select','Murano','Pathfinder',
+        'Armada','Kicks','Juke','Xterra','Qashqai','X-Trail','Cube',
+        'Frontier','Titan','Titan XD','Quest','NV200','NV Cargo','NV Passenger',
         '370Z','350Z','GT-R',
     },
+    # ── Subaru ────────────────────────────────────────────────────────────
     'Subaru': {
-        # Cars
-        'Impreza','Legacy','WRX','WRX STI','BRZ',
-        # SUVs / Crossovers
-        'Outback','Forester','Crosstrek','Ascent','Solterra','Tribeca','XV',
+        'Impreza','Impreza Sport','Legacy','WRX','WRX STI','BRZ',
+        'Outback','Outback Wilderness','Forester','Crosstrek','Crosstrek Hybrid',
+        'Ascent','Solterra','Tribeca','XV','Baja',
     },
+    # ── Mitsubishi ────────────────────────────────────────────────────────
     'Mitsubishi': {
-        # Cars
-        'Lancer','Lancer Evolution','Galant','Eclipse','Eclipse Cross','i-MiEV',
-        # SUVs
-        'Outlander','Outlander PHEV','Outlander Sport','RVR','ASX','Eclipse Cross',
-        # Trucks
-        'Raider',
+        'Lancer','Lancer Evolution','Lancer Sportback',
+        'Galant','Eclipse','Eclipse Cross','Eclipse Cross PHEV','i-MiEV',
+        'Outlander','Outlander PHEV','Outlander Sport','RVR','ASX',
+        'Mirage','Mirage G4','Raider',
     },
+    # ── Suzuki ────────────────────────────────────────────────────────────
     'Suzuki': {
-        'Swift','SX4','Aerio','Forenza','Reno','Grand Vitara','Vitara','XL-7','Kizashi',
+        'Swift','SX4','SX4 S-Cross','Aerio','Forenza','Reno',
+        'Grand Vitara','Vitara','XL-7','Kizashi','Equator',
     },
+    # ── Isuzu ─────────────────────────────────────────────────────────────
     'Isuzu': {
-        'Rodeo','Trooper','Ascender','i-Series',
+        'Rodeo','Trooper','Ascender','i-280','i-290','i-350','i-370',
     },
-
-    # ── Korean ───────────────────────────────────────────────────────────
+    # ── Hyundai ───────────────────────────────────────────────────────────
     'Hyundai': {
-        # Cars
-        'Accent','Elantra','Elantra N','Sonata','Azera','Ioniq','Ioniq 5','Ioniq 6',
+        'Accent','Accent Hatchback','Elantra','Elantra N','Elantra GT',
+        'Elantra Touring','Sonata','Sonata Hybrid','Azera',
+        'Ioniq','Ioniq Electric','Ioniq Hybrid','Ioniq Plug-in',
+        'Ioniq 5','Ioniq 6','Ioniq 9',
         'Veloster','Veloster N','Genesis Coupe',
-        # SUVs / Crossovers
-        'Tucson','Santa Fe','Santa Cruz','Palisade','Venue','Kona','Kona Electric',
-        'Santa Fe XL','ix35',
+        'Tucson','Tucson Hybrid','Santa Fe','Santa Fe XL','Santa Fe Hybrid',
+        'Santa Cruz','Palisade','Venue','Kona','Kona Electric','Kona N',
+        'ix35','Entourage',
     },
+    # ── Kia ───────────────────────────────────────────────────────────────
     'Kia': {
-        # Cars
-        'Rio','Forte','Forte5','Optima','K5','Stinger','EV6',
-        # SUVs / Crossovers
-        'Soul','Soul EV','Sportage','Sorento','Telluride','Seltos','Niro','Niro EV',
-        'Niro PHEV','Carnival','Sedona','Rondo',
+        'Rio','Rio5','Forte','Forte5','Forte Koup',
+        'Optima','Optima Hybrid','K5','Stinger','EV6','EV9',
+        'Soul','Soul EV','Sportage','Sportage Hybrid',
+        'Sorento','Sorento Hybrid','Telluride','Seltos',
+        'Niro','Niro EV','Niro PHEV','Niro HEV',
+        'Carnival','Sedona','Rondo','Spectra','Magentis','Amanti',
     },
+    # ── Genesis ───────────────────────────────────────────────────────────
     'Genesis': {
-        'G70','G80','G90','GV70','GV80','GV60',
+        'G70','G80','G90','GV70','GV80','GV60','G80 Electrified',
     },
-
-    # ── North American Domestic ──────────────────────────────────────────
+    # ── Ford ──────────────────────────────────────────────────────────────
     'Ford': {
-        # Cars & Crossovers
-        'Fusion','Focus','Fiesta','Taurus','Mustang','Mustang Mach-E','C-MAX',
-        # SUVs
-        'Escape','Edge','Explorer','Expedition','Bronco','Bronco Sport','EcoSport','Flex',
-        # Trucks & Vans
-        'F-150','F-150 Lightning','F-250','F-350','F-450','Ranger','Maverick',
-        'Transit','Transit Connect','E-Series','E-Transit',
+        'Fusion','Fusion Hybrid','Fusion Energi',
+        'Focus','Focus ST','Focus RS','Focus Electric',
+        'Fiesta','Taurus','Taurus X','Mustang','Mustang Mach-E','Mustang GT',
+        'Mustang EcoBoost','C-MAX','C-MAX Hybrid','C-MAX Energi',
+        'Escape','Escape Hybrid','Escape PHEV',
+        'Edge','Explorer','Explorer Sport','Expedition','Expedition MAX',
+        'Bronco','Bronco Sport','EcoSport','Flex','Freestyle',
+        'F-150','F-150 Lightning','F-150 Raptor',
+        'F-250','F-250 Super Duty','F-350','F-350 Super Duty',
+        'F-450','F-450 Super Duty',
+        'Ranger','Maverick','Transit','Transit Connect','Transit-150',
+        'Transit-250','Transit-350','E-Series','E-150','E-250','E-350','E-Transit',
+        'Five Hundred','Freestar',
     },
+    # ── Chevrolet ─────────────────────────────────────────────────────────
     'Chevrolet': {
-        # Cars
-        'Malibu','Impala','Cruze','Sonic','Spark','Cobalt','Aveo','Trax',
-        'Camaro','Corvette','Volt','Bolt EV','Bolt EUV',
-        # SUVs
-        'Equinox','Traverse','Tahoe','Suburban','Blazer','Trailblazer','HHR',
-        # Trucks & Vans
+        'Malibu','Malibu Hybrid','Impala','Cruze','Cruze Hatchback',
+        'Sonic','Spark','Cobalt','Aveo','Aveo5','Trax','Trax EV',
+        'Camaro','Camaro SS','Camaro ZL1','Corvette','Corvette Stingray',
+        'Corvette Z06','Volt','Bolt EV','Bolt EUV',
+        'Equinox','Equinox EV','Traverse','Tahoe','Suburban',
+        'Blazer','Blazer EV','Trailblazer','HHR','Uplander',
         'Silverado','Silverado 1500','Silverado 2500','Silverado 2500HD',
-        'Silverado 3500HD','Colorado','Avalanche','Express',
+        'Silverado 3500','Silverado 3500HD','Silverado EV',
+        'Colorado','Avalanche','Express','Express 1500','Express 2500','Express 3500',
+        'Captiva',
     },
+    # ── GMC ───────────────────────────────────────────────────────────────
     'GMC': {
-        # Cars
-        'Sierra','Sierra 1500','Sierra 2500','Sierra 2500HD','Sierra 3500HD',
+        'Sierra','Sierra 1500','Sierra 2500','Sierra 2500HD',
+        'Sierra 3500','Sierra 3500HD','Sierra EV',
         'Canyon','Sonoma',
-        # SUVs
-        'Acadia','Terrain','Yukon','Yukon XL','Envoy','Envision','Envoy XL',
-        # EV
-        'Hummer EV',
+        'Acadia','Terrain','Yukon','Yukon XL','Envoy','Envoy XL',
+        'Envision','Safari','Jimmy','Hummer EV',
     },
+    # ── Dodge ─────────────────────────────────────────────────────────────
     'Dodge': {
-        # Cars
-        'Charger','Challenger','Dart','Avenger','Neon','Stratus','Viper',
-        # SUVs / Vans
+        'Charger','Challenger','Dart','Avenger','Neon','Stratus',
+        'Stratus Coupe','Viper','Caliber','Magnum',
         'Durango','Journey','Grand Caravan','Caravan','Hornet',
+        'Dakota','Nitro',
     },
+    # ── Ram ───────────────────────────────────────────────────────────────
     'Ram': {
-        '1500','1500 Classic','2500','3500','4500','5500',
-        'ProMaster','ProMaster City',
+        '1500','1500 Classic','1500 TRX',
+        '2500','3500','4500','5500',
+        'ProMaster','ProMaster City','ProMaster 1500','ProMaster 2500','ProMaster 3500',
+        'Dakota',
     },
+    # ── Jeep ──────────────────────────────────────────────────────────────
     'Jeep': {
-        'Wrangler','Wrangler Unlimited','Grand Cherokee','Grand Cherokee L',
-        'Cherokee','Compass','Renegade','Gladiator','Patriot','Commander',
+        'Wrangler','Wrangler Unlimited','Wrangler 4xe',
+        'Grand Cherokee','Grand Cherokee L','Grand Cherokee 4xe',
+        'Cherokee','Compass','Compass Trailhawk',
+        'Renegade','Gladiator','Patriot','Commander',
         'Liberty','Grand Wagoneer','Wagoneer','Avenger',
     },
+    # ── Chrysler ──────────────────────────────────────────────────────────
     'Chrysler': {
-        '200','300','300C','Pacifica','Pacifica Hybrid','Voyager','PT Cruiser',
-        'Sebring','Town & Country','Aspen',
+        '200','300','300C','300S','Pacifica','Pacifica Hybrid',
+        'Voyager','PT Cruiser','PT Cruiser Convertible',
+        'Sebring','Sebring Convertible','Town & Country','Aspen','Crossfire',
     },
+    # ── Lincoln ───────────────────────────────────────────────────────────
     'Lincoln': {
-        'Navigator','Navigator L','Aviator','Corsair','Nautilus','MKZ','MKC',
-        'MKS','MKT','MKX','Blackwood','Town Car',
+        'Navigator','Navigator L','Aviator','Aviator Grand Touring',
+        'Corsair','Corsair Grand Touring','Nautilus',
+        'MKZ','MKC','MKS','MKT','MKX','Blackwood','Town Car','LS',
     },
+    # ── Cadillac ──────────────────────────────────────────────────────────
     'Cadillac': {
-        # Cars
-        'CT4','CT5','CT6','ATS','CTS','XTS','STS','DTS','DeVille','Eldorado',
-        # SUVs
-        'XT4','XT5','XT6','Escalade','Escalade ESV','SRX','Lyriq',
+        'CT4','CT4-V','CT4-V Blackwing','CT5','CT5-V','CT5-V Blackwing','CT6',
+        'ATS','ATS-V','CTS','CTS-V','XTS','STS','STS-V','DTS','DeVille','Eldorado',
+        'XT4','XT5','XT5 Platinum','XT6','Escalade','Escalade ESV','Escalade IQ',
+        'SRX','Lyriq','Celestiq',
     },
+    # ── Buick ─────────────────────────────────────────────────────────────
     'Buick': {
-        'Encore','Encore GX','Envision','Envista','Enclave','LaCrosse','Regal',
-        'Verano','Cascada','Lucerne','Rendezvous','Rainier','Terraza',
+        'Encore','Encore GX','Envision','Envista','Enclave','Enclave Avenir',
+        'LaCrosse','Regal','Regal TourX','Regal Sportback',
+        'Verano','Cascada','Lucerne','Rendezvous','Rainier','Terraza','Allure',
     },
+    # ── Pontiac (discontinued 2010) ───────────────────────────────────────
     'Pontiac': {
-        'G3','G5','G6','G8','Solstice','Torrent','Vibe','Montana','Aztek',
-        'Grand Prix','Grand Am','Bonneville','Firebird',
+        'G3','G5','G6','G6 GTP','G8','Solstice','Torrent',
+        'Vibe','Montana','Montana SV6','Aztek',
+        'Grand Prix','Grand Am','Bonneville','Pursuit',
     },
+    # ── Saturn (discontinued 2010) ────────────────────────────────────────
     'Saturn': {
-        'Aura','Ion','Vue','Outlook','Sky',
+        'Aura','Ion','Ion Quad Coupe','Vue','Vue Hybrid','Outlook','Sky','Relay',
     },
+    # ── Hummer ────────────────────────────────────────────────────────────
     'Hummer': {
-        'H1','H2','H3','H3T',
+        'H1','H1 Alpha','H2','H2 SUT','H3','H3T',
     },
+    # ── Tesla ─────────────────────────────────────────────────────────────
     'Tesla': {
-        'Model S','Model 3','Model X','Model Y','Cybertruck','Roadster',
+        'Model S','Model S Plaid','Model 3','Model 3 Long Range',
+        'Model X','Model X Plaid','Model Y','Model Y Long Range',
+        'Cybertruck','Roadster',
     },
-
-    # ── German ───────────────────────────────────────────────────────────
+    # ── Volkswagen ────────────────────────────────────────────────────────
     'Volkswagen': {
-        # Cars
-        'Jetta','Jetta GLI','Passat','Golf','Golf GTI','Golf R','Golf Sportwagen',
-        'Golf Alltrack','Beetle','New Beetle','Eos','CC','Arteon','ID.4','ID.3',
-        # SUVs
-        'Tiguan','Atlas','Atlas Cross Sport','Touareg','Taos',
+        'Jetta','Jetta GLI','Jetta Sportwagen',
+        'Passat','Passat CC','Golf','Golf GTI','Golf R',
+        'Golf Sportwagen','Golf Alltrack','Golf Wagon',
+        'Beetle','New Beetle','Beetle Convertible',
+        'Eos','CC','Arteon','ID.4','ID.3','ID.Buzz',
+        'Tiguan','Atlas','Atlas Cross Sport','Touareg','Taos','Routan',
     },
+    # ── Audi ──────────────────────────────────────────────────────────────
     'Audi': {
-        # Cars
-        'A3','A3 Sportback','A3 Sedan','A4','A4 Allroad','A5','A6','A7','A8',
-        'TT','TTS','TT RS','RS3','RS5','RS6','RS7','S3','S4','S5','S6','S7','S8',
-        'e-tron','e-tron GT','Q4 e-tron',
-        # SUVs
-        'Q3','Q4','Q5','Q5 Sportback','Q7','Q8','SQ5','SQ7','SQ8','RS Q8',
-        'Allroad',
+        'A3','A3 Sportback','A3 Sedan','A4','A4 Allroad','A4 Avant',
+        'A5','A5 Sportback','A5 Cabriolet','A6','A6 Allroad',
+        'A7','A8','A8 L','TT','TTS','TT RS',
+        'RS3','RS4','RS5','RS6','RS7','RS e-tron GT',
+        'S3','S4','S5','S6','S7','S8',
+        'e-tron','e-tron GT','e-tron Sportback','Q4 e-tron','Q4 Sportback e-tron',
+        'Q3','Q3 Sportback','Q4','Q5','Q5 Sportback','Q7','Q8',
+        'SQ3','SQ5','SQ5 Sportback','SQ7','SQ8','RS Q8',
+        'Allroad','Cabriolet',
     },
+    # ── BMW ───────────────────────────────────────────────────────────────
     'BMW': {
-        # Cars
-        '1 Series','2 Series','3 Series','4 Series','5 Series','6 Series',
-        '7 Series','8 Series','M2','M3','M4','M5','M6','M8','Z3','Z4','Z8',
-        'i3','i4','i7','i8','iX',
-        # SUVs
-        'X1','X2','X3','X4','X5','X6','X7','iX3','XM',
+        '1 Series','2 Series','2 Series Gran Coupe','3 Series','3 Series Gran Turismo',
+        '4 Series','4 Series Gran Coupe','5 Series','5 Series Gran Turismo',
+        '6 Series','6 Series Gran Coupe','6 Series Gran Turismo',
+        '7 Series','8 Series','8 Series Gran Coupe',
+        'M2','M2 Competition','M3','M3 Competition','M4','M4 Competition',
+        'M5','M5 Competition','M6','M8','M8 Competition',
+        'Z3','Z4','Z8','i3','i4','i5','i7','i8','iX','iX1','iX3',
+        'X1','X2','X3','X3 M','X4','X4 M','X5','X5 M','X6','X6 M','X7','XM',
+        '128i','130i','228i','235i','328i','335i','428i','435i',
+        '528i','535i','550i','640i','650i','740i','750i','760i',
+        'ActiveHybrid','Gran Coupe',
     },
+    # ── Mercedes-Benz ─────────────────────────────────────────────────────
     'Mercedes-Benz': {
-        # Cars
-        'A-Class','B-Class','C-Class','CLA','CLS','E-Class','S-Class','SL','SLC','SLK',
-        'AMG GT','C 300','C 43','C 63','E 300','E 350','E 400','E 450','E 550',
-        'S 450','S 500','S 550','S 580','S 650','S 63','S 65',
-        # SUVs
-        'GLA','GLB','GLC','GLC Coupe','GLE','GLE Coupe','GLS','G-Class','G 550',
-        'AMG GLE 63','EQC','EQE','EQS',
-        # Vans
-        'Metris','Sprinter',
+        'A-Class','A 220','A 250','B-Class','B 250',
+        'C-Class','C 300','C 350','C 350e','C 400','C 43','C 63','C 63 S',
+        'CLA','CLA 250','CLA 35','CLA 45',
+        'CLS','CLS 450','CLS 500','CLS 53','CLS 550',
+        'E-Class','E 300','E 350','E 400','E 450','E 550','E 53','E 63',
+        'S-Class','S 450','S 500','S 550','S 580','S 650','S 63','S 65',
+        'SL','SL 450','SL 550','SLC','SLC 300','SLK','SLK 250','SLK 300','SLK 350',
+        'AMG GT','AMG GT S','AMG GT R','AMG GT C','AMG GT 43','AMG GT 53','AMG GT 63',
+        'GLA','GLA 250','GLA 35','GLA 45',
+        'GLB','GLB 250','GLB 35',
+        'GLC','GLC 300','GLC 350e','GLC 43','GLC 63',
+        'GLC Coupe','GLE','GLE 350','GLE 400','GLE 450','GLE 53','GLE 63',
+        'GLE Coupe','GLS','GLS 450','GLS 580','GLS 600','G-Class','G 550','G 63',
+        'AMG GLE 63','EQC','EQE','EQS','EQS SUV','EQE SUV',
+        'Metris','Sprinter','Sprinter 1500','Sprinter 2500','Sprinter 3500',
     },
+    # ── Porsche ───────────────────────────────────────────────────────────
     'Porsche': {
-        '911','Boxster','Cayman','718 Boxster','718 Cayman',
-        'Cayenne','Macan','Panamera','Taycan',
+        '911','911 Carrera','911 Targa','911 Turbo','911 GT3','911 GT2',
+        'Boxster','Cayman','718 Boxster','718 Cayman','718 Spyder',
+        'Cayenne','Cayenne Coupe','Cayenne E-Hybrid','Cayenne Turbo',
+        'Macan','Macan EV','Panamera','Panamera Sport Turismo','Taycan','Taycan Cross Turismo',
     },
+    # ── Smart ─────────────────────────────────────────────────────────────
     'Smart': {
-        'Fortwo','Forfour',
+        'Fortwo','Fortwo Cabrio','Forfour',
     },
-
-    # ── British ──────────────────────────────────────────────────────────
+    # ── Land Rover ────────────────────────────────────────────────────────
     'Land Rover': {
         'Range Rover','Range Rover Sport','Range Rover Evoque','Range Rover Velar',
-        'Discovery','Discovery Sport','LR2','LR4','Defender','Freelander',
+        'Discovery','Discovery Sport','Defender','Defender 90','Defender 110',
+        'LR2','LR4','Freelander',
     },
+    # ── Jaguar ────────────────────────────────────────────────────────────
     'Jaguar': {
-        'XE','XF','XJ','F-Type','E-Pace','F-Pace','I-Pace','XK','S-Type','X-Type',
+        'XE','XF','XF Sportbrake','XJ','F-Type','F-Type R',
+        'E-Pace','F-Pace','F-Pace SVR','I-Pace','XK','XKR','S-Type','X-Type',
     },
+    # ── MINI ──────────────────────────────────────────────────────────────
     'MINI': {
-        'Cooper','Cooper S','Clubman','Convertible','Countryman','Paceman',
-        'Coupe','Roadster','John Cooper Works',
+        'Cooper','Cooper S','Cooper SE','Cooper Hardtop','Cooper Hatchback',
+        'Clubman','Clubman S','Convertible','Countryman','Countryman S',
+        'Countryman SE','Paceman','Coupe','Roadster','John Cooper Works',
+        'Aceman',
     },
-
-    # ── Italian ──────────────────────────────────────────────────────────
+    # ── Fiat ──────────────────────────────────────────────────────────────
     'Fiat': {
-        '500','500X','500L','500e','124 Spider','Bravo','Punto',
+        '500','500 Abarth','500 Cabrio','500X','500L','500e',
+        '124 Spider','Bravo','Punto','Freemont',
     },
+    # ── Alfa Romeo ────────────────────────────────────────────────────────
     'Alfa Romeo': {
-        'Giulia','Stelvio','4C','Spider','GTV','Giulietta','Tonale',
+        'Giulia','Giulia Quadrifoglio','Stelvio','Stelvio Quadrifoglio',
+        '4C','4C Spider','Spider','GTV','Giulietta','Tonale',
     },
+    # ── Ferrari ───────────────────────────────────────────────────────────
     'Ferrari': {
-        '430','458','488','F8','SF90','812','Roma','Portofino','California',
+        '360','430','430 Scuderia','458','458 Italia','458 Speciale',
+        '488','488 GTB','488 Spider','F8','F8 Tributo','SF90','SF90 Stradale',
+        '812','812 Superfast','Roma','Portofino','California','California T',
+        'GTC4Lusso','FF','Purosangue',
     },
+    # ── Lamborghini ───────────────────────────────────────────────────────
     'Lamborghini': {
-        'Gallardo','Huracan','Aventador','Urus',
+        'Gallardo','Gallardo Spyder','Huracan','Huracan Evo','Huracan Spyder',
+        'Aventador','Aventador S','Aventador SVJ','Urus','Revuelto',
     },
+    # ── Maserati ──────────────────────────────────────────────────────────
     'Maserati': {
-        'Ghibli','Quattroporte','GranTurismo','Levante','Grecale',
+        'Ghibli','Ghibli S','Quattroporte','Quattroporte S',
+        'GranTurismo','GranCabrio','Levante','Levante S','Grecale',
     },
-
-    # ── Swedish ──────────────────────────────────────────────────────────
+    # ── Volvo ─────────────────────────────────────────────────────────────
     'Volvo': {
-        # Cars
-        'S40','S60','S80','S90','V40','V60','V70','V90','C30','C70',
-        # SUVs
-        'XC40','XC60','XC70','XC90',
-        # Electric
-        'C40',
+        'S40','S60','S60 Cross Country','S80','S90',
+        'V40','V60','V60 Cross Country','V70','V90','V90 Cross Country',
+        'C30','C70','XC40','XC40 Recharge','XC60','XC70','XC90','C40 Recharge',
     },
-
-    # ── French ───────────────────────────────────────────────────────────
-    'Peugeot': {
-        '206','207','208','3008','5008','RCZ',
-    },
-    'Renault': {
-        'Megane','Clio','Scenic','Kadjar','Captur','Koleos',
-    },
-
-    # ── Luxury / Niche ───────────────────────────────────────────────────
+    # ── Acura ─────────────────────────────────────────────────────────────
     'Acura': {
-        # Cars
-        'ILX','TLX','TL','TSX','RL','RLX','CSX','RSX','NSX','Integra',
-        # SUVs
-        'RDX','MDX','CDX','ZDX',
+        'ILX','TLX','TLX Type S','TL','TSX','TSX Sport Wagon',
+        'RL','RLX','RLX Sport Hybrid','CSX','RSX','RSX Type-S',
+        'NSX','Integra','Integra Type S',
+        'RDX','MDX','MDX Sport Hybrid','CDX','ZDX',
     },
+    # ── Lexus ─────────────────────────────────────────────────────────────
     'Lexus': {
-        # Cars
-        'IS','IS F','RC','RC F','ES','GS','GS F','LS','LC','LFA','UX',
-        # SUVs
-        'NX','NX 300h','RX','RX 350','RX 450h','GX','LX','UX','RZ',
+        'IS','IS 200t','IS 250','IS 300','IS 350','IS 500','IS F',
+        'RC','RC 200t','RC 300','RC 350','RC F',
+        'ES','ES 250','ES 300','ES 300h','ES 330','ES 350',
+        'GS','GS 200t','GS 250','GS 300','GS 350','GS 450h','GS 460','GS F',
+        'LS','LS 430','LS 460','LS 500','LS 500h','LS 600h',
+        'LC','LC 500','LC 500h','LFA',
+        'NX','NX 200t','NX 300','NX 300h','NX 350','NX 350h','NX 450h+',
+        'RX','RX 300','RX 330','RX 350','RX 350h','RX 400h','RX 450h','RX 450h+','RX 500h',
+        'GX','GX 460','GX 550','LX','LX 570','LX 600','UX','UX 200','UX 250h','RZ',
     },
+    # ── Infiniti ──────────────────────────────────────────────────────────
     'Infiniti': {
-        # Cars
-        'Q30','Q40','Q45','Q50','Q60','Q70','QX30',
-        # SUVs
-        'QX50','QX55','QX60','QX70','QX80','EX','FX','JX','M',
+        'Q30','Q40','Q45','Q50','Q50S','Q50 Red Sport',
+        'Q60','Q60S','Q60 Red Sport','Q70','Q70L','QX30',
+        'QX50','QX55','QX60','QX70','QX80',
+        'EX','EX35','EX37','FX','FX35','FX37','FX45','FX50',
+        'JX','JX35','M','M35','M37','M45','G','G25','G35','G37',
+        'I','I30','I35',
     },
-    'Lincoln': {
-        'Navigator','Navigator L','Aviator','Corsair','Nautilus','MKZ','MKC',
-        'MKS','MKT','MKX','Blackwood','Town Car',
-    },
-
-    # ── Other / Specialty ───────────────────────────────────────────────
+    # ── Scion (discontinued 2016) ────────────────────────────────────────
     'Scion': {
         'tC','xB','xD','xA','iA','iM','iQ','FR-S',
     },
-    'Pontiac': {
-        'G3','G5','G6','G8','Solstice','Torrent','Vibe','Montana','Aztek',
-        'Grand Prix','Grand Am','Bonneville',
-    },
+    # ── Mercury (discontinued 2011) ───────────────────────────────────────
     'Mercury': {
-        'Grand Marquis','Mariner','Milan','Montego','Monterey','Mountaineer','Sable',
+        'Grand Marquis','Mariner','Mariner Hybrid','Milan','Milan Hybrid',
+        'Montego','Monterey','Mountaineer','Sable',
     },
+    # ── Oldsmobile (discontinued 2004) ───────────────────────────────────
     'Oldsmobile': {
         'Alero','Aurora','Bravada','Intrigue','Silhouette',
     },
+    # ── Saab (discontinued 2011) ──────────────────────────────────────────
     'Saab': {
-        '9-2X','9-3','9-5','9-7X',
+        '9-2X','9-3','9-3X','9-5','9-7X',
     },
+    # ── Daewoo ────────────────────────────────────────────────────────────
     'Daewoo': {
         'Leganza','Lanos','Nubira',
     },
-    'Geo': {
-        'Metro','Prizm','Tracker',
-    },
+    # ── EVs / New Brands ─────────────────────────────────────────────────
     'Rivian': {
         'R1T','R1S',
     },
     'Lucid': {
-        'Air',
+        'Air','Air Pure','Air Touring','Air Grand Touring','Air Sapphire',
     },
     'Polestar': {
         '1','2','3','4',
     },
-    'Genesis': {
-        'G70','G80','G90','GV70','GV80','GV60',
-    },
     'Fisker': {
         'Ocean',
+    },
+    # ── Peugeot ───────────────────────────────────────────────────────────
+    'Peugeot': {
+        '206','207','208','3008','5008','RCZ','2008','308',
+    },
+    # ── Renault ───────────────────────────────────────────────────────────
+    'Renault': {
+        'Megane','Clio','Scenic','Kadjar','Captur','Koleos','Zoe',
     },
 }
 
 TRIM_PATTERNS = {
+    # Order matters — more specific patterns first to prevent partial matches
+
     # ── Toyota / Lexus ───────────────────────────────────────────────────
-    'Capstone':         r'\bCapstone\b',
-    'TRD Pro':          r'\bTRD\s+Pro\b',
-    'TRD Off-Road':     r'\bTRD\s+Off-?Road\b',
-    'TRD Sport':        r'\bTRD\s+Sport\b',
-    'TRD':              r'\bTRD\b',
-    'SR5':              r'\bSR5\b',
-    'SR':               r'\bSR\b(?!\d)',
-    'XLE':              r'\bXLE\b',
-    'XSE':              r'\bXSE\b',
-    'XLE Premium':      r'\bXLE\s+Premium\b',
-    'Nightshade':       r'\bNightshade\b',
-    'Adventure':        r'\bAdventure\b',
-    'Trail':            r'\bTrail\b(?!\w)',
-    'CrewMax':          r'\bCrewMax\b',
-    'Double Cab':       r'\bDouble\s+Cab\b',
-    'Access Cab':       r'\bAccess\s+Cab\b',
-    'Prime':            r'\bPrime\b',
-    'Hybrid':           r'\bHybrid\b',
-    'PHEV':             r'\bPHEV\b',
+    'TRD Pro':              r'\bTRD\s+Pro\b',
+    'TRD Off-Road':         r'\bTRD\s+Off-?Road\b',
+    'TRD Sport':            r'\bTRD\s+Sport\b',
+    'TRD':                  r'\bTRD\b',
+    'SR5':                  r'\bSR5\b',
+    'SR':                   r'\bSR\b(?!\d)',
+    'XLE Premium':          r'\bXLE\s+Premium\b',
+    'XLE':                  r'\bXLE\b',
+    'XSE':                  r'\bXSE\b',
+    'Capstone':             r'\bCapstone\b',
+    'Nightshade':           r'\bNightshade\b',
+    'Adventure':            r'\bAdventure\b',
+    'CrewMax':              r'\bCrewMax\b',
+    'Double Cab':           r'\bDouble\s+Cab\b',
+    'Access Cab':           r'\bAccess\s+Cab\b',
+    'RAV4 Hybrid':          r'\bRAV4\s+Hybrid\b',
+    'Prius Prime':          r'\bPrius\s+Prime\b',
     # Lexus
-    'F Sport':          r'\bF\s+Sport\b',
-    'F':                r'\bF\b(?!\s+Sport)',
-    'Ultra Luxury':     r'\bUltra\s+Luxury\b',
-    'Prado':            r'\bPrado\b',
+    'F Sport':              r'\bF\s+Sport\b',
+    'Ultra Luxury':         r'\bUltra\s+Luxury\b',
 
     # ── Ford / Lincoln ───────────────────────────────────────────────────
-    'Raptor':           r'\bRaptor\b',
-    'Raptor R':         r'\bRaptor\s+R\b',
-    'King Ranch':       r'\bKing\s+Ranch\b',
-    'Platinum':         r'\bPlatinum\b',
-    'Lariat':           r'\bLariat\b',
-    'XLT':              r'\bXLT\b',
-    'XL':               r'\bXL\b(?!\w)',
-    'STX':              r'\bSTX\b',
-    'FX2':              r'\bFX2\b',
-    'FX4':              r'\bFX4\b',
-    'Tremor':           r'\bTremor\b',
-    'Wildtrak':         r'\bWildtrak\b',
-    'Badlands':         r'\bBadlands\b',
-    'Black Diamond':    r'\bBlack\s+Diamond\b',
-    'Big Bend':         r'\bBig\s+Bend\b',
-    'Outer Banks':      r'\bOuter\s+Banks\b',
-    'First Edition':    r'\bFirst\s+Edition\b',
-    'ST-Line':          r'\bST-?Line\b',
-    'ST':               r'\bST\b(?!\w)',
-    'Titanium':         r'\bTitanium\b',
-    'Titanium Hybrid':  r'\bTitanium\s+Hybrid\b',
-    'Ambiente':         r'\bAmbiente\b',
-    'Trend':            r'\bTrend\b',
+    'Raptor R':             r'\bRaptor\s+R\b',
+    'Raptor':               r'\bRaptor\b',
+    'King Ranch':           r'\bKing\s+Ranch\b',
+    'Lariat':               r'\bLariat\b',
+    'XLT':                  r'\bXLT\b',
+    'STX':                  r'\bSTX\b',
+    'FX4':                  r'\bFX4\b',
+    'FX2':                  r'\bFX2\b',
+    'Tremor':               r'\bTremor\b',
+    'Wildtrak':             r'\bWildtrak\b',
+    'Badlands':             r'\bBadlands\b',
+    'Black Diamond':        r'\bBlack\s+Diamond\b',
+    'Big Bend':             r'\bBig\s+Bend\b',
+    'Outer Banks':          r'\bOuter\s+Banks\b',
+    'Bronco First Edition': r'\bFirst\s+Edition\b',
+    'ST-Line':              r'\bST-?Line\b',
+    'Titanium Hybrid':      r'\bTitanium\s+Hybrid\b',
+    'Titanium':             r'\bTitanium\b',
+    'Trend':                r'\bTrend\b',
+    'Ambiente':             r'\bAmbiente\b',
     # Lincoln
-    'Reserve':          r'\bReserve\b',
-    'Black Label':      r'\bBlack\s+Label\b',
+    'Black Label':          r'\bBlack\s+Label\b',
+    'Reserve':              r'\bReserve\b',
 
     # ── GM (Chevy / GMC / Buick / Cadillac) ─────────────────────────────
-    'High Country':     r'\bHigh\s+Country\b',
-    'LTZ':              r'\bLTZ\b',
-    'LT':               r'\bLT\b(?!\w)',
-    'LS':               r'\bLS\b(?!\w)',
-    'LT Trail Boss':    r'\bLT\s+Trail\s+Boss\b',
-    'Trail Boss':       r'\bTrail\s+Boss\b',
-    'Z71':              r'\bZ71\b',
-    'ZR2':              r'\bZR2\b',
-    'ZL1':              r'\bZL1\b',
-    'RS':               r'\bRS\b(?!\d)',
-    'SS':               r'\bSS\b(?!\w)',
-    'AT4X':             r'\bAT4X\b',
-    'AT4':              r'\bAT4\b',
-    'Denali Ultimate':  r'\bDenali\s+Ultimate\b',
-    'Denali':           r'\bDenali\b',
-    'SLT':              r'\bSLT\b',
-    'SLE':              r'\bSLE\b',
-    'SL':               r'\bSL\b(?!\w)',
-    'SV':               r'\bSV\b',
-    'Pro':              r'\bPro\b(?!\s*-)',
+    'High Country':         r'\bHigh\s+Country\b',
+    'LT Trail Boss':        r'\bLT\s+Trail\s+Boss\b',
+    'Trail Boss':           r'\bTrail\s+Boss\b',
+    'LTZ':                  r'\bLTZ\b',
+    'Z71':                  r'\bZ71\b',
+    'ZR2':                  r'\bZR2\b',
+    'ZL1':                  r'\bZL1\b',
+    'AT4X':                 r'\bAT4X\b',
+    'AT4':                  r'\bAT4\b',
+    'Denali Ultimate':      r'\bDenali\s+Ultimate\b',
+    'Denali':               r'\bDenali\b',
+    'SLT':                  r'\bSLT\b',
+    'SLE':                  r'\bSLE\b',
     # Cadillac
-    'Luxury':           r'\bLuxury\b',
-    'Premium Luxury':   r'\bPremium\s+Luxury\b',
-    'Premium':          r'\bPremium\b',
-    'Sport':            r'\bSport\b(?!\s+Utility)',
-    'V-Series':         r'\bV-Series\b',
-    'Blackwing':        r'\bBlackwing\b',
+    'V-Series Blackwing':   r'\bV-Series\s+Blackwing\b',
+    'V-Series':             r'\bV-Series\b',
+    'Blackwing':            r'\bBlackwing\b',
+    'Premium Luxury':       r'\bPremium\s+Luxury\b',
     # Buick
-    'Avenir':           r'\bAvenir\b',
-    'Essence':          r'\bEssence\b',
+    'Avenir':               r'\bAvenir\b',
+    'Essence':              r'\bEssence\b',
+    'Preferred':            r'\bPreferred\b',
 
     # ── Dodge / Ram / Jeep / Chrysler ────────────────────────────────────
-    'Hellcat':          r'\bHellcat\b',
-    'Hellcat Redeye':   r'\bHellcat\s+Redeye\b',
-    'Jailbreak':        r'\bJailbreak\b',
-    'Widebody':         r'\bWidebody\b',
-    'Scat Pack':        r'\bScat\s+Pack\b',
-    'SRT 392':          r'\bSRT\s+392\b',
-    'SRT':              r'\bSRT\b',
-    'R/T':              r'\bR/T\b',
-    'GT':               r'\bGT\b(?!\w)',
-    'SXT':              r'\bSXT\b',
-    'SXT Plus':         r'\bSXT\s+Plus\b',
-    'SE':               r'\bSE\b(?!\w)',
-    'TRX':              r'\bTRX\b',
-    'Rebel':            r'\bRebel\b',
-    'Laramie Longhorn': r'\bLaramie\s+Longhorn\b',
-    'Laramie':          r'\bLaramie\b',
-    'Longhorn':         r'\bLonghorn\b',
-    'Big Horn':         r'\bBig\s+Horn\b',
-    'Night Edition':    r'\bNight\s+Edition\b',
-    'Power Wagon':      r'\bPower\s+Wagon\b',
-    'Limited Longhorn': r'\bLimited\s+Longhorn\b',
+    'Hellcat Redeye':       r'\bHellcat\s+Redeye\b',
+    'Hellcat':              r'\bHellcat\b',
+    'Jailbreak':            r'\bJailbreak\b',
+    'Widebody':             r'\bWidebody\b',
+    'Scat Pack':            r'\bScat\s+Pack\b',
+    'SRT 392':              r'\bSRT\s+392\b',
+    'SRT':                  r'\bSRT\b',
+    'R/T':                  r'\bR/T\b',
+    'SXT Plus':             r'\bSXT\s+Plus\b',
+    'SXT':                  r'\bSXT\b',
+    'TRX':                  r'\bTRX\b',
+    'Rebel':                r'\bRebel\b',
+    'Laramie Longhorn':     r'\bLaramie\s+Longhorn\b',
+    'Limited Longhorn':     r'\bLimited\s+Longhorn\b',
+    'Laramie':              r'\bLaramie\b',
+    'Longhorn':             r'\bLonghorn\b',
+    'Big Horn':             r'\bBig\s+Horn\b',
+    'Night Edition':        r'\bNight\s+Edition\b',
+    'Power Wagon':          r'\bPower\s+Wagon\b',
     # Jeep
-    'Rubicon 392':      r'\bRubicon\s+392\b',
-    'Rubicon':          r'\bRubicon\b',
-    'Sahara':           r'\bSahara\b',
-    'Willys':           r'\bWillys\b',
-    'Trailhawk':        r'\bTrailhawk\b',
-    'Overland':         r'\bOverland\b',
-    'Summit Reserve':   r'\bSummit\s+Reserve\b',
-    'Summit':           r'\bSummit\b',
-    'Altitude':         r'\bAltitude\b',
-    'Mojave':           r'\bMojave\b',
-    'Freedom':          r'\bFreedom\b',
-    # Chrysler
-    '300S':             r'\b300S\b',
-    'Touring L':        r'\bTouring\s+L\b',
-    'Touring':          r'\bTouring\b',
+    'Rubicon 392':          r'\bRubicon\s+392\b',
+    'Rubicon':              r'\bRubicon\b',
+    'Sahara':               r'\bSahara\b',
+    'Willys Sport':         r'\bWillys\s+Sport\b',
+    'Willys':               r'\bWillys\b',
+    'Trailhawk':            r'\bTrailhawk\b',
+    'Summit Reserve':       r'\bSummit\s+Reserve\b',
+    'Altitude':             r'\bAltitude\b',
+    'Mojave':               r'\bMojave\b',
+    'Freedom':              r'\bFreedom\b',
+    'Wagoneer Series III':  r'\bWagoneer\s+Series\s+III\b',
+    'Wagoneer Series II':   r'\bWagoneer\s+Series\s+II\b',
+    'Wagoneer Series I':    r'\bWagoneer\s+Series\s+I\b',
 
     # ── Nissan / Infiniti ────────────────────────────────────────────────
-    'Nismo':            r'\bNismo\b',
-    'Pro-4X':           r'\bPro-4X\b',
-    'Pro-2X':           r'\bPro-2X\b',
-    'Midnight Edition': r'\bMidnight\s+Edition\b',
-    'Rock Creek':       r'\bRock\s+Creek\b',
+    'Nismo':                r'\bNismo\b',
+    'Pro-4X':               r'\bPro-4X\b',
+    'Pro-2X':               r'\bPro-2X\b',
+    'Midnight Edition':     r'\bMidnight\s+Edition\b',
+    'Rock Creek':           r'\bRock\s+Creek\b',
+    'Red Sport 400':        r'\bRed\s+Sport\s+400\b',
+    'Red Sport':            r'\bRed\s+Sport\b',
 
     # ── Hyundai / Kia / Genesis ──────────────────────────────────────────
-    'Calligraphy':      r'\bCalligraphy\b',
-    'N Line':           r'\bN\s+Line\b',
-    'N':                r'\bN\b(?!\s+Line)',
-    'Ultimate':         r'\bUltimate\b',
-    'Preferred':        r'\bPreferred\b',
-    'Essential':        r'\bEssential\b',
-    'Luxury':           r'\bLuxury\b',
-    'Prestige':         r'\bPrestige\b',
+    'Calligraphy':          r'\bCalligraphy\b',
+    'N Line':               r'\bN\s+Line\b',
+    'Ultimate':             r'\bUltimate\b',
+    'Essential':            r'\bEssential\b',
+    'Prestige':             r'\bPrestige\b',
+    'Luxury':               r'\bLuxury\b',
 
     # ── Subaru ───────────────────────────────────────────────────────────
-    'XT':               r'\bXT\b',
-    'Wilderness':       r'\bWilderness\b',
-    'Onyx Edition':     r'\bOnyx\s+Edition\b',
-    'Onyx':             r'\bOnyx\b',
-    'Limited XT':       r'\bLimited\s+XT\b',
+    'Wilderness':           r'\bWilderness\b',
+    'Onyx Edition XT':      r'\bOnyx\s+Edition\s+XT\b',
+    'Onyx Edition':         r'\bOnyx\s+Edition\b',
+    'Limited XT':           r'\bLimited\s+XT\b',
+    'Sport XT':             r'\bSport\s+XT\b',
+    'XT':                   r'\bXT\b(?!\w)',
 
-    # ── Volkswagen / Audi ────────────────────────────────────────────────
-    'Execline':         r'\bExecline\b',
-    'Highline':         r'\bHighline\b',
-    'Comfortline':      r'\bComfortline\b',
-    'Trendline':        r'\bTrendline\b',
-    'Sportline':        r'\bSportline\b',
-    'R-Line':           r'\bR-?Line\b',
-    'GTI':              r'\bGTI\b',
-    'Autobahn':         r'\bAutobahn\b',
-    'Progressiv':       r'\bProgressiv\b',
-    'Comf':             r'\bComf\b',
-    # Audi
-    'Technik':          r'\bTechnik\b',
-    'Progressiv':       r'\bProgressiv\b',
-    'Komfort':          r'\bKomfort\b',
-    'Quattro':          r'\bQuattro\b',
+    # ── Volkswagen ────────────────────────────────────────────────────────
+    'Execline':             r'\bExecline\b',
+    'Highline':             r'\bHighline\b',
+    'Comfortline':          r'\bComfortline\b',
+    'Trendline':            r'\bTrendline\b',
+    'Sportline':            r'\bSportline\b',
+    'R-Line':               r'\bR-?Line\b',
+    'GTI':                  r'\bGTI\b',
+    'Autobahn':             r'\bAutobahn\b',
+    'Progressiv':           r'\bProgressiv\b',
 
-    # ── BMW / Mercedes ───────────────────────────────────────────────────
-    'M Sport':          r'\bM\s+Sport\b',
-    'xDrive':           r'\bxDrive\b',
-    'sDrive':           r'\bsDrive\b',
-    'AMG':              r'\bAMG\b',
-    '4MATIC':           r'\b4MATIC\b',
-    'AMG Line':         r'\bAMG\s+Line\b',
+    # ── Audi ─────────────────────────────────────────────────────────────
+    'Technik':              r'\bTechnik\b',
+    'Komfort':              r'\bKomfort\b',
+    'Quattro':              r'\bQuattro\b',
+
+    # ── BMW ──────────────────────────────────────────────────────────────
+    'M Sport':              r'\bM\s+Sport\b',
+    'xDrive':               r'\bxDrive\b',
+    'sDrive':               r'\bsDrive\b',
+
+    # ── Mercedes-Benz ─────────────────────────────────────────────────────
+    'AMG Line':             r'\bAMG\s+Line\b',
+    'AMG':                  r'\bAMG\b',
+    '4MATIC+':              r'\b4MATIC\+\b',
+    '4MATIC':               r'\b4MATIC\b',
 
     # ── Honda / Acura ────────────────────────────────────────────────────
-    'Type R':           r'\bType\s+R\b',
-    'Si':               r'\bSi\b(?!\w)',
-    'EX-L':             r'\bEX-L\b',
-    'EX':               r'\bEX\b(?!\w)',
-    'LX':               r'\bLX\b(?!\w)',
-    'Sport Touring':    r'\bSport\s+Touring\b',
-    'Elite':            r'\bElite\b',
-    'A-Spec':           r'\bA-?Spec\b',
-    'Advance':          r'\bAdvance\b',
-    'TrailSport':       r'\bTrailSport\b',
+    'Type R':               r'\bType\s+R\b',
+    'Sport Touring':        r'\bSport\s+Touring\b',
+    'EX-L Navi':            r'\bEX-L\s+Navi\b',
+    'EX-L':                 r'\bEX-L\b',
+    'A-Spec':               r'\bA-?Spec\b',
+    'Advance':              r'\bAdvance\b',
+    'TrailSport':           r'\bTrailSport\b',
+    'Elite':                r'\bElite\b',
 
     # ── Mazda ────────────────────────────────────────────────────────────
-    'Signature':        r'\bSignature\b',
-    'Carbon Edition':   r'\bCarbon\s+Edition\b',
-    'Turbo':            r'\bTurbo\b',
+    'Signature':            r'\bSignature\b',
+    'Carbon Edition':       r'\bCarbon\s+Edition\b',
+    'Turbo':                r'\bTurbo\b',
 
     # ── Volvo ────────────────────────────────────────────────────────────
-    'Inscription':      r'\bInscription\b',
-    'Momentum':         r'\bMomentum\b',
-    'R-Design':         r'\bR-?Design\b',
-    'Polestar':         r'\bPolestar\b',
+    'Inscription Expression': r'\bInscription\s+Expression\b',
+    'Inscription':          r'\bInscription\b',
+    'Momentum Pro':         r'\bMomentum\s+Pro\b',
+    'Momentum':             r'\bMomentum\b',
+    'R-Design':             r'\bR-?Design\b',
+    'Polestar Engineered':  r'\bPolestar\s+Engineered\b',
 
     # ── Generic / Universal ──────────────────────────────────────────────
-    'Capstone':         r'\bCapstone\b',
-    'Limited':          r'\bLimited\b',
-    'LE':               r'\bLE\b(?!\w)',
-    'XLE':              r'\bXLE\b',
-    'AWD':              r'\bAWD\b',
-    '4WD':              r'\b4WD\b',
-    '4x4':              r'\b4x4\b',
-    '4x2':              r'\b4x2\b',
-    'IVT':              r'\bIVT\b',
-    '2 Door':           r'\b2\s*Door\b',
-    '4 Door':           r'\b4\s*Door\b',
-    'Crew Cab':         r'\bCrew\s+Cab\b',
-    'Extended Cab':     r'\bExtended\s+Cab\b',
-    'Regular Cab':      r'\bRegular\s+Cab\b',
-    'Long Box':         r'\bLong\s+Box\b',
-    'Short Box':        r'\bShort\s+Box\b',
+    'Platinum':             r'\bPlatinum\b',
+    'Limited':              r'\bLimited\b',
+    'Touring L':            r'\bTouring\s+L\b',
+    'Touring':              r'\bTouring\b',
+    'Premium':              r'\bPremium\b',
+    'Sport':                r'\bSport\b(?!\s+Utility)',
+    'GT':                   r'\bGT\b(?!\w)',
+    'ST':                   r'\bST\b(?!\w)',
+    'RS':                   r'\bRS\b(?!\d)',
+    'SS':                   r'\bSS\b(?!\w)',
+    'LS':                   r'\bLS\b(?!\w)',
+    'LT':                   r'\bLT\b(?!\w)',
+    'SL':                   r'\bSL\b(?!\w)',
+    'SV':                   r'\bSV\b',
+    'SE':                   r'\bSE\b(?!\w)',
+    'LE':                   r'\bLE\b(?!\w)',
+    'EX':                   r'\bEX\b(?!\w)',
+    'LX':                   r'\bLX\b(?!\w)',
+    'Si':                   r'\bSi\b(?!\w)',
+    'Hybrid':               r'\bHybrid\b',
+    'Prime':                r'\bPrime\b',
+    'PHEV':                 r'\bPHEV\b',
+    'Electric':             r'\bElectric\b',
+    'AWD':                  r'\bAWD\b',
+    '4WD':                  r'\b4WD\b',
+    '4x4':                  r'\b4x4\b',
+    '4x2':                  r'\b4x2\b',
+    'Crew Cab':             r'\bCrew\s+Cab\b',
+    'Extended Cab':         r'\bExtended\s+Cab\b',
+    'Double Cab':           r'\bDouble\s+Cab\b',
+    'Regular Cab':          r'\bRegular\s+Cab\b',
+    'Long Box':             r'\bLong\s+Box\b',
+    'Short Box':            r'\bShort\s+Box\b',
+    'Long Bed':             r'\bLong\s+Bed\b',
+    'Short Bed':            r'\bShort\s+Bed\b',
+    'IVT':                  r'\bIVT\b',
+    'Summit':               r'\bSummit\b',
+    'Overland':             r'\bOverland\b',
+    'Pro':                  r'\bPro\b(?!\s*-)',
+    'XL':                   r'\bXL\b(?!\w)',
 }
 
 # Common dealer platform API URL patterns to auto-discover
 API_CANDIDATES = [
-    # Dealer.com / Cox Automotive
     "/apis/widget/INVENTORY_LISTING_DEFAULT_AUTO_USED:inventory-data-bus1/getInventory",
     "/apis/widget/INVENTORY_LISTING_DEFAULT_AUTO_USED:inventory-data-bus1/getInventory?pageSize=100",
     "/apis/widget/INVENTORY_LISTING_DEFAULT_AUTO_ALL:inventory-data-bus1/getInventory?condition=used",
-    # Generic REST patterns
     "/api/inventory/listings?condition=used&pageSize=100",
     "/api/inventory/search?condition=used",
     "/api/vehicles/used",
@@ -583,16 +643,12 @@ API_CANDIDATES = [
     "/inventory/used.json",
     "/_api/inventory?type=used",
     "/ajax/inventory?condition=used",
-    # DealerSocket
     "/inventory/listing?type=used&format=json",
     "/inventory/search?format=json&type=used",
-    # CDK / FortellaMedia
     "/vehicle/search?condition=used&format=json",
     "/api/search/vehicle?condition=used",
-    # Autotrader/vAuto integrations
     "/api/srp/vehicles?condition=used",
     "/api/srp/listings?condition=used",
-    # Toyota-specific platforms
     "/toyota/inventory/used",
     "/api/toyota/inventory?condition=used",
 ]
@@ -658,40 +714,33 @@ def extract_prices_from_text(text):
 
 
 def vehicle_from_json(item):
-    """Map a JSON object from the dealer API to our standard vehicle dict."""
     v = {'makeName':'','year':'','model':'','sub-model':'','trim':'',
          'mileage':'','value':'','sale_value':'','stock_number':'','engine':''}
-
-    # Try common field names used across dealer platforms
     field_map = {
-        'makeName':   ['make','makeName','Make','manufacturer'],
-        'year':       ['year','modelYear','Year','yr'],
-        'model':      ['model','modelName','Model'],
-        'trim':       ['trim','trimName','Trim','trimLevel','subModel'],
-        'mileage':    ['mileage','odometer','miles','km','Mileage','Odometer'],
-        'value':      ['price','listPrice','retailPrice','msrp','Price','salePrice',
-                       'internetPrice','sellingPrice','askingPrice'],
-        'sale_value': ['salePrice','internetPrice','specialPrice','discountPrice',
-                       'webPrice','ourPrice'],
+        'makeName':    ['make','makeName','Make','manufacturer'],
+        'year':        ['year','modelYear','Year','yr'],
+        'model':       ['model','modelName','Model'],
+        'trim':        ['trim','trimName','Trim','trimLevel','subModel'],
+        'mileage':     ['mileage','odometer','miles','km','Mileage','Odometer'],
+        'value':       ['price','listPrice','retailPrice','msrp','Price','salePrice',
+                        'internetPrice','sellingPrice','askingPrice'],
+        'sale_value':  ['salePrice','internetPrice','specialPrice','discountPrice',
+                        'webPrice','ourPrice'],
         'stock_number':['stockNumber','stock','stockNum','StockNumber','vin'],
-        'engine':     ['engine','engineDescription','engineSize'],
+        'engine':      ['engine','engineDescription','engineSize'],
     }
-
     for our_key, candidates in field_map.items():
         for c in candidates:
             val = item.get(c) or item.get(c.lower()) or item.get(c.upper())
             if val:
                 v[our_key] = str(val).strip()
                 break
-
-    # Ensure sale < regular
     if v['value'] and v['sale_value']:
         try:
             if int(re.sub(r'[^\d]','',v['sale_value'])) >= int(re.sub(r'[^\d]','',v['value'])):
                 v['sale_value'] = ''
         except Exception:
             pass
-
     v['sub-model'] = v['trim']
     return v
 
@@ -737,22 +786,13 @@ def is_valid(v):
 
 
 def completeness(v):
-    """Score a vehicle record by how complete it is (higher = better)."""
     fields = ['stock_number', 'mileage', 'engine', 'trim', 'value', 'sale_value']
     return sum(1 for f in fields if v.get(f, '').strip())
 
 
 def dedup(vehicles):
-    """
-    Two-pass deduplication:
-    Pass 1 — keep one entry per stock number (the most complete).
-    Pass 2 — for entries without a stock number, drop them if a stocked entry
-              already covers the same year+make+model+price combination.
-    """
-    # Pass 1: group by stock number, keep most complete per stock
-    by_stock = {}   # stock -> best vehicle
+    by_stock = {}
     no_stock = []
-
     for v in vehicles:
         stock = v.get('stock_number', '').strip()
         if stock:
@@ -760,29 +800,18 @@ def dedup(vehicles):
                 by_stock[stock] = v
         else:
             no_stock.append(v)
-
     stocked = list(by_stock.values())
-
-    # Build a lookup: (year, make, model, price) -> True for every stocked vehicle
     stocked_ymmp = set()
     for v in stocked:
-        stocked_ymmp.add((
-            v.get('year',''), v.get('makeName',''),
-            v.get('model',''), v.get('value',''),
-        ))
-
-    # Pass 2: only keep no-stock entries that don't duplicate a stocked vehicle
+        stocked_ymmp.add((v.get('year',''), v.get('makeName',''), v.get('model',''), v.get('value','')))
     extra = []
     seen_extra = set()
     for v in no_stock:
         ymmp = (v.get('year',''), v.get('makeName',''), v.get('model',''), v.get('value',''))
-        if ymmp in stocked_ymmp:
-            continue          # a stocked entry already covers this
-        if ymmp in seen_extra:
-            continue          # duplicate within the no-stock group
+        if ymmp in stocked_ymmp or ymmp in seen_extra:
+            continue
         seen_extra.add(ymmp)
         extra.append(v)
-
     return stocked + extra
 
 
@@ -791,7 +820,6 @@ def dedup(vehicles):
 # -----------------------------------------------------------------------
 
 def try_json_api(url):
-    """Try fetching a JSON API endpoint. Returns list of vehicles or []."""
     try:
         resp = SESSION.get(url, timeout=15)
         if resp.status_code != 200:
@@ -800,8 +828,6 @@ def try_json_api(url):
         if 'json' not in ct and not resp.text.strip().startswith(('{','[')):
             return []
         data = resp.json()
-
-        # Drill into common wrapper keys
         if isinstance(data, dict):
             for key in ['vehicles','inventory','listings','results','data',
                         'items','records','vehicles_list','vehicleList']:
@@ -809,15 +835,12 @@ def try_json_api(url):
                     data = data[key]
                     break
             if isinstance(data, dict):
-                # Try one level deeper
                 for v in data.values():
                     if isinstance(v, list) and len(v) > 0 and isinstance(v[0], dict):
                         data = v
                         break
-
         if not isinstance(data, list) or len(data) == 0:
             return []
-
         vehicles = []
         for item in data:
             if not isinstance(item, dict):
@@ -825,25 +848,20 @@ def try_json_api(url):
             v = vehicle_from_json(item)
             if is_valid(v):
                 vehicles.append(v)
-
         logger.info("JSON API hit: {} — {} vehicles".format(url, len(vehicles)))
         return vehicles
-
     except Exception as e:
         logger.debug("JSON API failed {}: {}".format(url, e))
         return []
 
 
 def discover_and_scrape_json():
-    """Try the configured URL first, then auto-discover."""
     global JSON_API_URL
-
     if JSON_API_URL:
         vehicles = try_json_api(JSON_API_URL)
         if vehicles:
             return vehicles
         logger.warning("Configured JSON_API_URL returned no vehicles — trying auto-discovery")
-
     logger.info("Auto-discovering dealer JSON API ({} candidates)...".format(len(API_CANDIDATES)))
     for path in API_CANDIDATES:
         url = BASE + path
@@ -852,52 +870,42 @@ def discover_and_scrape_json():
             logger.info("SUCCESS: API found at {}".format(url))
             logger.info("TIP: Set TOYOTA_API_URL={} to skip discovery next time".format(url))
             return vehicles
-
     logger.info("No JSON API found via auto-discovery")
     return []
 
 
 # -----------------------------------------------------------------------
-# Strategy 2: HTML scraping (works from residential IPs / self-hosted runner)
+# Strategy 2: HTML scraping
 # -----------------------------------------------------------------------
 
 def scrape_html():
     all_vehicles = []
-    page_num = 1
-
     logger.info("Falling back to HTML scraping (requires non-blocked IP)...")
-
     for page_num in range(1, 11):
         url = "{}?page={}".format(TARGET.rstrip('/'), page_num)
         try:
             resp = SESSION.get(url, timeout=30)
             if resp.status_code == 403:
                 logger.error("403 Forbidden — this IP is blocked by Cloudflare.")
-                logger.error("Run this scraper on your own machine or a self-hosted GitHub Actions runner.")
                 break
             resp.raise_for_status()
         except Exception as e:
             logger.error("HTML fetch failed page {}: {}".format(page_num, e))
             break
-
         soup = BeautifulSoup(resp.content, 'html.parser')
-
         if page_num == 1:
             with open('debug_page1.html', 'w', encoding='utf-8') as f:
                 f.write(soup.prettify())
             logger.info("Saved debug_page1.html")
-
         page_text = soup.get_text()
         if not re.search(r'\b(19[89]\d|20[0-2]\d)\b', page_text):
             break
-
         selectors = [
             '[data-vehicle-id]','[data-stock-number]','[data-vin]',
             '.vehicle-card','.inventory-item','.vehicle-listing',
             'article[class*="vehicle"]','div[class*="vehicle"]',
             'li[class*="vehicle"]','.vehicle','article','li[class*="item"]',
         ]
-
         page_vehicles, seen = [], set()
         for selector in selectors:
             elements = soup.select(selector)
@@ -914,14 +922,11 @@ def scrape_html():
             if count:
                 logger.info("Page {} selector '{}' — {} vehicles".format(page_num, selector, count))
                 break
-
         if not page_vehicles:
             logger.info("No vehicles on page {} — stopping".format(page_num))
             break
-
         all_vehicles.extend(page_vehicles)
         time.sleep(1.0)
-
     return all_vehicles
 
 
@@ -970,38 +975,22 @@ def main():
     logger.info("="*80)
     logger.info("RED DEER TOYOTA SCRAPER")
     logger.info("="*80)
-
-    # Strategy 1: JSON API (bypasses Cloudflare — works from any IP)
     vehicles = discover_and_scrape_json()
-
-    # Strategy 2: HTML fallback (requires residential/self-hosted IP)
     if not vehicles:
         vehicles = scrape_html()
-
     vehicles = dedup(vehicles)
     logger.info("FINAL: {} unique vehicles".format(len(vehicles)))
-
     print_results(vehicles)
-
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(script_dir, '..', '..'))
     csv_path = os.path.join(project_root, 'public', 'data', 'inventory.csv')
-
     if vehicles:
         save_csv(vehicles, csv_path)
         print("\nCSV created: {}".format(csv_path))
     else:
         print("\nNo vehicles found.")
-        print("\nNEXT STEPS — pick one:")
-        print("  A) Find the JSON API: Open Chrome DevTools → Network → XHR/Fetch")
-        print("     while loading https://www.reddeertoyota.com/inventory/used/")
-        print("     Set the API URL as TOYOTA_API_URL env var in GitHub secrets.")
-        print("")
-        print("  B) Self-hosted runner: Run the GitHub Action on your own PC.")
-        print("     See .github/workflows/daily-scrape.yml for instructions.")
         if os.path.exists(csv_path):
             os.remove(csv_path)
-
     return 0 if vehicles else 1
 
 
