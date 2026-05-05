@@ -334,10 +334,37 @@ CAR_MAKES = {
     },
     # ── Acura ─────────────────────────────────────────────────────────────
     'Acura': {
-        'ILX','TLX','TLX Type S','TL','TSX','TSX Sport Wagon',
-        'RL','RLX','RLX Sport Hybrid','CSX','RSX','RSX Type-S',
-        'NSX','Integra','Integra Type S',
-        'RDX','MDX','MDX Sport Hybrid','CDX','ZDX',
+        # ── Canada-exclusive cars ─────────────────────────────────────────
+        'EL',                   # 2001–2005 (Canada only, Civic-based sedan)
+        'CSX',                  # 2006–2011 (Canada only, replaced EL)
+        # ── Sports/Coupe cars ────────────────────────────────────────────
+        'CL',                   # 1999–2003
+        'RSX',                  # 2002–2006
+        'RSX Type-S',
+        'NSX',                  # 2017–2022
+        # ── Compact cars ─────────────────────────────────────────────────
+        'ILX',                  # 2013–2022
+        'Integra',              # 2023+
+        'Integra Type S',       # 2023+
+        # ── Mid-size cars ────────────────────────────────────────────────
+        'TL',                   # 1999–2014
+        'TLX',                  # 2015+
+        'TLX Type S',
+        'TSX',                  # 2004–2014
+        'TSX Sport Wagon',
+        # ── Full-size / flagship cars ─────────────────────────────────────
+        'RL',                   # 2005–2012
+        'RLX',                  # 2013–2020
+        'RLX Sport Hybrid',
+        # ── Compact SUVs ─────────────────────────────────────────────────
+        'RDX',                  # 2007+
+        # ── Mid-size SUVs ────────────────────────────────────────────────
+        'MDX',                  # 2001+
+        'MDX Sport Hybrid',
+        'MDX Type S',
+        # ── Other SUVs ───────────────────────────────────────────────────
+        'ZDX',                  # 2010–2013, 2024+
+        'CDX',
     },
     # ── Lexus ─────────────────────────────────────────────────────────────
     'Lexus': {
@@ -566,12 +593,18 @@ TRIM_PATTERNS = {
     '4MATIC':               r'\b4MATIC\b',
 
     # ── Honda / Acura ────────────────────────────────────────────────────
+    'Type S':               r'\bType\s+S\b',
     'Type R':               r'\bType\s+R\b',
+    'SH-AWD':               r'\bSH-AWD\b',
+    'Platinum Elite':       r'\bPlatinum\s+Elite\b',
     'Sport Touring':        r'\bSport\s+Touring\b',
     'EX-L Navi':            r'\bEX-L\s+Navi\b',
     'EX-L':                 r'\bEX-L\b',
     'A-Spec':               r'\bA-?Spec\b',
     'Advance':              r'\bAdvance\b',
+    'Tech':                 r'\bTech\b(?!\w)',
+    'w/Tech':               r'\bw/\s*Tech\b',
+    'w/A-Spec':             r'\bw/\s*A-?Spec\b',
     'TrailSport':           r'\bTrailSport\b',
     'Elite':                r'\bElite\b',
 
