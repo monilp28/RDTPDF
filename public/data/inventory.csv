@@ -1,5 +1,4 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
-Subaru,2016,Crosstrek,AWD,AWD,155568,16977,,S61382,2.0L 4
 Toyota,2018,RAV4,LE,LE,173944,21977,,S40701,2.5L 4
 Dodge,2016,Durango,Platinum,Platinum,68873,24977,,S70632,3.6L 6
 Toyota,2019,RAV4,LE,LE,100,25977,,11466,2.5L 4
@@ -19,9 +18,14 @@ Subaru,2025,WRX,AWD,AWD,5254,48967,,S71201,2.4L 4
 Toyota,2025,RAV4 Hybrid,XLE Premium,XLE Premium,22494,49977,,S61761,2.5L 4
 Ford,2023,F-150,Lariat,Lariat,97512,52977,51977,S71251,3.5L 6
 Toyota,2024,Tacoma,TRD,TRD,24855,53977,,11457,2.4L 4
+Toyota,2024,Highlander,Limited,Limited,64681,54967,,S62131,2.4L 4
 Toyota,2024,Tundra,TRD,TRD,63966,55977,,11447,3.5L 6
 Toyota,2022,Tundra,TRD Pro,TRD Pro,161463,59977,,S71351,3.5L 6
 Toyota,2025,Tundra,TRD,TRD,13632,63977,61977,11452,3.4L 6
+Lexus,2025,NX 350,F Sport,F Sport,36330,61977,,S70981,2.4L 4
+Toyota,2025,Tacoma,Limited,Limited,22529,64977,,S71321,2.4L 4
+Kia,2016,Sportage,EX,EX,141161,,,S61502,2.4L 4
 Toyota,2011,4Runner,SR5,SR5,189646,,,S62101,4.0L 6
 Hyundai,2016,Tucson,Limited,Limited,102036,,,S40522,1.6L 4
 Toyota,2017,Corolla,LE,LE,150194,,,S62011,1.8L 4
+Kia,2022,Seltos,LX,LX,101376,,,S62111,2.0L 4
