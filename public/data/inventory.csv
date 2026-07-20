@@ -1,14 +1,13 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
 Hyundai,2016,Tucson,Limited,Limited,102036,17977,,S40522,1.6L 4
-Toyota,2018,RAV4,LE,LE,173944,21977,,S40701,2.5L 4
+Toyota,2018,RAV4,LE,LE,173596,21977,,S40701,2.5L 4
 Dodge,2016,Durango,Platinum,Platinum,68873,24977,,S70632,3.6L 6
-Toyota,2019,RAV4,LE,LE,100,25977,,11466,2.5L 4
+Toyota,2019,RAV4,LE,LE,135314,25977,,11466,2.5L 4
 Lexus,2015,RC 350,AWD,AWD,115407,29977,27977,114381,3.5L 6
 Toyota,2021,Corolla Hatchback,SE,SE,27888,28977,,11467,2.0L 4
 Jeep,2021,Grand Cherokee,Limited,Limited,122360,33977,29977,S60621,3.6L 6
 Subaru,2024,Crosstrek,Touring,Touring,19452,33967,,S62021,2.0L 4
-Toyota,2023,RAV4,XLE Premium,XLE Premium,120343,33977,,11461,2.5L 4
-Toyota,2023,Corolla Cross,Premium,Premium,36280,33977,,S71491,2.0L 4
+Toyota,2023,RAV4,XLE Premium,XLE Premium,120416,33977,,11461,2.5L 4
 Toyota,2025,Corolla Cross,LE,LE,25916,34977,,11464,2.0L 4
 GMC,2023,Acadia,AT4,AT4,90713,39977,36977,114451,3.6L 6
 Honda,2020,Pilot,EX-L Navi,EX-L Navi,106716,36977,,S61751,3.5L 6
