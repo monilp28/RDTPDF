@@ -975,24 +975,65 @@ def scrape_html():
 
         page = context.new_page()
 
-        # ── Step 1: Warm up with the homepage so Cloudflare issues a session cookie ──
+        # ── Step 1: Homepage warmup — establishes Cloudflare session cookie ─────────
         try:
-            logger.info("Warming up — visiting homepage first...")
-            resp = page.goto(BASE + '/', wait_until='domcontentloaded', timeout=30000)
+            logger.info("Step 1: Loading homepage...")
+            resp = page.goto(BASE + '/', wait_until='networkidle', timeout=30000)
             logger.info("Homepage status: {}".format(resp.status if resp else '?'))
-            # Simulate a human reading the page for a moment
-            time.sleep(3)
-            # Scroll down slightly — real users do this
-            page.evaluate("window.scrollBy(0, 300)")
-            time.sleep(1)
+            time.sleep(2)
+            page.mouse.move(400, 300)
+            page.evaluate("window.scrollBy(0, 400)")
+            time.sleep(2)
         except Exception as e:
-            logger.warning("Homepage warmup failed (continuing anyway): {}".format(e))
+            logger.warning("Homepage warmup failed: {}".format(e))
 
-        # ── Step 2: Navigate to the inventory, one page at a time ──────────────────
+        # ── Step 2: Try clicking into inventory via the nav (most human-like) ───────
+        reached_inventory = False
+        try:
+            logger.info("Step 2: Clicking into inventory via navigation...")
+            nav_selectors = [
+                'a[href*="/inventory/used"]',
+                'a[href*="used"]',
+                'a:text-matches("Used", "i")',
+                'a:text-matches("Inventory", "i")',
+                'nav a[href*="inventory"]',
+            ]
+            for sel in nav_selectors:
+                try:
+                    page.wait_for_selector(sel, timeout=4000)
+                    page.click(sel)
+                    page.wait_for_load_state("domcontentloaded", timeout=15000)
+                    time.sleep(2)
+                    current = page.url
+                    logger.info("Clicked nav link — landed on: {}".format(current))
+                    if "inventory" in current or "used" in current:
+                        reached_inventory = True
+                        break
+                except Exception:
+                    continue
+        except Exception as e:
+            logger.warning("Nav click approach failed: {}".format(e))
+
+        # ── Step 3: Fall back to goto with referer if click did not work ─────────────
+        if not reached_inventory:
+            logger.info("Step 3: Using goto with Referer header...")
+            try:
+                resp = page.goto(
+                    TARGET,
+                    wait_until="domcontentloaded",
+                    timeout=45000,
+                    referer=BASE + "/",
+                )
+                logger.info("Inventory page status (with referer): {}".format(
+                    resp.status if resp else "?"))
+                time.sleep(3)
+            except Exception as e:
+                logger.warning("Goto with referer failed: {}".format(e))
+
+        # ── Step 4: Paginate through inventory ───────────────────────────────────────
         for page_num in range(1, 11):
-            # Use the trailing-slash form the site actually uses
             if page_num == 1:
-                url = TARGET  # https://www.reddeertoyota.com/inventory/used/
+                url = TARGET
             else:
                 url = "{}?page={}".format(TARGET, page_num)
 
