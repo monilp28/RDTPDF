@@ -915,7 +915,7 @@ def discover_and_scrape_json():
 def scrape_html():
     """
     Strategy 2: Playwright headless Chromium.
-    Executes JavaScript and passes Cloudflare checks on residential/self-hosted IPs.
+    Visits the homepage first to establish a Cloudflare session, then scrapes inventory.
     Requires: pip install playwright && playwright install chromium
     """
     try:
@@ -934,11 +934,14 @@ def scrape_html():
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-blink-features=AutomationControlled',
+                '--disable-dev-shm-usage',
+                '--disable-infobars',
+                '--window-size=1366,768',
             ],
         )
         context = browser.new_context(
             user_agent=(
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
                 'AppleWebKit/537.36 (KHTML, like Gecko) '
                 'Chrome/131.0.0.0 Safari/537.36'
             ),
@@ -946,19 +949,53 @@ def scrape_html():
             locale='en-CA',
             timezone_id='America/Edmonton',
             java_script_enabled=True,
+            # Accept all cookies like a real browser
+            extra_http_headers={
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-CA,en;q=0.9',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'DNT': '1',
+                'Upgrade-Insecure-Requests': '1',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'none',
+                'Sec-Fetch-User': '?1',
+            },
         )
+
         # Mask automation signals
         context.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-            Object.defineProperty(navigator, 'plugins',   { get: () => [1,2,3,4,5] });
-            Object.defineProperty(navigator, 'languages', { get: () => ['en-CA','en'] });
+            Object.defineProperty(navigator, 'webdriver',  { get: () => undefined });
+            Object.defineProperty(navigator, 'plugins',    { get: () => [1,2,3,4,5] });
+            Object.defineProperty(navigator, 'languages',  { get: () => ['en-CA','en'] });
+            Object.defineProperty(navigator, 'platform',   { get: () => 'MacIntel' });
+            Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 });
             window.chrome = { runtime: {} };
         """)
 
         page = context.new_page()
 
+        # ── Step 1: Warm up with the homepage so Cloudflare issues a session cookie ──
+        try:
+            logger.info("Warming up — visiting homepage first...")
+            resp = page.goto(BASE + '/', wait_until='domcontentloaded', timeout=30000)
+            logger.info("Homepage status: {}".format(resp.status if resp else '?'))
+            # Simulate a human reading the page for a moment
+            time.sleep(3)
+            # Scroll down slightly — real users do this
+            page.evaluate("window.scrollBy(0, 300)")
+            time.sleep(1)
+        except Exception as e:
+            logger.warning("Homepage warmup failed (continuing anyway): {}".format(e))
+
+        # ── Step 2: Navigate to the inventory, one page at a time ──────────────────
         for page_num in range(1, 11):
-            url = "{}?page={}".format(TARGET.rstrip('/'), page_num)
+            # Use the trailing-slash form the site actually uses
+            if page_num == 1:
+                url = TARGET  # https://www.reddeertoyota.com/inventory/used/
+            else:
+                url = "{}?page={}".format(TARGET, page_num)
+
             logger.info("Navigating to: {}".format(url))
 
             try:
@@ -967,24 +1004,26 @@ def scrape_html():
                 logger.info("HTTP status: {}".format(status))
 
                 if status == 403:
-                    logger.error("403 — Cloudflare is blocking this IP/environment.")
-                    logger.error("Make sure this is running on a self-hosted runner, not GitHub-hosted.")
+                    logger.error("403 on page {} — Cloudflare blocked. "
+                                 "Verify the runner is self-hosted with a residential IP.".format(page_num))
                     break
 
-                # Wait for inventory content to appear (JS-rendered pages)
+                # Wait for inventory cards to render (JS-heavy page)
                 try:
                     page.wait_for_selector(
                         ', '.join([
                             '.vehicle-card', '.inventory-item', '.vehicle-listing',
                             '[data-vehicle-id]', 'article', '.srp-list-item',
+                            '.inventory-list-item', '[class*="VehicleCard"]',
                         ]),
-                        timeout=15000,
+                        timeout=20000,
                     )
+                    logger.info("Inventory selector found on page {}".format(page_num))
                 except PWTimeout:
-                    logger.warning("Timed out waiting for vehicle selectors — parsing anyway")
+                    logger.warning("Selector timeout on page {} — parsing whatever loaded".format(page_num))
 
-                # Extra settle time for lazy-loaded content
-                time.sleep(2)
+                # Extra settle for lazy-loaded images / JS renders
+                time.sleep(2.5)
 
                 html = page.content()
 
@@ -997,12 +1036,12 @@ def scrape_html():
                 logger.info("Page {} — {} vehicles extracted".format(page_num, len(page_vehicles)))
 
                 if not page_vehicles:
-                    logger.info("No vehicles on page {} — stopping".format(page_num))
+                    logger.info("No vehicles on page {} — stopping pagination".format(page_num))
                     break
 
                 all_vehicles.extend(page_vehicles)
-                page_num += 1
-                time.sleep(1.5)
+                # Human-like delay between pages
+                time.sleep(2)
 
             except PWTimeout:
                 logger.error("Page load timed out on page {}".format(page_num))
