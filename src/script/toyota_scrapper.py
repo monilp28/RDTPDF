@@ -913,228 +913,55 @@ def discover_and_scrape_json():
 # -----------------------------------------------------------------------
 
 def scrape_html():
-    """
-    Strategy 2: Playwright headless Chromium.
-    Visits the homepage first to establish a Cloudflare session, then scrapes inventory.
-    Requires: pip install playwright && playwright install chromium
-    """
-    try:
-        from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
-    except ImportError:
-        logger.error("Playwright not installed. Run: pip install playwright && playwright install chromium")
-        return []
-
     all_vehicles = []
-    logger.info("Launching Playwright/Chromium...")
-
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch(
-            headless=True,
-            args=[
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-blink-features=AutomationControlled',
-                '--disable-dev-shm-usage',
-                '--disable-infobars',
-                '--window-size=1366,768',
-            ],
-        )
-        context = browser.new_context(
-            user_agent=(
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-                'AppleWebKit/537.36 (KHTML, like Gecko) '
-                'Chrome/131.0.0.0 Safari/537.36'
-            ),
-            viewport={'width': 1366, 'height': 768},
-            locale='en-CA',
-            timezone_id='America/Edmonton',
-            java_script_enabled=True,
-            # Accept all cookies like a real browser
-            extra_http_headers={
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-                'Accept-Language': 'en-CA,en;q=0.9',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'DNT': '1',
-                'Upgrade-Insecure-Requests': '1',
-                'Sec-Fetch-Dest': 'document',
-                'Sec-Fetch-Mode': 'navigate',
-                'Sec-Fetch-Site': 'none',
-                'Sec-Fetch-User': '?1',
-            },
-        )
-
-        # Mask automation signals
-        context.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver',  { get: () => undefined });
-            Object.defineProperty(navigator, 'plugins',    { get: () => [1,2,3,4,5] });
-            Object.defineProperty(navigator, 'languages',  { get: () => ['en-CA','en'] });
-            Object.defineProperty(navigator, 'platform',   { get: () => 'MacIntel' });
-            Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 });
-            window.chrome = { runtime: {} };
-        """)
-
-        page = context.new_page()
-
-        # ── Step 1: Homepage warmup — establishes Cloudflare session cookie ─────────
+    logger.info("Falling back to HTML scraping (requires non-blocked IP)...")
+    for page_num in range(1, 11):
+        url = "{}?page={}".format(TARGET.rstrip('/'), page_num)
         try:
-            logger.info("Step 1: Loading homepage...")
-            resp = page.goto(BASE + '/', wait_until='networkidle', timeout=30000)
-            logger.info("Homepage status: {}".format(resp.status if resp else '?'))
-            time.sleep(2)
-            page.mouse.move(400, 300)
-            page.evaluate("window.scrollBy(0, 400)")
-            time.sleep(2)
-        except Exception as e:
-            logger.warning("Homepage warmup failed: {}".format(e))
-
-        # ── Step 2: Try clicking into inventory via the nav (most human-like) ───────
-        reached_inventory = False
-        try:
-            logger.info("Step 2: Clicking into inventory via navigation...")
-            nav_selectors = [
-                'a[href*="/inventory/used"]',
-                'a[href*="used"]',
-                'a:text-matches("Used", "i")',
-                'a:text-matches("Inventory", "i")',
-                'nav a[href*="inventory"]',
-            ]
-            for sel in nav_selectors:
-                try:
-                    page.wait_for_selector(sel, timeout=4000)
-                    page.click(sel)
-                    page.wait_for_load_state("domcontentloaded", timeout=15000)
-                    time.sleep(2)
-                    current = page.url
-                    logger.info("Clicked nav link — landed on: {}".format(current))
-                    if "inventory" in current or "used" in current:
-                        reached_inventory = True
-                        break
-                except Exception:
-                    continue
-        except Exception as e:
-            logger.warning("Nav click approach failed: {}".format(e))
-
-        # ── Step 3: Fall back to goto with referer if click did not work ─────────────
-        if not reached_inventory:
-            logger.info("Step 3: Using goto with Referer header...")
-            try:
-                resp = page.goto(
-                    TARGET,
-                    wait_until="domcontentloaded",
-                    timeout=45000,
-                    referer=BASE + "/",
-                )
-                logger.info("Inventory page status (with referer): {}".format(
-                    resp.status if resp else "?"))
-                time.sleep(3)
-            except Exception as e:
-                logger.warning("Goto with referer failed: {}".format(e))
-
-        # ── Step 4: Paginate through inventory ───────────────────────────────────────
-        for page_num in range(1, 11):
-            if page_num == 1:
-                url = TARGET
-            else:
-                url = "{}?page={}".format(TARGET, page_num)
-
-            logger.info("Navigating to: {}".format(url))
-
-            try:
-                resp = page.goto(url, wait_until='domcontentloaded', timeout=45000)
-                status = resp.status if resp else 0
-                logger.info("HTTP status: {}".format(status))
-
-                if status == 403:
-                    logger.error("403 on page {} — Cloudflare blocked. "
-                                 "Verify the runner is self-hosted with a residential IP.".format(page_num))
-                    break
-
-                # Wait for inventory cards to render (JS-heavy page)
-                try:
-                    page.wait_for_selector(
-                        ', '.join([
-                            '.vehicle-card', '.inventory-item', '.vehicle-listing',
-                            '[data-vehicle-id]', 'article', '.srp-list-item',
-                            '.inventory-list-item', '[class*="VehicleCard"]',
-                        ]),
-                        timeout=20000,
-                    )
-                    logger.info("Inventory selector found on page {}".format(page_num))
-                except PWTimeout:
-                    logger.warning("Selector timeout on page {} — parsing whatever loaded".format(page_num))
-
-                # Extra settle for lazy-loaded images / JS renders
-                time.sleep(2.5)
-
-                html = page.content()
-
-                if page_num == 1:
-                    with open('debug_page1.html', 'w', encoding='utf-8') as f:
-                        f.write(html)
-                    logger.info("Saved debug_page1.html ({} bytes)".format(len(html)))
-
-                page_vehicles = find_vehicles_in_html(html)
-                logger.info("Page {} — {} vehicles extracted".format(page_num, len(page_vehicles)))
-
-                if not page_vehicles:
-                    logger.info("No vehicles on page {} — stopping pagination".format(page_num))
-                    break
-
-                all_vehicles.extend(page_vehicles)
-                # Human-like delay between pages
-                time.sleep(2)
-
-            except PWTimeout:
-                logger.error("Page load timed out on page {}".format(page_num))
+            resp = SESSION.get(url, timeout=30)
+            if resp.status_code == 403:
+                logger.error("403 Forbidden — this IP is blocked by Cloudflare.")
                 break
-            except Exception as e:
-                logger.error("Error on page {}: {}".format(page_num, e))
-                break
-
-        browser.close()
-
-    return all_vehicles
-
-
-def find_vehicles_in_html(html):
-    """Parse HTML string and return list of valid vehicle dicts."""
-    soup = BeautifulSoup(html, 'html.parser')
-    selectors = [
-        '[data-vehicle-id]','[data-stock-number]','[data-vin]',
-        '.vehicle-card','.inventory-item','.vehicle-listing',
-        'article[class*="vehicle"]','div[class*="vehicle"]',
-        'li[class*="vehicle"]','.vehicle','article','li[class*="item"]',
-    ]
-    vehicles, seen = [], set()
-    for selector in selectors:
-        elements = soup.select(selector)
-        if not elements: continue
-        count = 0
-        for idx, el in enumerate(elements):
-            eid = id(el)
-            if eid in seen: continue
-            v = parse_html_element(el, idx)
-            if is_valid(v):
-                vehicles.append(v)
-                seen.add(eid)
-                count += 1
-        if count:
-            logger.info("Selector '{}' — {} vehicles".format(selector, count))
-            return vehicles
-    # Broad fallback
-    for idx, div in enumerate(soup.find_all(['div','section','article','li'])):
-        eid = id(div)
-        if eid in seen: continue
-        txt = div.get_text(separator=' ', strip=True)
-        if not re.search(r'\b(19[89]\d|20[0-2]\d)\b', txt): continue
-        for make in CAR_MAKES:
-            if re.search(r'\b' + re.escape(make) + r'\b', txt, re.IGNORECASE):
-                v = parse_html_element(div, idx)
+            resp.raise_for_status()
+        except Exception as e:
+            logger.error("HTML fetch failed page {}: {}".format(page_num, e))
+            break
+        soup = BeautifulSoup(resp.content, 'html.parser')
+        if page_num == 1:
+            with open('debug_page1.html', 'w', encoding='utf-8') as f:
+                f.write(soup.prettify())
+            logger.info("Saved debug_page1.html")
+        page_text = soup.get_text()
+        if not re.search(r'\b(19[89]\d|20[0-2]\d)\b', page_text):
+            break
+        selectors = [
+            '[data-vehicle-id]','[data-stock-number]','[data-vin]',
+            '.vehicle-card','.inventory-item','.vehicle-listing',
+            'article[class*="vehicle"]','div[class*="vehicle"]',
+            'li[class*="vehicle"]','.vehicle','article','li[class*="item"]',
+        ]
+        page_vehicles, seen = [], set()
+        for selector in selectors:
+            elements = soup.select(selector)
+            if not elements: continue
+            count = 0
+            for idx, el in enumerate(elements):
+                eid = id(el)
+                if eid in seen: continue
+                v = parse_html_element(el, idx)
                 if is_valid(v):
-                    vehicles.append(v)
+                    page_vehicles.append(v)
                     seen.add(eid)
+                    count += 1
+            if count:
+                logger.info("Page {} selector '{}' — {} vehicles".format(page_num, selector, count))
                 break
-    return vehicles
+        if not page_vehicles:
+            logger.info("No vehicles on page {} — stopping".format(page_num))
+            break
+        all_vehicles.extend(page_vehicles)
+        time.sleep(1.0)
+    return all_vehicles
 
 
 # -----------------------------------------------------------------------
