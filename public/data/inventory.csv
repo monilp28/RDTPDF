@@ -1,5 +1,4 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
-Honda,2014,Odyssey,Touring,Touring,138278,21977,,S70982,3.5L 6
 Dodge,2018,Durango,GT,GT,75149,24977,,S71811,5.7L 8
 Mazda,2021,CX-5,AWD,AWD,62097,27977,,S71721,2.5L 4
 Toyota,2021,Corolla Hatchback,SE,SE,27888,28977,,11467,2.0L 4
@@ -11,11 +10,11 @@ Mazda,2024,CX-5,AWD,AWD,38691,34977,,S62191,2.5L 4
 Toyota,2021,Venza,XLE,XLE,100064,34977,,11469,2.5L 4
 Volvo,2023,XC40,Hybrid,Hybrid,49725,34977,,S62181,2.0L 4
 Ram,2019,1500,Laramie Longhorn,Laramie Longhorn,148816,38977,,S71381,5.7L 8
-Toyota,2025,RAV4,LE,LE,43925,40977,39977,11462,2.5L 4
 Toyota,2025,RAV4,LE,LE,35396,40977,39977,11465,2.5L 4
 Toyota,2023,RAV4 Hybrid,XLE,XLE,40903,41977,,11474,2.5L 4
 Ford,2022,Explorer,ST-Line,ST-Line,54872,42977,,S62401,2.3L 4
 Kia,2025,Sorento,AWD,AWD,23905,42977,,S62491,2.5L 4
+Acura,2025,ADX,A-Spec,A-Spec,7517,47977,44977,S71051,1.5L 4
 Toyota,2024,RAV4 Hybrid,XLE,XLE,11242,45977,,11473,2.5L 4
 Toyota,2021,Highlander Hybrid,Platinum,Platinum,76570,45977,,S62411,2.5L 4
 Ford,2020,Expedition,Platinum,Platinum,125933,45977,,S62441,3.5L 6
