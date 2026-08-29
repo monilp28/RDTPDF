@@ -1,14 +1,13 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
-Dodge,2018,Durango,GT,GT,75149,24977,,S71811,5.7L 8
 Mazda,2021,CX-5,AWD,AWD,62097,27977,,S71721,2.5L 4
-Toyota,2021,Corolla Hatchback,SE,SE,27888,28977,,11467,2.0L 4
+Toyota,2024,Corolla,LE,LE,10682,28977,,11476,2.0L 4
 GMC,2019,Terrain,4WD,4WD,125815,30977,,S71751,3.6L 6
+Toyota,2026,Corolla,SE,SE,9598,31977,,11475,2.0L 4
 Toyota,2019,RAV4,AWD,AWD,101334,32977,,S62511,2.5L 4
 Chevrolet,2025,Equinox,RS,RS,86742,33977,,11471,1.5L 4
 Honda,2024,Civic Si,,,22252,34977,,S62231,1.5L 4
 Mazda,2024,CX-5,AWD,AWD,38691,34977,,S62191,2.5L 4
 Toyota,2021,Venza,XLE,XLE,100064,34977,,11469,2.5L 4
-Volvo,2023,XC40,Hybrid,Hybrid,49725,34977,,S62181,2.0L 4
 Ram,2019,1500,Laramie Longhorn,Laramie Longhorn,148816,38977,,S71381,5.7L 8
 Toyota,2025,RAV4,LE,LE,35396,40977,39977,11465,2.5L 4
 Toyota,2023,RAV4 Hybrid,XLE,XLE,40903,41977,,11474,2.5L 4
@@ -28,9 +27,9 @@ Toyota,2024,Tundra,CrewMax,CrewMax,116088,53977,,S71831,3.5L 6
 Toyota,2024,Tacoma,TRD Sport,TRD Sport,45413,55977,,S71661,2.4L 4
 Toyota,2025,Crown Signia,Limited,Limited,30169,58977,,11470,2.5L 4
 Toyota,2024,Tundra,TRD,TRD,70284,61977,,S71651,3.5L 6
-Toyota,2025,Tacoma,Limited,Limited,22912,64977,,S71321,2.4L 4
-Toyota,2026,Corolla,SE,SE,9598,,,11475,2.0L 4
-Toyota,2027,Land Cruiser,Hybrid,Hybrid,100,,,V6005,
-Toyota,2026,Highlander,XLE,XLE,100,,,S6267,
-Toyota,2026,4Runner,Limited,Limited,,74895,,S6271,
-Toyota,2026,Highlander Hybrid,Platinum,Platinum,100,,,S6272,
+Toyota,2026,RAV4,XSE,XSE,,,,S6273,
+Toyota,2027,Land Cruiser,Hybrid,Hybrid,100,,,V6006,
+Toyota,2026,Highlander Hybrid,XLE,XLE,100,,,S6269,
+Toyota,2026,Tundra,CrewMax,CrewMax,100,74800,,S7200,
+Toyota,2026,Tundra,CrewMax,CrewMax,100,78970,,S7197,
+Toyota,2026,RAV4,XSE,XSE,,65495,,S6270,
