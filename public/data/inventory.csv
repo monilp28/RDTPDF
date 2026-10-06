@@ -1,11 +1,10 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
 Mazda,2015,CX-5,GT,GT,132530,18977,,S40841,2.5L 4
-Toyota,2021,C-HR,XLE Premium,XLE Premium,73752,25977,,S40871,2.0L 4
+Toyota,2021,C-HR,XLE Premium,XLE Premium,73799,25977,,S40871,2.0L 4
 Toyota,2018,RAV4,SE,SE,151023,25977,,S71663,2.5L 4
 Toyota,2010,Tundra,CrewMax,CrewMax,142463,26977,,S71511,5.7L 8
 Subaru,2020,Forester,Limited,Limited,121547,27977,,S62771,2.5L 4
 Toyota,2024,Corolla,SE,SE,12403,29977,,S20611,2.0L 4
-Toyota,2022,Camry,SE,SE,70955,29977,,S62811,2.5L 4
 Chevrolet,2025,Equinox,RS,RS,86742,33977,31977,11471,1.5L 4
 Mazda,2024,CX-5,AWD,AWD,38691,34977,33977,S62191,2.5L 4
 Toyota,2026,Corolla,SE,SE,182,34967,,11477,2.0L 4
@@ -31,12 +30,14 @@ Toyota,2021,Highlander,XLE,XLE,24945,,,S62991,3.5L 6
 Chevrolet,2019,Colorado,Z71,Z71,55655,,,S71952,3.6L 6
 Chrysler,2013,200,LX,LX,128181,,,S40931,2.4L 4
 Subaru,2024,Ascent,AWD,AWD,59680,,,S72281,2.4L 4
-Toyota,2024,Highlander,AWD,AWD,45917,,,S63001,2.4L 4
+Toyota,2024,Highlander,XSE,XSE,45917,,,S63001,2.4L 4
+Toyota,2026,Tundra,CrewMax,CrewMax,100,,,11486,3.4L 6
 Honda,2016,Civic,Touring,Touring,168979,,,S71571,1.5L 4
+Toyota,2024,Highlander Hybrid,Limited,Limited,30000,,,L025507,2.5L 4
 Toyota,2012,Tundra,SR5,SR5,209179,,,S71662,5.7L 8
 Toyota,2024,Tundra,SR5,SR5,120865,,,S71961,3.4L 6
-Toyota,2026,Corolla Cross Hybrid,SE,SE,100,,,S4095,
-Toyota,2026,Corolla Cross,LE,LE,100,,,S4096,
-Toyota,2026,RAV4,LE,LE,100,,,S6308,
-Toyota,2026,4Runner,4WD,4WD,100,,,S6311,
-Toyota,2026,4Runner,4WD,4WD,100,,,S6312,
+Toyota,2027,C-HR,SE,SE,100,46925,,V4000,
+Toyota,2027,Corolla,XSE,XSE,100,39480,,V2005,
+Toyota,2026,4Runner,4WD,4WD,100,71674,,S6310,
+Toyota,2027,Corolla Hatchback,,,100,31158,,V2006,
+Toyota,2027,C-HR,XSE,XSE,100,56775,,V4001,
