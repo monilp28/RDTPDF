@@ -1,7 +1,7 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
 Hyundai,2018,Kona,Essential,Essential,158239,13977,,S40901,2.0L 4
 Honda,2016,Civic,Touring,Touring,168979,17977,,S71571,1.5L 4
-Mazda,2015,CX-5,GT,GT,132530,18977,,S40841,2.5L 4
+Subaru,2018,Outback,Touring,Touring,141525,19977,,114811,2.5L 4
 Subaru,2020,Forester,Limited,Limited,121547,27977,,S62771,2.5L 4
 Toyota,2024,Corolla,SE,SE,12403,29977,,S20611,2.0L 4
 Chevrolet,2025,Equinox,RS,RS,86742,33977,31977,11471,1.5L 4
@@ -16,25 +16,26 @@ Subaru,2025,WRX,AWD,AWD,5254,48977,44977,S71201,2.4L 4
 Toyota,2024,RAV4 Hybrid,XLE,XLE,15556,44977,,S62901,2.5L 4
 Toyota,2023,RAV4 Prime,XSE,XSE,130350,44977,,S62761,2.5L 4
 Ram,2022,1500,Rebel,Rebel,65376,45977,,S71471,3.0L 6
+Toyota,2023,Tundra,TRD Sport,TRD Sport,104113,45977,,S71901,3.4L 6
 GMC,2024,Canyon,,,44783,46977,,S71641,2.7L 4
 Toyota,2022,Highlander Hybrid,XLE,XLE,82795,47977,,S62541,2.5L 4
+Toyota,2023,Tacoma,SR5,SR5,39040,48977,,S72321,3.5L 6
+Toyota,2024,Tacoma,TRD,TRD,63093,48977,,S72041,2.4L 4
 Toyota,2025,Tacoma,SR5,SR5,33319,48977,,11479,2.4L 4
+Toyota,2024,Tundra,CrewMax,CrewMax,116088,53977,50977,S71831,3.4L 6
 Toyota,2024,Highlander,XSE,XSE,45917,51977,,S63001,2.4L 4
-Toyota,2024,Tundra,CrewMax,CrewMax,116088,53977,51977,S71831,3.4L 6
-Dodge,2017,Challenger,Hellcat,Hellcat,60119,59977,,S72021,6.2L 8
+Dodge,2017,Challenger,Hellcat,Hellcat,60140,59977,,S72021,6.2L 8
+Toyota,2024,Tundra,TRD,TRD,70284,61977,59977,S71651,3.4L 6
 Toyota,2023,Tundra,CrewMax,CrewMax,82399,60977,,11480,3.4L 6
-Toyota,2024,Tundra,TRD,TRD,70284,61977,60977,S71651,3.4L 6
 Toyota,2026,Highlander Hybrid,XLE,XLE,19757,65977,,11482,2.5L 4
 Toyota,2025,Land Cruiser,Hybrid,Hybrid,17506,79977,,11485,2.4L 4
-Toyota,2023,Tacoma,SR5,SR5,39040,,,S72321,3.5L 6
-Toyota,2024,Tacoma,TRD,TRD,63093,,,S72041,2.4L 4
-Toyota,2023,Tundra,TRD Sport,TRD Sport,104113,,,S71901,3.4L 6
-Toyota,2026,Tundra,TRD Pro,TRD Pro,43639,,,11486,3.4L 6
-Subaru,2018,Outback,Touring,Touring,141525,,,114811,2.5L 4
+Toyota,2026,Tundra,TRD Pro,TRD Pro,43639,81977,,11486,3.4L 6
+Jeep,2016,Patriot,Sport,Sport,172154,,,S62931,2.4L 4
+Toyota,2022,Corolla,,,103858,,,S40961,1.8L 4
 Toyota,2024,Tundra,SR5,SR5,120865,,,S71961,3.4L 6
-Toyota,2026,Tacoma,TRD,TRD,,60965,,S7237,
-Toyota,2026,RAV4,LE,LE,100,,,S6320,
-Toyota,2026,RAV4,XLE,XLE,100,,,S6321,
-Toyota,2027,Corolla Hatchback,,,100,34608,,V2011,
-Toyota,2027,Corolla Hatchback,,,100,33718,,V2013,
-Toyota,2027,Corolla Hatchback,,,100,31158,,V2010,
+Toyota,2026,4Runner,4WD,4WD,100,,,S6323,
+Toyota,2026,Crown Signia,Limited,Limited,100,,,S4098,
+Toyota,2027,Corolla Hatchback,XSE,XSE,,36795,,V2011,
+Toyota,2027,Corolla Hatchback,XSE,XSE,,36795,,V2012,
+Toyota,2026,4Runner,TRD,TRD,,81595,,S6319,
+Toyota,2027,Corolla Hatchback,SE,SE,,29795,,V2014,
