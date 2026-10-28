@@ -1,42 +1,44 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
 Hyundai,2018,Kona,Essential,Essential,158239,13977,,S40901,2.0L 4
-Honda,2016,Civic,Touring,Touring,168979,17977,,S71571,1.5L 4
+Toyota,2022,Corolla,,,103858,19977,,S40961,1.8L 4
 Subaru,2018,Outback,Touring,Touring,141525,19977,,114811,2.5L 4
 Subaru,2020,Forester,Limited,Limited,121547,27977,,S62771,2.5L 4
 Toyota,2024,Corolla,SE,SE,12403,29977,,S20611,2.0L 4
 Chevrolet,2025,Equinox,RS,RS,87150,33977,30977,11471,1.5L 4
 Toyota,2025,GR86,,,11590,37977,,11487,2.4L 4
-Toyota,2023,RAV4 Hybrid,XLE,XLE,121119,38977,,S62801,2.5L 4
+Toyota,2023,RAV4 Hybrid,XLE,XLE,121119,38977,37977,S62801,2.5L 4
 Toyota,2021,4Runner,Limited,Limited,170389,39977,,S63141,4.0L 6
 Ram,2023,1500,Big Horn,Big Horn,70727,39977,,S71711,5.7L 8
-Kia,2025,Sorento,AWD,AWD,24068,42977,40977,S62491,2.5L 4
 Subaru,2024,Ascent,AWD,AWD,59680,42977,,S72281,2.4L 4
 Jeep,2021,Gladiator,Rubicon,Rubicon,59743,44977,,114851,3.6L 6
+Toyota,2023,Tacoma,TRD Sport,TRD Sport,73467,45977,,S72071,3.5L 6
 Ram,2022,1500,Rebel,Rebel,65376,45977,,S71471,3.0L 6
-Toyota,2023,Tundra,TRD Sport,TRD Sport,104154,45977,,S71901,3.4L 6
 Toyota,2021,RAV4 Hybrid,Limited,Limited,11909,45977,,V30001,2.5L 4
 Toyota,2025,RAV4,XLE Premium,XLE Premium,17522,47977,,S63201,2.5L 4
+Toyota,2023,Tacoma,TRD,TRD,60543,47977,,S72331,3.5L 6
 Toyota,2024,Tacoma,TRD,TRD,63093,48977,,S72041,2.4L 4
+Toyota,2025,RAV4,Limited,Limited,17395,48977,,S63451,2.5L 4
 Toyota,2025,Tundra,SR,SR,91963,49977,,S72291,3.4L 6
+Toyota,2025,Tundra,TRD,TRD,77056,49977,,S72381,3.4L 6
 BMW,2025,4 Series,xDrive,xDrive,43669,49977,,S63181,2.0L 4
 Toyota,2024,Tundra,CrewMax,CrewMax,116088,53977,50977,S71831,3.4L 6
+Lexus,2021,RX 350,Sport,Sport,70473,52977,,S63311,3.5L 6
+Toyota,2026,Sienna,XLE,XLE,29212,55977,,11489,2.5L 4
 Toyota,2023,Tundra,CrewMax,CrewMax,82399,60977,,11480,3.4L 6
 Toyota,2022,Sequoia,Platinum,Platinum,120259,64977,,S63161,5.7L 4
 Toyota,2026,Highlander Hybrid,XLE,XLE,19757,65977,,11482,2.5L 4
 Toyota,2025,Land Cruiser,Hybrid,Hybrid,30511,78977,,S63131,2.4L 4
 Toyota,2026,Tundra,TRD Pro,TRD Pro,43639,81977,,11486,3.4L 6
-Toyota,2023,Tacoma,Double Cab,Double Cab,73467,,,S72071,3.5L 6
-Toyota,2026,Sienna,XLE,XLE,29212,,,11489,2.5L 4
 Jeep,2018,Wrangler Unlimited,Sahara,Sahara,131210,,,S80471,3.6L 6
 Ram,2022,1500,Limited Longhorn,Limited Longhorn,63000,,,S72421,5.7L 8
 Buick,2014,Encore,Premium,Premium,174000,,,S41001,1.4L 4
 Toyota,2016,Highlander,XLE,XLE,222556,,,S63002,3.5L 6
-Toyota,2023,Tacoma,Double Cab,Double Cab,60543,,,S72331,3.5L 6
 Toyota,2009,RAV4,4WD,4WD,347949,,,S63072,3.5L 6
-Toyota,2022,Corolla,,,103858,,,S40961,1.8L 4
-Toyota,2025,Tundra,SR,SR,77056,,,S72381,3.4L 6
-Honda,2016,City,EX-L,EX-L,200986,,,S63251,1.8L 4
-Toyota,2026,RAV4,LE,LE,100,39530,,S6341,
-Toyota,2026,4Runner,4WD,4WD,100,71674,,S6346,
-Toyota,2026,4Runner,TRD Sport,TRD Sport,,65495,,S6348,
-Toyota,2026,4Runner,Limited,Limited,,74995,,S6347,
+Hyundai,2017,Elantra GT,SE,SE,95355,,,S41021,2.0L 4
+Lexus,2011,RX 450h,Hybrid,Hybrid,186436,,,S63202,3.5L 6
+Honda,2016,HR-V,EX-L,EX-L,200986,,,S63251,1.8L 4
+Toyota,2026,4Runner,4WD,4WD,100,67492,,S6350,
+Toyota,2026,Sienna,LE,LE,100,54290,,S8052,
+Toyota,2026,Sienna,XSE,XSE,100,59640,,S8051,
+Toyota,2027,Corolla Hatchback,,,100,31158,,V2019,
+Toyota,2026,RAV4,XSE,XSE,,62285,,S6349,
