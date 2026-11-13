@@ -1,6 +1,6 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
 Hyundai,2018,Kona,Essential,Essential,158239,13977,,S40901,2.0L 4
-Honda,2016,HR-V,EX-L,EX-L,200986,14977,,S63251,1.8L 4
+Honda,2016,City,EX-L,EX-L,200986,14977,,S63251,1.8L 4
 Hyundai,2017,Elantra GT,SE,SE,95355,15977,,S41021,2.0L 4
 Toyota,2022,Corolla,,,103858,19977,,S40961,1.8L 4
 Subaru,2018,Outback,Touring,Touring,141525,19977,,114811,2.5L 4
@@ -31,10 +31,11 @@ Toyota,2026,Highlander Hybrid,XLE,XLE,19757,65977,64977,11482,2.5L 4
 Toyota,2025,Land Cruiser,Hybrid,Hybrid,30511,78977,,S63131,2.4L 4
 Toyota,2026,Tundra,TRD Pro,TRD Pro,43639,81977,79977,11486,3.4L 6
 Mercedes-Benz,2018,C-Class,4MATIC,4MATIC,84200,,,S80531,2.0L 4
+Chevrolet,2016,Silverado 1500,LTZ,LTZ,163580,,,S72221,5.3L 8
 Lexus,2011,RX 450h,Hybrid,Hybrid,186436,,,S63202,3.5L 6
-Toyota,2026,Tundra,CrewMax,CrewMax,100,78620,,S7264,
-Toyota,2026,Sienna,XSE,XSE,100,59990,,S8056,
-Toyota,2026,Tacoma,Double Cab,Double Cab,100,62561,,S7263,
+Toyota,2026,Tacoma,Double Cab,Double Cab,100,58818,,S7266,
 Toyota,2026,Tundra,CrewMax,CrewMax,100,74450,,S7261,
 Toyota,2026,Tundra,CrewMax,CrewMax,100,78620,,S7262,
-Toyota,2026,Tundra,CrewMax,CrewMax,100,91456,,S7260,
+Toyota,2027,Camry,SE,SE,100,,,V3005,
+Toyota,2026,Tacoma,Double Cab,Double Cab,100,58818,,S7265,
+Toyota,2026,Tacoma,Double Cab,Double Cab,100,54605,,S7267,
