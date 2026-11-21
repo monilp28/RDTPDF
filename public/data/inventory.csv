@@ -1,6 +1,6 @@
 makeName,year,model,sub-model,trim,mileage,value,sale_value,stock_number,engine
 Hyundai,2018,Kona,Essential,Essential,158239,13977,,S40901,2.0L 4
-Honda,2016,HR-V,EX-L,EX-L,200986,14977,,S63251,1.8L 4
+Honda,2016,City,EX-L,EX-L,200986,14977,,S63251,1.8L 4
 Hyundai,2017,Elantra GT,SE,SE,95355,15977,,S41021,2.0L 4
 Lexus,2011,RX 450h,Hybrid,Hybrid,186436,18977,,S63202,3.5L 6
 Toyota,2022,Corolla,,,103858,19977,,S40961,1.8L 4
@@ -13,6 +13,8 @@ Chevrolet,2019,Colorado,Z71,Z71,55655,27977,,S71952,3.6L 6
 Toyota,2024,Corolla,SE,SE,12403,29977,28977,S20611,2.0L 4
 Chevrolet,2025,Equinox,RS,RS,87150,33977,29977,11471,1.5L 4
 Toyota,2025,Corolla,LE,LE,32195,30977,,11494,1.8L 4
+Toyota,2021,Highlander,XLE,XLE,170908,32977,,S63611,3.5L 6
+Toyota,2026,Corolla Cross,AWD,AWD,17176,33977,,11495,2.0L 4
 Toyota,2025,GR86,,,11590,37977,,11487,2.4L 4
 Toyota,2023,RAV4 Hybrid,XLE,XLE,122000,38977,37977,S62801,2.5L 4
 Ram,2023,1500,Big Horn,Big Horn,70727,39977,37977,S71711,5.7L 8
@@ -34,13 +36,13 @@ Toyota,2025,Crown Signia,Limited,Limited,32586,56797,,11491,2.5L 4
 Toyota,2023,Tundra,CrewMax,CrewMax,82399,60977,,11480,3.4L 6
 Toyota,2026,Highlander Hybrid,XLE,XLE,19757,65977,64977,11482,2.5L 4
 Toyota,2026,Tundra,TRD Pro,TRD Pro,43639,81977,79977,11486,3.4L 6
+Toyota,2014,Sienna,LE,LE,222963,,,S80561,3.5L 6
 Kia,2020,Forte,EX,EX,74441,,,S72161,2.0L 4
 Toyota,2006,Corolla,,,183979,,,V20281,1.8L 4
-Toyota,2021,Highlander,XLE,XLE,170908,,,S63611,3.5L 6
+Kia,2017,Forte,EX,EX,134928,,,S41051,2.0L 4
 Chevrolet,2016,Silverado 1500,LTZ,LTZ,163580,,,S72221,5.3L 8
-Toyota,2026,Highlander Hybrid,Limited,Limited,100,64116,,S6365,
-Toyota,2026,RAV4,SE,SE,,,,S6363,
-Toyota,2027,Land Cruiser,Hybrid,Hybrid,100,,,V6012,
-Toyota,2027,Land Cruiser,Hybrid,Hybrid,100,73700,,V6013,
-Toyota,2027,Land Cruiser,Hybrid,Hybrid,100,89215,,V6010,
-Toyota,2026,Crown Signia,Limited,Limited,100,63565,,S4106,
+Honda,2022,City,LX,LX,136170,,,S72631,1.5L 4
+Toyota,2027,Land Cruiser,Hybrid,Hybrid,100,,,V6013,
+Toyota,2027,Land Cruiser,Hybrid,Hybrid,100,,,V6010,
+Toyota,2026,Crown Signia,Limited,Limited,100,,,S4106,
+Toyota,2026,Tundra,SR,SR,100,67146,,S7259,
